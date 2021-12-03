@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { HTTPRequestInfo, PullerResult, Replicache } from "replicache";
+import { Replicache } from "replicache";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../frontend/mutators";
 import { randUserInfo } from "../../frontend/client-state";
 import { randomShape } from "../../frontend/shape";
-import { Request, responseSchema } from "protocol/socket";
-import { PushRequest, PushResponse } from "protocol/push";
+import { PushMessage, PushBody } from "../../protocol/push";
 import { resolver } from "frontend/resolver";
 import { nanoid } from "nanoid";
+import { pokeMessageSchema } from "protocol/poke";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -30,9 +30,9 @@ export default function Home() {
 
         pusher: async (req) => {
           const ws = await socket;
-          const pushReq = (await req.json()) as PushRequest;
-          pushReq.id = nanoid();
-          const msg: Request = ["pushReq", pushReq];
+          const pushBody = (await req.json()) as PushBody;
+          pushBody.id = nanoid();
+          const msg: PushMessage = ["push", pushBody];
           ws.send(JSON.stringify(msg));
           return {
             errorMessage: "",
@@ -52,10 +52,8 @@ export default function Home() {
         });
         ws.addEventListener("message", (e) => {
           const data = JSON.parse(e.data);
-          const [type] = responseSchema.parse(data);
-          if (type == "pokeRes") {
-            r.pull();
-          }
+          pokeMessageSchema.parse(data);
+          // TODO
         });
         return await promise;
       })();

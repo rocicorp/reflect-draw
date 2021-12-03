@@ -7,17 +7,15 @@ export const mutationSchema = z.object({
   args: jsonSchema,
 });
 
-export const pushRequestSchema = z.object({
+export const pushBodySchema = z.object({
   id: z.string(),
   mutations: z.array(mutationSchema),
   pushVersion: z.number(),
   schemaVersion: z.string(),
 });
 
-export const pushResponseSchema = z.object({
-  id: z.string(),
-});
+export const pushMessageSchema = z.tuple([z.literal("push"), pushBodySchema]);
 
 export type Mutation = z.infer<typeof mutationSchema>;
-export type PushRequest = z.infer<typeof pushRequestSchema>;
-export type PushResponse = z.infer<typeof pushResponseSchema>;
+export type PushBody = z.infer<typeof pushBodySchema>;
+export type PushMessage = z.infer<typeof pushMessageSchema>;

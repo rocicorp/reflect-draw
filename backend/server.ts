@@ -2,9 +2,8 @@ import { createServer } from "http";
 import WebSocket from "ws";
 import { parse } from "url";
 import next from "next";
-import { requestSchema, Response } from "../protocol/socket";
-import { PushRequest } from "protocol/push";
 import { Command } from "commander";
+import { pushMessageSchema } from "protocol/push";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -86,15 +85,9 @@ app.prepare().then(() => {
 
 function handleSocketRequest(client: Client, data: WebSocket.RawData) {
   const v = JSON.parse(data.toString());
-  const message = requestSchema.safeParse(v);
+  const message = pushMessageSchema.safeParse(v);
   if (!message.success) {
     console.error(message.error);
     return;
-  }
-
-  const [type, payload] = message.data;
-  switch (type) {
-    case "pushReq":
-      break;
   }
 }
