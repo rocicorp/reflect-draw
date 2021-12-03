@@ -2,8 +2,8 @@ import { createServer } from "http";
 import WebSocket from "ws";
 import { parse } from "url";
 import next from "next";
-import { requestSchema, Response } from "../schemas/socket";
-import { PushRequest } from "schemas/push";
+import { requestSchema, Response } from "../protocol/socket";
+import { PushRequest } from "protocol/push";
 import { Command } from "commander";
 
 const dev = process.env.NODE_ENV !== "production";
