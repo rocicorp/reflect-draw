@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { setup, test } from "mocha";
 import {
+  createDatabase,
   delObject,
   getCookie,
   getLastMutationID,
@@ -8,7 +9,7 @@ import {
   putObject,
   setLastMutationID,
 } from "./data";
-import { createDatabase, withExecutor } from "./db";
+import { withExecutor } from "./pg";
 
 setup(async () => {
   await withExecutor(async () => {
@@ -46,7 +47,7 @@ test("set/getlastmutationid", async () => {
 
 test("getCookie", async () => {
   await withExecutor(async (executor) => {
-    expect(await getCookie(executor, "d1")).to.equal("");
+    expect(await getCookie(executor, "d1")).to.equal("0");
     await putObject(executor, "d1", "foo", "bar");
     const cookie1 = await getCookie(executor, "d1");
 

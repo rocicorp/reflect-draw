@@ -2,12 +2,8 @@ import { createServer } from "http";
 import WebSocket from "ws";
 import { parse } from "url";
 import next from "next";
-import { requestSchema, Response } from "../schemas/socket";
-import { handlePushRequest } from "./push";
-import { PushRequest } from "schemas/push";
-import { handlePullRequest } from "./pull";
-import { PullRequest } from "schemas/pull";
 import { Command } from "commander";
+import { pushMessageSchema } from "protocol/push";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -89,44 +85,9 @@ app.prepare().then(() => {
 
 function handleSocketRequest(client: Client, data: WebSocket.RawData) {
   const v = JSON.parse(data.toString());
-  const message = requestSchema.safeParse(v);
+  const message = pushMessageSchema.safeParse(v);
   if (!message.success) {
     console.error(message.error);
     return;
   }
-
-  const [type, payload] = message.data;
-  switch (type) {
-    case "pushReq":
-      handlePushRequest(
-        payload as PushRequest,
-        client.roomID,
-        client.clientID,
-        client.socket
-      );
-      sendPokes(client.roomID);
-      break;
-    case "pullReq":
-      handlePullRequest(
-        payload as PullRequest,
-        client.roomID,
-        client.clientID,
-        client.socket
-      );
-      break;
-  }
-}
-
-function sendPokes(roomID: string) {
-  const t0 = Date.now();
-  const response: Response = ["pokeRes", {}];
-  const resStr = JSON.stringify(response);
-  let count = 0;
-  for (const c of clients) {
-    if (c.roomID === roomID) {
-      c.socket.send(resStr);
-      count++;
-    }
-  }
-  console.log(`Sent ${count} pokes in ${Date.now() - t0}ms`);
 }
