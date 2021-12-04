@@ -1,8 +1,6 @@
+import { nullableVersionSchema, versionSchema } from "backend/version";
 import { z } from "zod";
 import { jsonSchema } from "./json";
-
-export const versionSchema = z.number();
-export const nullableVersionSchema = z.union([versionSchema, z.null()]);
 
 export const putOpSchema = z.object({
   op: z.literal("put"),
@@ -31,8 +29,6 @@ export const pokeBodySchema = z.object({
 
 export const pokeMessageSchema = z.tuple([z.literal("poke"), pokeBodySchema]);
 
-export type Version = z.infer<typeof versionSchema>;
-export type NullableVersion = z.infer<typeof nullableVersionSchema>;
 export type PutOp = z.infer<typeof putOpSchema>;
 export type DelOp = z.infer<typeof delOpSchema>;
 export type PatchOp = z.infer<typeof patchOpSchema>;
