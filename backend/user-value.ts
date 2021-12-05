@@ -1,4 +1,4 @@
-import { jsonSchema } from "protocol/json";
+import { jsonSchema } from "../protocol/json";
 import { versionSchema } from "./version";
 import { z } from "zod";
 
@@ -12,6 +12,6 @@ export type UserValue = z.infer<typeof userValueSchema>;
 
 export const userValuePrefix = "user/";
 
-export function userValueKey(id: string): string {
-  return `${userValuePrefix}${id}`;
+export function userValueKey(key: string): string {
+  return `${userValuePrefix}${key}`;
 }
