@@ -1,7 +1,7 @@
 import { JSONValue, ScanResult, WriteTransaction } from "replicache";
 import { Version } from "./version";
 import { EntryCache } from "./entry-cache";
-import { UserValue, userValueSchema } from "./user-value";
+import { UserValue, userValueKey, userValueSchema } from "./user-value";
 import { JSONType } from "protocol/json";
 import { ClientID } from "./client-state";
 
@@ -29,7 +29,7 @@ export class ReplicacheTransaction implements WriteTransaction {
       version: this._version,
       value: value as JSONType,
     };
-    await this._inner.put(key, userValue);
+    await this._inner.put(userValueKey(key), userValue);
   }
 
   async del(key: string): Promise<boolean> {
@@ -44,12 +44,12 @@ export class ReplicacheTransaction implements WriteTransaction {
       version: this._version,
       value: prev as JSONType,
     };
-    await this._inner.put(key, userValue);
+    await this._inner.put(userValueKey(key), userValue);
     return prev !== undefined;
   }
 
   async get(key: string): Promise<JSONValue | undefined> {
-    const entry = await this._inner.get(key, userValueSchema);
+    const entry = await this._inner.get(userValueKey(key), userValueSchema);
     if (entry === undefined) {
       return undefined;
     }

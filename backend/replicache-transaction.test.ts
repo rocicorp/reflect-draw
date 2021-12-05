@@ -4,7 +4,8 @@ import { expect } from "chai";
 import { setup, test } from "mocha";
 import { EntryCache } from "./entry-cache";
 import { DBStorage } from "./db-storage";
-import { createDatabase } from "./data";
+import { createDatabase, getEntry } from "./data";
+import { UserValue, userValueKey, userValueSchema } from "./user-value";
 
 setup(async () => {
   await withExecutor(async () => {
@@ -14,7 +15,7 @@ setup(async () => {
 
 test("ReplicacheTransaction", async () => {
   await transact(async (executor) => {
-    const storage = new DBStorage(executor, "c1");
+    const storage = new DBStorage(executor, "r1");
     const entryCache = new EntryCache(storage);
     const writeTx = new ReplicacheTransaction(entryCache, "c1", 1);
 
@@ -41,6 +42,16 @@ test("ReplicacheTransaction", async () => {
     const writeTx3 = new ReplicacheTransaction(entryCache, "c1", 3);
     expect(await writeTx3.has("foo")).true;
     expect(await writeTx3.get("foo")).to.equal("bar");
+
+    // Check the underlying storage gets written in the way we expect.
+    const expected: UserValue = {
+      deleted: false,
+      value: "bar",
+      version: 1,
+    };
+    expect(
+      await getEntry(executor, "r1", userValueKey("foo"), userValueSchema)
+    ).deep.equal(expected);
 
     // delete has special return value
     expect(await writeTx3.del("foo")).true;

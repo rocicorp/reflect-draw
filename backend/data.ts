@@ -18,10 +18,10 @@ export async function createDatabase() {
 
     await executor(`create index on entry (roomid)`);
     await executor(
-      `create index on entry ((value->>'deleted')) where key like '/user/*'`
+      `create index on entry (((value->>'deleted')::boolean)) where key like '/user/*'`
     );
     await executor(
-      `create index on entry ((value->>'version')) where key like '/user/*'`
+      `create index on entry (((value->>'version')::integer)) where key like '/user/*'`
     );
   });
 }
