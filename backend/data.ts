@@ -1,3 +1,4 @@
+import { JSONValue } from "replicache";
 import { ZodSchema } from "zod";
 import { Executor, transact } from "./pg";
 import { RoomID } from "./room-state";
@@ -25,12 +26,12 @@ export async function createDatabase() {
   });
 }
 
-export async function getEntry<Def>(
+export async function getEntry<T extends JSONValue>(
   executor: Executor,
   roomid: string,
   key: string,
-  schema: ZodSchema<Def>
-): Promise<Def | undefined> {
+  schema: ZodSchema<T>
+): Promise<T | undefined> {
   const {
     rows,
   } = await executor("select value from entry where roomid = $1 and key = $2", [
@@ -44,12 +45,12 @@ export async function getEntry<Def>(
   return schema.parse(value);
 }
 
-export async function mustGetEntry<Def>(
+export async function mustGetEntry<T extends JSONValue>(
   executor: Executor,
   roomid: string,
   key: string,
-  schema: ZodSchema<Def>
-): Promise<Def> {
+  schema: ZodSchema<T>
+): Promise<T> {
   const value = await getEntry(executor, roomid, key, schema);
   if (value === undefined) {
     throw new Error(`Entry ${key} not found`);
@@ -57,11 +58,11 @@ export async function mustGetEntry<Def>(
   return value;
 }
 
-export async function putEntry<Def>(
+export async function putEntry<T extends JSONValue>(
   executor: Executor,
   roomID: RoomID,
   key: string,
-  value: Def
+  value: T
 ): Promise<void> {
   await executor(
     `
