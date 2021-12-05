@@ -1,109 +1,85 @@
-import { JSONValue } from "replicache";
+import { ZodSchema } from "zod";
 import { Executor, transact } from "./pg";
+import { RoomID } from "./room-state";
 
 export async function createDatabase() {
   await transact(async (executor) => {
     // TODO: Proper versioning for schema.
-    await executor("drop table if exists client cascade");
-    await executor("drop table if exists object cascade");
+    await executor("drop table if exists entry cascade");
 
-    await executor(`create table client (
-      id varchar(100) primary key not null,
-      lastmutationid int not null)`);
-
-    await executor(`create table object (
-      k varchar(100) not null,
-      v text not null,
-      documentid varchar(100) not null,
-      deleted bool not null default false,
+    await executor(`create table entry (
+      roomid text not null,
+      key text not null,
+      value json not null,
       lastmodified timestamp(6) not null,
-      unique (documentid, k)
+      unique (roomid, key)
       )`);
 
-    await executor(`create index on object (documentid)`);
-    await executor(`create index on object (deleted)`);
-    await executor(`create index on object (lastmodified)`);
+    await executor(`create index on entry (roomid)`);
+    await executor(
+      `create index on entry ((value->>'deleted')) where key like '/user/*'`
+    );
+    await executor(
+      `create index on entry ((value->>'version')) where key like '/user/*'`
+    );
   });
 }
 
-export async function getCookie(
+export async function getEntry<Def>(
   executor: Executor,
-  docID: string
-): Promise<string> {
-  const result = await executor(
-    "select max(extract(epoch from lastmodified)) from object where documentid = $1",
-    [docID]
-  );
-  return result.rows[0]?.[result.fields[0].name] ?? "0";
-}
-
-export async function getLastMutationID(
-  executor: Executor,
-  clientID: string
-): Promise<number> {
-  const result = await executor(
-    "select lastmutationid from client where id = $1",
-    [clientID]
-  );
-  return result.rows[0]?.lastmutationid ?? 0;
-}
-
-export async function setLastMutationID(
-  executor: Executor,
-  clientID: string,
-  lastMutationID: number
-): Promise<void> {
-  await executor(
-    "insert into client (id, lastmutationid) values ($1, $2) " +
-      "on conflict (id) do update set lastmutationid = $2",
-    [clientID, lastMutationID]
-  );
-}
-
-export async function getObject(
-  executor: Executor,
-  documentID: string,
-  key: string
-): Promise<JSONValue | undefined> {
+  roomid: string,
+  key: string,
+  schema: ZodSchema<Def>
+): Promise<Def | undefined> {
   const {
     rows,
-  } = await executor(
-    "select v from object where documentid = $1 and k = $2 and deleted = false",
-    [documentID, key]
-  );
-  const value = rows[0]?.v;
-  if (!value) {
+  } = await executor("select value from entry where roomid = $1 and key = $2", [
+    roomid,
+    key,
+  ]);
+  const value = rows[0]?.value;
+  if (value === undefined) {
     return undefined;
   }
-  return JSON.parse(value);
+  return schema.parse(value);
 }
 
-export async function putObject(
+export async function mustGetEntry<Def>(
   executor: Executor,
-  docID: string,
+  roomid: string,
   key: string,
-  value: JSONValue
+  schema: ZodSchema<Def>
+): Promise<Def> {
+  const value = await getEntry(executor, roomid, key, schema);
+  if (value === undefined) {
+    throw new Error(`Entry ${key} not found`);
+  }
+  return value;
+}
+
+export async function putEntry<Def>(
+  executor: Executor,
+  roomID: RoomID,
+  key: string,
+  value: Def
 ): Promise<void> {
   await executor(
     `
-    insert into object (documentid, k, v, deleted, lastmodified)
-    values ($1, $2, $3, false, now())
-      on conflict (documentid, k) do update set v = $3, deleted = false, lastmodified = now()
+    insert into entry (roomid, key, value, lastmodified)
+    values ($1, $2, $3, now())
+      on conflict (roomid, key) do update set value = $3, lastmodified = now()
     `,
-    [docID, key, JSON.stringify(value)]
+    [roomID, key, JSON.stringify(value)]
   );
 }
 
-export async function delObject(
+export async function delEntry(
   executor: Executor,
-  docID: string,
+  roomID: RoomID,
   key: string
 ): Promise<void> {
-  await executor(
-    `
-    update object set deleted = true, lastmodified = now()
-    where documentid = $1 and k = $2
-  `,
-    [docID, key]
-  );
+  await executor(`delete from entry where roomid = $1 and key = $2`, [
+    roomID,
+    key,
+  ]);
 }
