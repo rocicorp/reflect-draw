@@ -1,93 +1,150 @@
-import { createServer } from "http";
-import WebSocket from "ws";
+import { IncomingMessage } from "http";
 import { parse } from "url";
-import next from "next";
-import { Command } from "commander";
-import { pushMessageSchema } from "protocol/push";
+import { RoomID, RoomMap } from "./room-state";
+import { z, ZodSchema } from "zod";
+import { NullableVersion, nullableVersionSchema } from "./version";
+import { Lock } from "./lock";
+import { ClientID, ClientState, Socket } from "./client-state";
+import {
+  clientRecordKey,
+  clientRecordSchema,
+  ClientRecord,
+} from "./client-record";
+import { DBStorage } from "./db-storage";
+import { transact } from "./pg";
 
-const dev = process.env.NODE_ENV !== "production";
-const app = next({ dev });
-const handle = app.getRequestHandler();
-const program = new Command().option(
-  "-p, --port <port>",
-  "port to listen on",
-  parseInt
-);
+export type Now = () => number;
 
-type Client = {
-  clientID: string;
-  roomID: string;
-  socket: WebSocket;
-};
+export class Server {
+  private _rooms: RoomMap = new Map();
+  private _lock = new Lock();
+  private _now: Now;
 
-const clients: Client[] = [];
+  constructor(rooms: RoomMap, now: Now) {
+    this._rooms = rooms;
+    this._now = now;
+  }
 
-app.prepare().then(() => {
-  program.parse(process.argv);
+  // Mainly for testing.
+  get rooms() {
+    return this._rooms;
+  }
 
-  const port = program.opts().port || process.env.PORT || 3000;
-
-  const server = createServer((req, res) =>
-    handle(req, res, parse(req.url!, true))
-  );
-  const wss = new WebSocket.Server({ noServer: true });
-
-  wss.on("connection", (ws, req) => {
-    const url = parse(req.url!, true);
-    const parts = (url.pathname ?? "").split("/");
-
-    if (parts[1] != "d" || !parts[2]) {
-      ws.send("invalid url - no room id");
+  async handleConnection(ws: Socket, url: string) {
+    const { result, error } = getConnectRequest(url);
+    if (result === null) {
+      ws.send(error!);
       ws.close();
       return;
     }
+    const { clientID, roomID, baseCookie, timestamp } = result;
+    await transact(async (executor) => {
+      const storage = new DBStorage(executor, roomID);
+      const existingRecord = await storage.get(
+        clientRecordKey(clientID),
+        clientRecordSchema
+      );
+      const lastMutationID = existingRecord?.lastMutationID ?? 0;
+      const record: ClientRecord = {
+        baseCookie,
+        lastMutationID,
+      };
+      await storage.put(clientRecordKey(clientID), record);
+    });
+    await this._lock.withLock(async () => {
+      let room = this._rooms.get(roomID);
+      if (!room) {
+        room = {
+          clients: new Map(),
+        };
+        this._rooms.set(roomID, room);
+      }
 
-    const roomID = parts[2];
-    const clientID = (url.query.clientID as string) ?? [];
-    if (!clientID) {
-      ws.send("invalid url - no client ID");
-      ws.close();
-      return;
+      // Add or update ClientState.
+      const existing = room.clients.get(clientID);
+      if (existing) {
+        existing.socket.close();
+      }
+
+      ws.onmessage = () => {}; // TODO
+      ws.onclose = () => this.handleClose(roomID, clientID);
+
+      const clockBehindByMs = this._now() - timestamp;
+
+      const client: ClientState = {
+        socket: ws,
+        clockBehindByMs,
+        pending: [],
+      };
+      room.clients.set(clientID, client);
+    });
+  }
+
+  async handleClose(roomID: RoomID, clientID: ClientID): Promise<void> {
+    await this._lock.withLock(async () => {
+      const room = this._rooms.get(roomID);
+      if (!room) {
+        return;
+      }
+      room.clients.delete(clientID);
+      if (room.clients.size === 0) {
+        this._rooms.delete(roomID);
+      }
+    });
+  }
+}
+
+export function getConnectRequest(urlString: string) {
+  const url = parse(urlString, true);
+
+  const getParam = (name: string, required: boolean) => {
+    const value = url.query[name];
+    if (value === "") {
+      if (required) {
+        throw new Error(`invalid querystring - missing ${name}`);
+      }
+      return null;
     }
-
-    const existingClient = clients.find((c) => c.clientID === clientID);
-    if (existingClient) {
-      existingClient.socket.close();
+    if (typeof value !== "string") {
+      throw new Error(
+        `invalid querystring parameter ${name}, url: ${urlString}, got: ${value}`
+      );
     }
+    return value;
+  };
+  const getIntegerParam = (name: string, required: boolean) => {
+    const value = getParam(name, required);
+    if (value === null) {
+      return null;
+    }
+    const int = parseInt(value);
+    if (isNaN(int)) {
+      throw new Error(
+        `invalid querystring parameter ${name}, url: ${urlString}, got: ${value}`
+      );
+    }
+    return int;
+  };
 
-    const client = {
-      clientID,
-      roomID,
-      socket: ws,
+  try {
+    const roomID = getParam("roomID", true)!;
+    const clientID = getParam("clientID", true)!;
+    const baseCookie = getIntegerParam("baseCookie", false);
+    const timestamp = getIntegerParam("ts", true)!;
+
+    return {
+      result: {
+        clientID,
+        roomID,
+        baseCookie,
+        timestamp,
+      },
+      error: null,
     };
-    clients.push(client);
-
-    client.socket.on("close", () => {
-      const index = clients.findIndex((c) => c.clientID === clientID);
-      clients.splice(index, 1);
-    });
-
-    client.socket.on("message", (data) => {
-      handleSocketRequest(client, data);
-    });
-  });
-
-  server.on("upgrade", (req, socket, head) => {
-    wss.handleUpgrade(req, socket, head, (ws) => {
-      wss.emit("connection", ws, req);
-    });
-  });
-
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`);
-  });
-});
-
-function handleSocketRequest(client: Client, data: WebSocket.RawData) {
-  const v = JSON.parse(data.toString());
-  const message = pushMessageSchema.safeParse(v);
-  if (!message.success) {
-    console.error(message.error);
-    return;
+  } catch (e) {
+    return {
+      result: null,
+      error: String(e),
+    };
   }
 }

@@ -1,9 +1,10 @@
 import { expect } from "chai";
 import { test } from "mocha";
 import { resolver } from "../frontend/resolver";
-import { Task, AsyncLoop } from "./async-loop";
+import { Lock } from "./lock";
 
-test("AsyncLoop", async () => {
+test("Lock", async () => {
+  type Task = () => Promise<void>;
   const log: string[] = [];
 
   function makeTask(name: string) {
@@ -24,10 +25,11 @@ test("AsyncLoop", async () => {
   const [t2, r2] = makeTask("t2");
   const [t3, r3] = makeTask("t3");
 
-  const loop = new AsyncLoop();
-  loop.addTask(t1);
-  loop.addTask(t2);
+  const loop = new Lock();
+  loop.withLock(t1);
+  loop.withLock(t2);
 
+  await sleep(0);
   expect(log).deep.equal(["t1 enter"]);
   r1();
   await sleep(0);
@@ -37,7 +39,7 @@ test("AsyncLoop", async () => {
   expect(log).deep.equal(["t1 enter", "t1 exit", "t2 enter", "t2 exit"]);
 
   r3();
-  loop.addTask(t3);
+  loop.withLock(t3);
   await sleep(0);
   expect(log).deep.equal([
     "t1 enter",
