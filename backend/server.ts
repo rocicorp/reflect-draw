@@ -1,8 +1,5 @@
-import { IncomingMessage } from "http";
 import { parse } from "url";
 import { RoomID, RoomMap } from "./room-state";
-import { z, ZodSchema } from "zod";
-import { NullableVersion, nullableVersionSchema } from "./version";
 import { Lock } from "./lock";
 import { ClientID, ClientState, Socket } from "./client-state";
 import {
@@ -12,6 +9,9 @@ import {
 } from "./client-record";
 import { DBStorage } from "./db-storage";
 import { transact } from "./pg";
+import { PushBody } from "../protocol/push";
+import { sendError } from "./socket";
+import { upstreamSchema } from "../protocol/up";
 
 export type Now = () => number;
 
@@ -78,6 +78,71 @@ export class Server {
       };
       room.clients.set(clientID, client);
     });
+  }
+
+  async handleMessage(
+    roomID: RoomID,
+    clientID: ClientID,
+    data: string,
+    ws: Socket
+  ) {
+    const getMessage = () => {
+      let json;
+      try {
+        json = JSON.parse(data);
+        const message = upstreamSchema.parse(json);
+        return { result: message };
+      } catch (e) {
+        return { error: String(e) };
+      }
+    };
+    await this._lock.withLock(async () => {
+      const { result: message, error } = getMessage();
+      if (error) {
+        sendError(ws, error);
+        return;
+      }
+
+      const [type, body] = message!;
+      switch (type) {
+        case "push":
+          this.handlePush(roomID, clientID, body, ws);
+          break;
+        default:
+          throw new Error(`Unknown message type: ${type}`);
+      }
+    });
+  }
+
+  async handlePush(
+    roomID: RoomID,
+    clientID: ClientID,
+    body: PushBody,
+    ws: Socket
+  ) {
+    const room = this._rooms.get(roomID);
+    if (!room) {
+      sendError(ws, `no such room: ${roomID}`);
+      return;
+    }
+
+    const client = room.clients.get(clientID);
+    if (!client) {
+      sendError(ws, `no such client: ${clientID}`);
+      return;
+    }
+
+    for (const m of body.mutations) {
+      let idx = client.pending.findIndex((pm) => pm.id >= m.id);
+      if (idx === -1) {
+        idx = client.pending.length;
+      } else if (client.pending[idx].id === m.id) {
+        console.log(`Mutation ${m.id} has already been queued`);
+        continue;
+      }
+      m.timestamp += client.clockBehindByMs;
+      client.pending.splice(idx, 0, m);
+    }
   }
 
   async handleClose(roomID: RoomID, clientID: ClientID): Promise<void> {
