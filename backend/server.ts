@@ -66,7 +66,8 @@ export class Server {
         existing.socket.close();
       }
 
-      ws.onmessage = () => {}; // TODO
+      ws.onmessage = (event) =>
+        this.handleMessage(roomID, clientID, event.data.toString(), ws);
       ws.onclose = () => this.handleClose(roomID, clientID);
 
       const clockBehindByMs = this._now() - timestamp;
