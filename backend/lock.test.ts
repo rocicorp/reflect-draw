@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { test } from "mocha";
 import { resolver } from "../frontend/resolver";
 import { Lock } from "./lock";
+import { sleep } from "./test-utils";
 
 test("Lock", async () => {
   type Task = () => Promise<void>;
@@ -17,10 +18,6 @@ test("Lock", async () => {
     return [task, resolve] as [Task, () => void];
   }
 
-  function sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   const [t1, r1] = makeTask("t1");
   const [t2, r2] = makeTask("t2");
   const [t3, r3] = makeTask("t3");
@@ -29,18 +26,18 @@ test("Lock", async () => {
   loop.withLock(t1);
   loop.withLock(t2);
 
-  await sleep(0);
+  await sleep();
   expect(log).deep.equal(["t1 enter"]);
   r1();
-  await sleep(0);
+  await sleep();
   expect(log).deep.equal(["t1 enter", "t1 exit", "t2 enter"]);
   r2();
-  await sleep(0);
+  await sleep();
   expect(log).deep.equal(["t1 enter", "t1 exit", "t2 enter", "t2 exit"]);
 
   r3();
   loop.withLock(t3);
-  await sleep(0);
+  await sleep();
   expect(log).deep.equal([
     "t1 enter",
     "t1 exit",

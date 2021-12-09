@@ -5,10 +5,10 @@ export const mutationSchema = z.object({
   id: z.number(),
   name: z.string(),
   args: jsonSchema,
+  timestamp: z.number(),
 });
 
 export const pushBodySchema = z.object({
-  id: z.string(),
   mutations: z.array(mutationSchema),
   pushVersion: z.number(),
   schemaVersion: z.string(),

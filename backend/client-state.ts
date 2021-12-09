@@ -15,20 +15,12 @@ export interface Socket {
 export type ClientState = {
   socket: Socket;
 
-  // A list of mutations awaiting application from this client. This list has
-  // a funny invariant. It is sorted by mutationID AND serverTimestamp ascending.
-  // The list needs to be sorted by mutationID because we need to process
-  // mutations in that order to preserve causality. But it also needs to be sorted
-  // by serverTimestamp so that mutations get processed in an order roughly
-  // corresponding to realtime. The push handler (below) ensures this invariant
-  // is preserved by adjusting serverTimestamp if necessary so that it is
-  // monotonically increasing.
-  pending: PendingMutation[];
+  // A list of mutations awaiting application from this client. Sorted by
+  // lastMutationID and de-duplicated. The timestamps in these mutations
+  // are in the server's timeframe. Note that they will generally increase
+  // with respect to mutationID but that is not guaranteed.
+  pending: Mutation[];
 
   // How long is the client's timestamp behind the local timestamp?
   clockBehindByMs: number;
-};
-
-export type PendingMutation = Mutation & {
-  serverTimestamp: number;
 };
