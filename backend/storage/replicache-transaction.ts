@@ -1,9 +1,9 @@
 import { JSONValue, ScanResult, WriteTransaction } from "replicache";
-import { Version } from "./version";
+import { Version } from "../types/version";
 import { EntryCache } from "./entry-cache";
-import { UserValue, userValueKey, userValueSchema } from "./user-value";
+import { UserValue, userValueKey, userValueSchema } from "../types/user-value";
 import { JSONType } from "protocol/json";
-import { ClientID } from "./client-state";
+import { ClientID } from "../types/client-state";
 
 /**
  * Implements Replicache's WriteTransaction in terms of EntryCache.

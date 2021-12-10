@@ -1,16 +1,16 @@
 import { parse } from "url";
-import { RoomID, RoomMap } from "./room-state";
-import { Lock } from "./lock";
-import { ClientID, ClientState, Socket } from "./client-state";
+import { RoomID, RoomMap } from "./types/room-state";
+import { Lock } from "./util/lock";
+import { ClientID, ClientState, Socket } from "./types/client-state";
 import {
   clientRecordKey,
   clientRecordSchema,
   ClientRecord,
-} from "./client-record";
-import { DBStorage } from "./db-storage";
-import { transact } from "./pg";
+} from "./types/client-record";
+import { DBStorage } from "./storage/db-storage";
+import { transact } from "./db/pg";
 import { PushBody } from "../protocol/push";
-import { sendError } from "./socket";
+import { sendError } from "./util/socket";
 import { upstreamSchema } from "../protocol/up";
 
 export type Now = () => number;

@@ -2,16 +2,16 @@ import {
   ClientRecord,
   getClientRecord,
   putClientRecord,
-} from "../client-record";
-import { MemStorage } from "../mem-storage";
-import { clientRecord, mutation } from "../test-utils";
+} from "../types/client-record";
+import { MemStorage } from "../storage/mem-storage";
+import { clientRecord, mutation } from "../util/test-utils";
 import { expect } from "chai";
 import { test } from "mocha";
 import { JSONType } from "protocol/json";
 import { Mutation } from "protocol/push";
 import { WriteTransaction } from "replicache";
 import { MutatorMap, processMutation } from "./process-mutation";
-import { getUserValue } from "../user-value";
+import { getUserValue } from "../types/user-value";
 
 test("processMutation", async () => {
   type Case = {

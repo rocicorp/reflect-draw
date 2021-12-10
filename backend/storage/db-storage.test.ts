@@ -1,10 +1,10 @@
-import { transact, withExecutor } from "./pg";
+import { transact, withExecutor } from "../db/pg";
 import { expect } from "chai";
 import { setup, test } from "mocha";
 import { DBStorage } from "./db-storage";
-import { createDatabase, getEntry } from "./data";
+import { createDatabase, getEntry } from "../db/data";
 import { z } from "zod";
-import { resolver } from "../frontend/resolver";
+import { resolver } from "../../frontend/resolver";
 
 setup(async () => {
   await withExecutor(async () => {

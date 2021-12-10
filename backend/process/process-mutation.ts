@@ -1,10 +1,10 @@
 import { Mutation } from "../../protocol/push";
-import { ReplicacheTransaction } from "../replicache-transaction";
-import { Version } from "../version";
-import { Storage } from "../storage";
-import { EntryCache } from "../entry-cache";
-import { getClientRecord, putClientRecord } from "../client-record";
-import { ClientID } from "../client-state";
+import { ReplicacheTransaction } from "../storage/replicache-transaction";
+import { Version } from "../types/version";
+import { Storage } from "../storage/storage";
+import { EntryCache } from "../storage/entry-cache";
+import { getClientRecord, putClientRecord } from "../types/client-record";
+import { ClientID } from "../types/client-state";
 
 export type Mutator = (tx: ReplicacheTransaction, args: any) => Promise<void>;
 export type MutatorMap = Map<string, Mutator>;

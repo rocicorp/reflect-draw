@@ -1,7 +1,7 @@
 import { JSONValue } from "replicache";
 import { ZodSchema } from "zod";
 import { Executor, transact } from "./pg";
-import { RoomID } from "./room-state";
+import { RoomID } from "../types/room-state";
 
 export async function createDatabase() {
   await transact(async (executor) => {

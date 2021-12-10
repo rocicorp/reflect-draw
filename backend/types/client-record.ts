@@ -1,7 +1,7 @@
 import { nullableVersionSchema } from "./version";
 import { z } from "zod";
 import { ClientID } from "./client-state";
-import { Storage } from "./storage";
+import { Storage } from "../storage/storage";
 
 export const clientRecordSchema = z.object({
   lastMutationID: z.number(),

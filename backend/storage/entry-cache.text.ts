@@ -1,4 +1,4 @@
-import { transact } from "./pg";
+import { transact } from "../db/pg";
 import { expect } from "chai";
 import { test } from "mocha";
 import { EntryCache } from "./entry-cache";

@@ -1,7 +1,7 @@
 import { JSONValue } from "replicache";
-import { delEntry, getEntry, putEntry } from "./data";
-import { Executor } from "./pg";
-import { Version } from "./version";
+import { delEntry, getEntry, putEntry } from "../db/data";
+import { Executor } from "../db/pg";
+import { Version } from "../types/version";
 import type { Storage } from "./storage";
 import { ZodSchema } from "zod";
 

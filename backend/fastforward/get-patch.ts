@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { Patch } from "../protocol/poke";
-import { Executor } from "./pg";
-import { userValuePrefix, userValueSchema } from "./user-value";
-import { NullableVersion } from "./version";
+import { Patch } from "../../protocol/poke";
+import { Executor } from "../db/pg";
+import { userValuePrefix, userValueSchema } from "../types/user-value";
+import { NullableVersion } from "../types/version";
 
 export async function getPatch(
   executor: Executor,

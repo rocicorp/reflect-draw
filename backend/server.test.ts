@@ -4,12 +4,12 @@ import {
   ClientRecord,
   clientRecordKey,
   clientRecordSchema,
-} from "./client-record";
-import { createDatabase, getEntry, putEntry } from "./data";
-import { transact, withExecutor } from "./pg";
+} from "./types/client-record";
+import { createDatabase, getEntry, putEntry } from "./db/data";
+import { transact, withExecutor } from "./db/pg";
 import { Server } from "./server";
-import { RoomMap } from "./room-state";
-import { Socket } from "./client-state";
+import { RoomMap } from "./types/room-state";
+import { Socket } from "./types/client-state";
 import { Mutation } from "../protocol/push";
 import {
   client,
@@ -19,7 +19,7 @@ import {
   room,
   roomMap,
   sleep,
-} from "./test-utils";
+} from "./util/test-utils";
 
 setup(async () => {
   await withExecutor(async () => {

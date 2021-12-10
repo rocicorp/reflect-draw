@@ -1,13 +1,13 @@
 import { expect } from "chai";
 import { setup, test } from "mocha";
 import { PatchOperation } from "replicache";
-import { createDatabase } from "./data";
-import { withExecutor } from "./pg";
+import { createDatabase } from "../db/data";
+import { withExecutor } from "../db/pg";
 import { getPatch } from "./get-patch";
-import { NullableVersion } from "./version";
-import { ReplicacheTransaction } from "./replicache-transaction";
-import { EntryCache } from "./entry-cache";
-import { DBStorage } from "./db-storage";
+import { NullableVersion } from "../types/version";
+import { ReplicacheTransaction } from "../storage/replicache-transaction";
+import { EntryCache } from "../storage/entry-cache";
+import { DBStorage } from "../storage/db-storage";
 
 setup(async () => {
   await withExecutor(async () => {

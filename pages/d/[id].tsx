@@ -7,7 +7,6 @@ import { randUserInfo } from "../../frontend/client-state";
 import { randomShape } from "../../frontend/shape";
 import { PushMessage, PushBody } from "../../protocol/push";
 import { resolver } from "frontend/resolver";
-import { nanoid } from "nanoid";
 import { pokeMessageSchema } from "protocol/poke";
 
 export default function Home() {
@@ -31,7 +30,6 @@ export default function Home() {
         pusher: async (req) => {
           const ws = await socket;
           const pushBody = (await req.json()) as PushBody;
-          pushBody.id = nanoid();
           const msg: PushMessage = ["push", pushBody];
           ws.send(JSON.stringify(msg));
           return {

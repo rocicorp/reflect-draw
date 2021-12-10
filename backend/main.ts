@@ -3,7 +3,7 @@ import { Command } from "commander";
 import { createServer, IncomingMessage, Server as NodeServer } from "http";
 import { WebSocket } from "ws";
 import { parse } from "url";
-import { Socket } from "./client-state";
+import { Socket } from "./types/client-state";
 import { Server } from "./server";
 
 const dev = process.env.NODE_ENV !== "production";
