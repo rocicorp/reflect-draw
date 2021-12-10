@@ -1,3 +1,4 @@
+import { ClientMutation } from "backend/types/client-mutation";
 import { JSONType } from "protocol/json";
 import { Mutation } from "protocol/push";
 import { ClientID, ClientState, Socket } from "../types/client-state";
@@ -38,6 +39,19 @@ export function mutation(
     name,
     args,
     timestamp,
+  };
+}
+
+export function clientMutation(
+  clientID: ClientID,
+  id: number,
+  name: string = "foo",
+  args: JSONType = [],
+  timestamp = 1
+): ClientMutation {
+  return {
+    clientID,
+    ...mutation(id, name, args, timestamp),
   };
 }
 
