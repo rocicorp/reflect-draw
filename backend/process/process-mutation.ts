@@ -1,22 +1,21 @@
-import { Mutation } from "../../protocol/push";
 import { ReplicacheTransaction } from "../storage/replicache-transaction";
 import { Version } from "../types/version";
 import { Storage } from "../storage/storage";
 import { EntryCache } from "../storage/entry-cache";
 import { getClientRecord, putClientRecord } from "../types/client-record";
-import { ClientID } from "../types/client-state";
+import { ClientMutation } from "backend/types/client-mutation";
 
 export type Mutator = (tx: ReplicacheTransaction, args: any) => Promise<void>;
 export type MutatorMap = Map<string, Mutator>;
 
 // Runs a single mutation and updates storage accordingly.
 export async function processMutation(
-  clientID: ClientID,
-  mutation: Mutation,
+  mutation: ClientMutation,
   mutators: MutatorMap,
   storage: Storage,
   version: Version
 ): Promise<void> {
+  const { clientID } = mutation;
   const cache = new EntryCache(storage);
   const record = await getClientRecord(clientID, storage);
   if (!record) {
