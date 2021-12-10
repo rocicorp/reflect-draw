@@ -8,7 +8,7 @@ import {
 import { createDatabase, getEntry, putEntry } from "./data";
 import { transact, withExecutor } from "./pg";
 import { Server } from "./server";
-import { RoomID, RoomMap, RoomState } from "./room-state";
+import { RoomMap } from "./room-state";
 import { Socket } from "./client-state";
 import { Mutation } from "../protocol/push";
 import {
