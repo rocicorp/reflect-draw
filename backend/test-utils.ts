@@ -54,8 +54,8 @@ export class Mocket implements Socket {
 }
 
 export function clientRecord(
-  baseCookie: NullableVersion,
-  lastMutationID: number
+  baseCookie: NullableVersion = null,
+  lastMutationID: number = 1
 ) {
   return {
     baseCookie,
