@@ -1,9 +1,15 @@
+import { deepClone } from "../util/deep-clone";
+import { JSONType } from "protocol/json";
 import { JSONValue } from "replicache";
 import { ZodType, ZodTypeDef } from "zod";
 import { Storage } from "./storage";
 
 export class MemStorage implements Storage {
   private _map: Map<string, JSONValue> = new Map();
+
+  get size(): number {
+    return this._map.size;
+  }
 
   async put<T extends JSONValue>(key: string, value: T): Promise<void> {
     this._map.set(key, value);
@@ -21,6 +27,7 @@ export class MemStorage implements Storage {
     if (val === undefined) {
       return val;
     }
-    return schema.parse(val);
+    // have to deep clone to replicate semantics of persistent storage.
+    return deepClone(schema.parse(val) as JSONType) as T;
   }
 }

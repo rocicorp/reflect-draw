@@ -1,4 +1,5 @@
 import { ClientMutation } from "backend/types/client-mutation";
+import { userValueKey } from "backend/types/user-value";
 import { JSONType } from "protocol/json";
 import { Mutation } from "protocol/push";
 import { ClientID, ClientState, Socket } from "../types/client-state";
@@ -79,4 +80,12 @@ export function clientRecord(
 
 export function sleep(ms: number = 0) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function userValue(value: JSONType, version = 1, deleted = false) {
+  return {
+    value,
+    version,
+    deleted,
+  };
 }

@@ -1,23 +1,30 @@
 import { JSONValue, ScanResult, WriteTransaction } from "replicache";
 import { Version } from "../types/version";
 import { EntryCache } from "./entry-cache";
-import { UserValue, userValueKey, userValueSchema } from "../types/user-value";
+import {
+  UserValue,
+  userValueKey,
+  userValuePrefix,
+  userValueSchema,
+} from "../types/user-value";
 import { JSONType } from "protocol/json";
 import { ClientID } from "../types/client-state";
+import { Patch } from "protocol/poke";
+import { Storage } from "./storage";
 
 /**
  * Implements Replicache's WriteTransaction in terms of EntryCache.
  */
 export class ReplicacheTransaction implements WriteTransaction {
   private _clientID: ClientID;
-  private _inner: EntryCache;
+  private _inner: Storage;
   private _version: Version;
 
   get clientID(): string {
     return this._clientID;
   }
 
-  constructor(inner: EntryCache, clientID: string, version: Version) {
+  constructor(inner: Storage, clientID: string, version: Version) {
     this._inner = inner;
     this._clientID = clientID;
     this._version = version;
@@ -71,4 +78,28 @@ export class ReplicacheTransaction implements WriteTransaction {
   scanAll(): Promise<[string, JSONValue][]> {
     throw new Error("not implemented");
   }
+}
+
+export function unwrapPatch(inner: Patch): Patch {
+  return inner
+    .filter((p) => p.key.startsWith(userValuePrefix))
+    .map((p) => {
+      const { key, op } = p;
+      const unwrappedKey = key.substring(userValuePrefix.length);
+      if (op === "put") {
+        const userValue = p.value as UserValue;
+        return {
+          op: "put",
+          key: unwrappedKey,
+          value: userValue.value,
+        };
+      } else if (op === "del") {
+        return {
+          op: "del",
+          key: unwrappedKey,
+        };
+      } else {
+        throw new Error(`unexpected op: ${op}`);
+      }
+    });
 }
