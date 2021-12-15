@@ -4,7 +4,11 @@ import { createServer, IncomingMessage, Server as NodeServer } from "http";
 import { WebSocket } from "ws";
 import { parse } from "url";
 import { Socket } from "./types/client-state";
-import { Server } from "./server";
+import { Server } from "./server/server";
+import { handleMessage } from "./server/message";
+import { handlePush } from "./server/push";
+import { handleConnection } from "./server/connect";
+import { handleClose } from "./server/close";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -24,7 +28,14 @@ app.prepare().then(() => {
     handle(req, res, parse(req.url!, true))
   );
   const webSocketServer = new WebSocket.Server({ noServer: true });
-  const replicacheServer = new Server(new Map(), performance.now);
+
+  const replicacheServer = new Server(
+    new Map(),
+    handleConnection,
+    handleMessage.bind(null, handlePush),
+    handleClose,
+    performance.now
+  );
 
   httpServer.on("upgrade", (req, socket, head) => {
     webSocketServer.handleUpgrade(req, socket, head, (ws) => {
