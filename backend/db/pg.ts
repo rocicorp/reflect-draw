@@ -84,9 +84,7 @@ async function transactWithExecutor<R>(
         );
         continue;
       }
-      throw new Error(
-        `Error executing SQL: ${((e as unknown) as any).toString()}`
-      );
+      throw e;
     }
   }
   throw new Error("Tried to execute transacation too many times. Giving up.");
