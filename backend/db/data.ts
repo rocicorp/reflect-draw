@@ -45,19 +45,6 @@ export async function getEntry<T extends JSONValue>(
   return schema.parse(value);
 }
 
-export async function mustGetEntry<T extends JSONValue>(
-  executor: Executor,
-  roomid: string,
-  key: string,
-  schema: ZodSchema<T>
-): Promise<T> {
-  const value = await getEntry(executor, roomid, key, schema);
-  if (value === undefined) {
-    throw new Error(`Entry ${key} not found`);
-  }
-  return value;
-}
-
 export async function putEntry<T extends JSONValue>(
   executor: Executor,
   roomID: RoomID,
