@@ -1,16 +1,9 @@
-import { sendError } from "../util/socket";
 import { upstreamSchema } from "../../protocol/up";
-import { PushBody } from "../../protocol/push";
 import { ClientID, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
-
-export type PushHandler = (
-  roomMap: RoomMap,
-  roomID: RoomID,
-  clientID: ClientID,
-  body: PushBody,
-  ws: Socket
-) => void;
+import { LogContext } from "../util/logger";
+import { sendError } from "../util/socket";
+import { handlePush, ProcessUntilDone } from "./push";
 
 /**
  * Handles an upstream message coming into the server by dispatching to the
@@ -24,15 +17,17 @@ export type PushHandler = (
  * @returns
  */
 export function handleMessage(
-  handlePush: PushHandler,
+  lc: LogContext,
   roomMap: RoomMap,
   roomID: RoomID,
   clientID: ClientID,
   data: string,
-  ws: Socket
+  ws: Socket,
+  processUntilDone: ProcessUntilDone
 ) {
   const { result: message, error } = getMessage(data);
   if (error) {
+    lc.info?.("invalid message", error);
     sendError(ws, error);
     return;
   }
@@ -40,7 +35,7 @@ export function handleMessage(
   const [type, body] = message!;
   switch (type) {
     case "push":
-      handlePush(roomMap, roomID, clientID, body, ws);
+      handlePush(lc, roomMap, roomID, clientID, body, ws, processUntilDone);
       break;
     default:
       throw new Error(`Unknown message type: ${type}`);

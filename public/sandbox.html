@@ -1,0 +1,14 @@
+<textarea id="data" style="width: 100%; height: 500px"></textarea><br />
+<button id="push">Push</button>
+
+<script>
+  const ws = new WebSocket(
+    "ws://localhost:3000/?clientID=c1&roomID=r1&baseCookie=&ts=" +
+      performance.now()
+  );
+
+  document.querySelector("#push").onclick = () => {
+    const data = JSON.parse(document.querySelector("#data").value);
+    ws.send(JSON.stringify(["push", data]));
+  };
+</script>

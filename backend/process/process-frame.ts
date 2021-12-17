@@ -6,6 +6,7 @@ import { ClientPokeBody } from "../types/client-poke-body";
 import { getClientRecord, putClientRecord } from "../types/client-record";
 import { ClientID } from "../types/client-state";
 import { getVersion } from "../types/version";
+import { LogContext } from "../util/logger";
 import { must } from "../util/must";
 import { PeekIterator } from "../util/peek-iterator";
 import { MutatorMap, processMutation } from "./process-mutation";
@@ -15,6 +16,7 @@ import { MutatorMap, processMutation } from "./process-mutation";
 // because we need clients to be in sync with server version so that pokes
 // can continue to apply.
 export async function processFrame(
+  lc: LogContext,
   mutations: PeekIterator<ClientMutation>,
   mutators: MutatorMap,
   clients: ClientID[],
@@ -22,19 +24,32 @@ export async function processFrame(
   startTime: number,
   endTime: number
 ): Promise<ClientPokeBody[]> {
+  lc.debug?.(
+    "processing frame - startTime",
+    startTime,
+    "endTime",
+    endTime,
+    "clients",
+    clients
+  );
+
   const cache = new EntryCache(storage);
   const prevVersion = must(await getVersion(cache));
   const nextVersion = (prevVersion ?? 0) + 1;
 
+  lc.debug?.("prevVersion", prevVersion, "nextVersion", nextVersion);
+
   for (; !mutations.peek().done; mutations.next()) {
     const { value: mutation } = mutations.peek();
     if (mutation!.timestamp >= endTime) {
+      lc.debug?.("reached end of frame", mutation);
       break;
     }
-    await processMutation(mutation!, mutators, cache, nextVersion);
+    await processMutation(lc, mutation!, mutators, cache, nextVersion);
   }
 
   if (must(await getVersion(cache)) === prevVersion) {
+    lc.debug?.("no change in frame, skipping poke");
     return [];
   }
 

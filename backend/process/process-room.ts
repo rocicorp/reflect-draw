@@ -8,7 +8,8 @@ import { ClientPokeBody } from "../types/client-poke-body";
 import { getClientRecord, putClientRecord } from "../types/client-record";
 import { ClientID, ClientMap } from "../types/client-state";
 import { RoomID } from "../types/room-state";
-import { getVersion } from "../types/version";
+import { getVersion, putVersion } from "../types/version";
+import { LogContext } from "../util/logger";
 import { must } from "../util/must";
 import { PeekIterator } from "../util/peek-iterator";
 import { generateMergedMutations } from "./generate-merged-mutations";
@@ -28,6 +29,7 @@ export const FRAME_LENGTH_MS = 1000 / 60;
  * @returns
  */
 export async function processRoom(
+  lc: LogContext,
   roomID: RoomID,
   clients: ClientMap,
   mutators: MutatorMap,
@@ -40,6 +42,16 @@ export async function processRoom(
 
   // TODO: can/should we pass `clients` to fastForward instead?
   const clientIDs = [...clients.keys()];
+  lc.debug?.(
+    "processing room",
+    roomID,
+    "clientIDs",
+    clientIDs,
+    "startTime",
+    startTime,
+    "endTime",
+    endTime
+  );
 
   // Before running any mutations, fast forward connected clients to
   // current state.
@@ -48,7 +60,13 @@ export async function processRoom(
       await getClientRecord(clientID, cache),
       `Client record not found: ${clientID}`
     );
-  const currentVersion = must(await getVersion(cache));
+  let currentVersion = await getVersion(cache);
+  if (currentVersion === undefined) {
+    currentVersion = 0;
+    putVersion(currentVersion, cache);
+  }
+  lc.debug?.("currentVersion", currentVersion);
+
   const pokes: ClientPokeBody[] = await fastForwardRoom(
     roomID,
     clientIDs,
@@ -57,6 +75,7 @@ export async function processRoom(
     executor,
     startTime
   );
+  lc.debug?.("pokes from fastforward", JSON.stringify(pokes));
 
   for (const poke of pokes) {
     const cr = must(await getClientRecord(poke.clientID, cache));
@@ -72,6 +91,7 @@ export async function processRoom(
   ) {
     pokes.push(
       ...(await processFrame(
+        lc,
         mergedMutations,
         mutators,
         clientIDs,

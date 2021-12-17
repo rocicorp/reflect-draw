@@ -172,7 +172,7 @@ test("handlePush", async () => {
       schemaVersion: "",
     };
     const rooms = c.existingRooms;
-    handlePush(rooms, "r1", "c1", push, s1);
+    handlePush(rooms, "r1", "c1", push, s1, () => {});
     if (c.expectedError) {
       expect(s1.log, c.name).deep.equal([
         ["send", JSON.stringify(["error", c.expectedError])],

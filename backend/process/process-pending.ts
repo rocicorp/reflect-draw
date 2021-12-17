@@ -5,6 +5,7 @@ import { PokeMessage } from "../../protocol/poke";
 import { transact } from "../db/pg";
 import { ClientPokeBody } from "../types/client-poke-body";
 import { RoomID, RoomMap } from "../types/room-state";
+import { LogContext } from "../util/logger";
 import { must } from "../util/must";
 import { MutatorMap } from "./process-mutation";
 import { processRoom } from "./process-room";
@@ -17,6 +18,7 @@ import { processRoom } from "./process-room";
  * @param endTime Timespan end
  */
 export async function processPending(
+  lc: LogContext,
   // Rooms to process mutations for
   rooms: RoomMap,
   // All known mutators
@@ -25,12 +27,15 @@ export async function processPending(
   startTime: number,
   endTime: number
 ): Promise<void> {
+  lc.debug?.("process pending - startTime", startTime, "endTime", endTime);
+
   const pokes = await transact(async (executor) => {
     const pokes: Map<RoomID, ClientPokeBody[]> = new Map();
     for (const [roomID, roomState] of rooms) {
       pokes.set(
         roomID,
         await processRoom(
+          lc,
           roomID,
           roomState.clients,
           mutators,
@@ -43,11 +48,16 @@ export async function processPending(
     return pokes;
   });
 
-  sendPokes(pokes, rooms);
-  clearPendingMutations(pokes, rooms);
+  sendPokes(lc, pokes, rooms);
+  clearPendingMutations(lc, pokes, rooms);
 }
 
-function sendPokes(pokes: Map<RoomID, ClientPokeBody[]>, rooms: RoomMap) {
+function sendPokes(
+  lc: LogContext,
+  pokes: Map<RoomID, ClientPokeBody[]>,
+  rooms: RoomMap
+) {
+  lc.debug?.("sending pokes", pokes);
   for (const [roomID, pokesForRoom] of pokes) {
     const roomState = must(rooms.get(roomID));
     for (const pokeBody of pokesForRoom) {
@@ -59,9 +69,11 @@ function sendPokes(pokes: Map<RoomID, ClientPokeBody[]>, rooms: RoomMap) {
 }
 
 function clearPendingMutations(
+  lc: LogContext,
   pokes: Map<RoomID, ClientPokeBody[]>,
   rooms: RoomMap
 ) {
+  lc.debug?.("clearing pending mutations");
   for (const [roomID, pokesForRoom] of pokes) {
     const roomState = must(rooms.get(roomID));
     for (const pokeBody of pokesForRoom) {
@@ -70,12 +82,6 @@ function clearPendingMutations(
         (mutation) => mutation.id > pokeBody.poke.lastMutationID
       );
       client.pending.splice(0, idx > -1 ? idx : client.pending.length);
-      if (client.pending.length === 0) {
-        roomState.clients.delete(pokeBody.clientID);
-      }
-    }
-    if (roomState.clients.size === 0) {
-      rooms.delete(roomID);
     }
   }
 }

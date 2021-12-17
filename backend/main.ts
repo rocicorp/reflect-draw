@@ -1,14 +1,11 @@
-import next from "next";
 import { Command } from "commander";
-import { createServer, IncomingMessage, Server as NodeServer } from "http";
-import { WebSocket } from "ws";
+import { createServer, IncomingMessage } from "http";
+import next from "next";
 import { parse } from "url";
-import { Socket } from "./types/client-state";
+import { WebSocket } from "ws";
+import { processPending } from "./process/process-pending";
 import { Server } from "./server/server";
-import { handleMessage } from "./server/message";
-import { handlePush } from "./server/push";
-import { handleConnection } from "./server/connect";
-import { handleClose } from "./server/close";
+import { Socket } from "./types/client-state";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -18,6 +15,14 @@ const program = new Command().option(
   "port to listen on",
   parseInt
 );
+
+process.on("unhandledRejection", (reason, p) => {
+  console.log(
+    `Unhandled Rejection at: Promise ${p}, reason: ${reason}, stack: ${
+      ((reason ?? {}) as any).stack
+    }`
+  );
+});
 
 app.prepare().then(() => {
   program.parse(process.argv);
@@ -31,10 +36,9 @@ app.prepare().then(() => {
 
   const replicacheServer = new Server(
     new Map(),
-    handleConnection,
-    handleMessage.bind(null, handlePush),
-    handleClose,
-    performance.now
+    processPending,
+    performance.now,
+    setTimeout
   );
 
   httpServer.on("upgrade", (req, socket, head) => {

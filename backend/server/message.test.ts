@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { test } from "mocha";
-import { RoomID, RoomMap } from "../types/room-state";
-import { Mocket, mutation, roomMap } from "../util/test-utils";
 import { PushBody } from "../../protocol/push";
+import { ClientID, Socket } from "../types/client-state";
+import { RoomID, RoomMap } from "../types/room-state";
+import { Mocket, mutation } from "../util/test-utils";
 import { handleMessage } from "./message";
-import { ClientID, Socket } from "backend/types/client-state";
 
 test("handleMessage", async () => {
   type Case = {

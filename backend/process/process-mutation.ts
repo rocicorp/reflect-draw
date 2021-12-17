@@ -4,6 +4,7 @@ import { Storage } from "../storage/storage";
 import { ClientMutation } from "../types/client-mutation";
 import { getClientRecord, putClientRecord } from "../types/client-record";
 import { putVersion, Version } from "../types/version";
+import { LogContext } from "../util/logger";
 
 export type Mutator = (tx: ReplicacheTransaction, args: any) => Promise<void>;
 export type MutatorMap = Map<string, Mutator>;
@@ -14,26 +15,34 @@ export type MutatorMap = Map<string, Mutator>;
 // - version key will have been updated if any change was made
 // - client record of mutating client will have been updated
 export async function processMutation(
+  lc: LogContext,
   mutation: ClientMutation,
   mutators: MutatorMap,
   storage: Storage,
   version: Version
 ): Promise<void> {
+  lc.debug?.(
+    "processing mutation",
+    JSON.stringify(mutation),
+    "version",
+    version
+  );
   const { clientID } = mutation;
   const cache = new EntryCache(storage);
   const record = await getClientRecord(clientID, cache);
   if (!record) {
+    lc.info?.("client not found");
     throw new Error(`Client ${clientID} not found`);
   }
 
   const expectedMutationID = record.lastMutationID + 1;
   if (mutation.id < expectedMutationID) {
-    console.info(`Skipping duplicate mutation ${mutation}`);
+    lc.debug?.("skipping duplicate mutation", JSON.stringify(mutation));
     return;
   }
 
   if (mutation.id > expectedMutationID) {
-    console.warn(`Skipping out of order mutation: ${mutation}`);
+    lc.info?.("skipping out of order mutation", JSON.stringify(mutation));
     return;
   }
 
@@ -41,12 +50,12 @@ export async function processMutation(
   try {
     const mutator = mutators.get(mutation.name);
     if (!mutator) {
-      console.warn(`Skipping mutation with unknown mutator: ${mutation}`);
+      lc.info?.("skipping unknown mutator", JSON.stringify(mutation));
     } else {
       await mutator(tx, mutation.args);
     }
   } catch (e) {
-    console.warn(`Skipping mutation: ${mutation} because error: ${e}`);
+    lc.info?.("skipping mutation because error", JSON.stringify(mutation), e);
   }
 
   record.lastMutationID = expectedMutationID;

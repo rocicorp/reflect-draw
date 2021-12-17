@@ -17,7 +17,6 @@ export async function getPatch(
         ((value->>'version')::integer) > $2`,
     [roomID, fromCookie ?? 0]
   );
-  console.log(`Read ${vals.rows.length} entries in`, Date.now() - t0);
 
   const patch: Patch = [];
   for (let row of vals.rows) {

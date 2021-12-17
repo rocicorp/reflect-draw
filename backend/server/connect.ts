@@ -1,13 +1,14 @@
+import { parse } from "url";
 import { transact } from "../db/pg";
 import { DBStorage } from "../storage/db-storage";
 import {
+  ClientRecord,
   clientRecordKey,
   clientRecordSchema,
-  ClientRecord,
 } from "../types/client-record";
 import { ClientID, ClientState, Socket } from "../types/client-state";
-import { parse } from "url";
-import { RoomID, RoomMap } from "backend/types/room-state";
+import { RoomID, RoomMap } from "../types/room-state";
+import { LogContext } from "../util/logger";
 
 export type MessageHandler = (
   roomID: RoomID,
@@ -31,6 +32,7 @@ export type Now = () => number;
  * @returns
  */
 export async function handleConnection(
+  lc: LogContext,
   ws: Socket,
   url: string,
   rooms: RoomMap,
@@ -40,10 +42,17 @@ export async function handleConnection(
 ) {
   const { result, error } = getConnectRequest(url);
   if (result === null) {
+    lc.info?.("invalid connection request", error);
     ws.send(error!);
     ws.close();
     return;
   }
+
+  lc = lc
+    .addContext("room", result.roomID)
+    .addContext("client", result.clientID);
+  lc.debug?.("parsed request", result);
+
   const { clientID, roomID, baseCookie, timestamp } = result;
   await transact(async (executor) => {
     const storage = new DBStorage(executor, roomID);
@@ -51,12 +60,14 @@ export async function handleConnection(
       clientRecordKey(clientID),
       clientRecordSchema
     );
+    lc.debug?.("Existing client record", existingRecord);
     const lastMutationID = existingRecord?.lastMutationID ?? 0;
     const record: ClientRecord = {
       baseCookie,
       lastMutationID,
     };
     await storage.put(clientRecordKey(clientID), record);
+    lc.debug?.("Put client record", record);
   });
   let room = rooms.get(roomID);
   if (!room) {
@@ -69,6 +80,7 @@ export async function handleConnection(
   // Add or update ClientState.
   const existing = room.clients.get(clientID);
   if (existing) {
+    lc.debug?.("Closing old socket");
     existing.socket.close();
   }
 
@@ -77,6 +89,7 @@ export async function handleConnection(
   ws.onclose = () => onClose(roomID, clientID);
 
   const clockBehindByMs = now() - timestamp;
+  lc.debug?.("clock behind by", clockBehindByMs);
 
   const client: ClientState = {
     socket: ws,
