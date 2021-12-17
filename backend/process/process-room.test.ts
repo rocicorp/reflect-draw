@@ -253,6 +253,37 @@ test("processRoom", async () => {
       expectedUserValues: new Map(),
       expectedVersion: 2,
     },
+    {
+      name: "mutations late in range",
+      clientRecords: new Map([["c1", clientRecord(1)]]),
+      headVersion: 1,
+      clients: new Map([
+        client("c1", undefined, 0, mutation(2, "inc", null, 150)),
+      ]),
+      expectedPokes: [
+        {
+          clientID: "c1",
+          poke: {
+            baseCookie: 1,
+            cookie: 2,
+            lastMutationID: 2,
+            patch: [
+              {
+                op: "put",
+                key: "count",
+                value: 1,
+              },
+            ],
+            // We don't get a poke until several frames go by
+            timestamp:
+              100 + FRAME_LENGTH_MS + FRAME_LENGTH_MS + FRAME_LENGTH_MS,
+          },
+        },
+      ],
+      expectedClientRecords: new Map([["c1", clientRecord(2, 2)]]),
+      expectedUserValues: new Map(),
+      expectedVersion: 2,
+    },
   ];
 
   const mutators = new Map(
