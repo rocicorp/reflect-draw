@@ -1,17 +1,18 @@
+import { expect } from "chai";
+import { test } from "mocha";
+import { JSONType } from "protocol/json";
+import { WriteTransaction } from "replicache";
+import { MemStorage } from "../storage/mem-storage";
+import { ClientMutation } from "../types/client-mutation";
 import {
   ClientRecord,
   getClientRecord,
   putClientRecord,
 } from "../types/client-record";
-import { MemStorage } from "../storage/mem-storage";
-import { clientMutation, clientRecord, mutation } from "../util/test-utils";
-import { expect } from "chai";
-import { test } from "mocha";
-import { JSONType } from "protocol/json";
-import { WriteTransaction } from "replicache";
-import { MutatorMap, processMutation } from "./process-mutation";
 import { getUserValue } from "../types/user-value";
-import { ClientMutation } from "backend/types/client-mutation";
+import { getVersion } from "../types/version";
+import { clientMutation, clientRecord } from "../util/test-utils";
+import { MutatorMap, processMutation } from "./process-mutation";
 
 test("processMutation", async () => {
   type Case = {
@@ -21,6 +22,7 @@ test("processMutation", async () => {
     expectedError?: string;
     expectedRecord?: ClientRecord;
     expectAppWrite: boolean;
+    expectVersionWrite: boolean;
   };
 
   const cases: Case[] = [
@@ -29,6 +31,7 @@ test("processMutation", async () => {
       mutation: clientMutation("c1", 1),
       expectedError: "Error: Client c1 not found",
       expectAppWrite: false,
+      expectVersionWrite: false,
     },
     {
       name: "duplicate mutation",
@@ -36,6 +39,7 @@ test("processMutation", async () => {
       mutation: clientMutation("c1", 1),
       expectedRecord: clientRecord(null, 1),
       expectAppWrite: false,
+      expectVersionWrite: false,
     },
     {
       name: "ooo mutation",
@@ -43,6 +47,7 @@ test("processMutation", async () => {
       mutation: clientMutation("c1", 3),
       expectedRecord: clientRecord(null, 1),
       expectAppWrite: false,
+      expectVersionWrite: false,
     },
     {
       name: "unknown mutator",
@@ -50,6 +55,7 @@ test("processMutation", async () => {
       mutation: clientMutation("c1", 2, "unknown"),
       expectedRecord: clientRecord(null, 2),
       expectAppWrite: false,
+      expectVersionWrite: true,
     },
     {
       name: "mutator throws",
@@ -57,6 +63,7 @@ test("processMutation", async () => {
       mutation: clientMutation("c1", 2, "throws"),
       expectedRecord: clientRecord(null, 2),
       expectAppWrite: false,
+      expectVersionWrite: true,
     },
     {
       name: "success",
@@ -64,6 +71,7 @@ test("processMutation", async () => {
       mutation: clientMutation("c1", 2, "foo"),
       expectedRecord: clientRecord(null, 2),
       expectAppWrite: true,
+      expectVersionWrite: true,
     },
   ];
 
@@ -105,5 +113,8 @@ test("processMutation", async () => {
     expect(await getUserValue("foo", storage), c.name).deep.equal(
       c.expectAppWrite ? { version, deleted: false, value: "bar" } : undefined
     );
+
+    const expectedVersion = c.expectVersionWrite ? version : undefined;
+    expect(await getVersion(storage), c.name).equal(expectedVersion);
   }
 });

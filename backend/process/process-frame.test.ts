@@ -1,22 +1,23 @@
-import { MemStorage } from "../storage/mem-storage";
-import { ClientMutation } from "../types/client-mutation";
-import { ClientPokeBody } from "../types/client-poke-body";
-import { clientRecordKey, putClientRecord } from "../types/client-record";
-import { ClientID } from "../types/client-state";
-import { versionKey, versionSchema } from "../types/version";
-import { clientMutation, clientRecord, userValue } from "../util/test-utils";
 import { expect } from "chai";
 import { test } from "mocha";
 import { JSONType } from "protocol/json";
 import { WriteTransaction } from "replicache";
 import { z } from "zod";
+import { MemStorage } from "../storage/mem-storage";
+import { ClientMutation } from "../types/client-mutation";
+import { ClientPokeBody } from "../types/client-poke-body";
+import { ClientRecord, clientRecordKey } from "../types/client-record";
+import { ClientID } from "../types/client-state";
+import { UserValue, userValueKey } from "../types/user-value";
+import { Version, versionKey } from "../types/version";
+import { PeekIterator } from "../util/peek-iterator";
+import { clientMutation, clientRecord, userValue } from "../util/test-utils";
 import { processFrame } from "./process-frame";
-import { userValueKey } from "../types/user-value";
 
 test("processFrame", async () => {
   const records = new Map([
-    ["c1", clientRecord(null, 1)],
-    ["c2", clientRecord(1, 7)],
+    [clientRecordKey("c1"), clientRecord(null, 1)],
+    [clientRecordKey("c2"), clientRecord(1, 7)],
   ]);
   const startTime = 100;
   const endTime = 200;
@@ -28,7 +29,9 @@ test("processFrame", async () => {
     mutations: ClientMutation[];
     clients: ClientID[];
     expectedPokes: ClientPokeBody[];
-    expectedState: Record<string, JSONType>;
+    expectedUserValues: Map<string, UserValue>;
+    expectedClientRecords: Map<string, ClientRecord>;
+    expectedVersion: Version;
   };
 
   const mutators = new Map(
@@ -45,43 +48,24 @@ test("processFrame", async () => {
     })
   );
 
-  const baseExpectedState = {
-    [versionKey]: endVersion,
-    [clientRecordKey("c1")]: records.get("c1")!,
-    [clientRecordKey("c2")]: records.get("c2")!,
-  };
-
   const cases: Case[] = [
     {
       name: "no mutations, no clients",
       mutations: [],
       clients: [],
       expectedPokes: [],
-      expectedState: baseExpectedState,
+      expectedUserValues: new Map(),
+      expectedClientRecords: records,
+      expectedVersion: startVersion,
     },
     {
       name: "no mutations, one client",
       mutations: [],
       clients: ["c1"],
-      expectedPokes: [
-        {
-          clientID: "c1",
-          poke: {
-            baseCookie: startVersion,
-            cookie: endVersion,
-            lastMutationID: 1,
-            patch: [],
-            timestamp: startTime,
-          },
-        },
-      ],
-      expectedState: {
-        ...baseExpectedState,
-        [clientRecordKey("c1")]: {
-          baseCookie: endVersion,
-          lastMutationID: 1,
-        },
-      },
+      expectedPokes: [],
+      expectedUserValues: new Map(),
+      expectedClientRecords: records,
+      expectedVersion: startVersion,
     },
     {
       name: "one mutation, one client",
@@ -105,14 +89,14 @@ test("processFrame", async () => {
           },
         },
       ],
-      expectedState: {
-        ...baseExpectedState,
-        [clientRecordKey("c1")]: {
-          baseCookie: endVersion,
-          lastMutationID: 2,
-        },
-        [userValueKey("foo")]: userValue("bar", endVersion),
-      },
+      expectedUserValues: new Map([
+        [userValueKey("foo"), userValue("bar", endVersion)],
+      ]),
+      expectedClientRecords: new Map([
+        ...records,
+        [clientRecordKey("c1"), clientRecord(endVersion, 2)],
+      ]),
+      expectedVersion: endVersion,
     },
     {
       name: "one mutation, two clients",
@@ -152,18 +136,14 @@ test("processFrame", async () => {
           },
         },
       ],
-      expectedState: {
-        ...baseExpectedState,
-        [clientRecordKey("c1")]: {
-          baseCookie: endVersion,
-          lastMutationID: 2,
-        },
-        [clientRecordKey("c2")]: {
-          baseCookie: endVersion,
-          lastMutationID: 7,
-        },
-        [userValueKey("foo")]: userValue("bar", endVersion),
-      },
+      expectedUserValues: new Map([
+        [userValueKey("foo"), userValue("bar", endVersion)],
+      ]),
+      expectedClientRecords: new Map([
+        [clientRecordKey("c1"), clientRecord(endVersion, 2)],
+        [clientRecordKey("c2"), clientRecord(endVersion, 7)],
+      ]),
+      expectedVersion: endVersion,
     },
     {
       name: "two mutations, one client, one key",
@@ -190,14 +170,14 @@ test("processFrame", async () => {
           },
         },
       ],
-      expectedState: {
-        ...baseExpectedState,
-        [clientRecordKey("c1")]: {
-          baseCookie: endVersion,
-          lastMutationID: 3,
-        },
-        [userValueKey("foo")]: userValue("baz", endVersion),
-      },
+      expectedUserValues: new Map([
+        [userValueKey("foo"), userValue("baz", endVersion)],
+      ]),
+      expectedClientRecords: new Map([
+        ...records,
+        [clientRecordKey("c1"), clientRecord(endVersion, 3)],
+      ]),
+      expectedVersion: endVersion,
     },
     {
       name: "frame cutoff",
@@ -225,14 +205,14 @@ test("processFrame", async () => {
           },
         },
       ],
-      expectedState: {
-        ...baseExpectedState,
-        [clientRecordKey("c1")]: {
-          baseCookie: endVersion,
-          lastMutationID: 3,
-        },
-        [userValueKey("foo")]: userValue("baz", endVersion),
-      },
+      expectedUserValues: new Map([
+        [userValueKey("foo"), userValue("baz", endVersion)],
+      ]),
+      expectedClientRecords: new Map([
+        ...records,
+        [clientRecordKey("c1"), clientRecord(endVersion, 3)],
+      ]),
+      expectedVersion: endVersion,
     },
   ];
 
@@ -241,11 +221,11 @@ test("processFrame", async () => {
 
     await storage.put(versionKey, startVersion);
     for (const [key, value] of records) {
-      await putClientRecord(key, value, storage);
+      await storage.put(key, value);
     }
 
     const result = await processFrame(
-      c.mutations[Symbol.iterator](),
+      new PeekIterator(c.mutations[Symbol.iterator]()),
       mutators,
       c.clients,
       storage,
@@ -255,10 +235,13 @@ test("processFrame", async () => {
 
     expect(result, c.name).deep.equal(c.expectedPokes);
 
-    expect(await storage.get(versionKey, versionSchema)).equal(endVersion);
-
-    expect(storage.size, c.name).equal(Object.keys(c.expectedState).length);
-    for (const [key, value] of Object.entries(c.expectedState)) {
+    const expectedState = new Map([
+      ...(c.expectedUserValues as Map<string, JSONType>),
+      ...(c.expectedClientRecords as Map<string, JSONType>),
+      [versionKey, c.expectedVersion],
+    ]);
+    expect(storage.size, c.name).equal(expectedState.size);
+    for (const [key, value] of expectedState) {
       expect(await storage.get(key, z.any()), c.name).deep.equal(value);
     }
   }

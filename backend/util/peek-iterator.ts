@@ -1,8 +1,8 @@
 export class PeekIterator<T> implements IterableIterator<T> {
-  private _peeked: IteratorResult<T, undefined> | undefined = undefined;
-  private readonly _iter: Iterator<T, undefined>;
+  private _peeked: IteratorResult<T, void> | undefined = undefined;
+  private readonly _iter: Iterator<T, void>;
 
-  constructor(iter: Iterator<T, undefined>) {
+  constructor(iter: Iterator<T, void>) {
     this._iter = iter;
   }
 
@@ -10,7 +10,7 @@ export class PeekIterator<T> implements IterableIterator<T> {
     return this;
   }
 
-  next(): IteratorResult<T, undefined> {
+  next(): IteratorResult<T, void> {
     if (this._peeked !== undefined) {
       const p = this._peeked;
       this._peeked = undefined;
@@ -19,7 +19,7 @@ export class PeekIterator<T> implements IterableIterator<T> {
     return this._iter.next();
   }
 
-  peek(): IteratorResult<T, undefined> {
+  peek(): IteratorResult<T, void> {
     if (this._peeked !== undefined) {
       return this._peeked;
     }
