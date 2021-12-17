@@ -1,14 +1,18 @@
-import { ReplicacheTransaction } from "../storage/replicache-transaction";
-import { Version } from "../types/version";
-import { Storage } from "../storage/storage";
 import { EntryCache } from "../storage/entry-cache";
+import { ReplicacheTransaction } from "../storage/replicache-transaction";
+import { Storage } from "../storage/storage";
+import { ClientMutation } from "../types/client-mutation";
 import { getClientRecord, putClientRecord } from "../types/client-record";
-import { ClientMutation } from "backend/types/client-mutation";
+import { putVersion, Version } from "../types/version";
 
 export type Mutator = (tx: ReplicacheTransaction, args: any) => Promise<void>;
 export type MutatorMap = Map<string, Mutator>;
 
 // Runs a single mutation and updates storage accordingly.
+// At exit:
+// - storage will have been updated with effect of mutation
+// - version key will have been updated if any change was made
+// - client record of mutating client will have been updated
 export async function processMutation(
   mutation: ClientMutation,
   mutators: MutatorMap,
@@ -17,7 +21,7 @@ export async function processMutation(
 ): Promise<void> {
   const { clientID } = mutation;
   const cache = new EntryCache(storage);
-  const record = await getClientRecord(clientID, storage);
+  const record = await getClientRecord(clientID, cache);
   if (!record) {
     throw new Error(`Client ${clientID} not found`);
   }
@@ -46,6 +50,7 @@ export async function processMutation(
   }
 
   record.lastMutationID = expectedMutationID;
-  await putClientRecord(clientID, record, storage);
+  await putClientRecord(clientID, record, cache);
+  await putVersion(version, cache);
   await cache.flush();
 }

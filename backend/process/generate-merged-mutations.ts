@@ -46,7 +46,7 @@ export function* generateMergedMutations(clients: ClientMap) {
     }
     const { value, done } = next.peek();
     assert(!done);
-    yield value;
+    yield value as ClientMutation;
     next.next();
     insertIterator(next);
     //dumpIterators("after insert");
