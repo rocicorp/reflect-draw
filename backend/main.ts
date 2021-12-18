@@ -42,10 +42,13 @@ app.prepare().then(() => {
   );
 
   httpServer.on("upgrade", (req, socket, head) => {
-    webSocketServer.handleUpgrade(req, socket, head, (ws) => {
-      // TODO: Not sure if this indirection through the connection event is necessary?
-      webSocketServer.emit("connection", ws, req);
-    });
+    const { pathname } = parse(req.url, true);
+    if (pathname !== "/_next/webpack-hmr") {
+      webSocketServer.handleUpgrade(req, socket, head, (ws) => {
+        // TODO: Not sure if this indirection through the connection event is necessary?
+        webSocketServer.emit("connection", ws, req);
+      });
+    }
   });
 
   webSocketServer.on("connection", (ws: Socket, req: IncomingMessage) => {

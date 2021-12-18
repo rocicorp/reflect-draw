@@ -1,7 +1,6 @@
 import styles from "./collaborator.module.css";
 import { useEffect, useState } from "react";
 import { Rect } from "./rect";
-import { useCursor } from "./smoothie";
 import { Replicache } from "replicache";
 import type { M } from "./mutators";
 import { useClientInfo } from "./subscriptions";
@@ -27,12 +26,11 @@ export function Collaborator({
   const [lastPos, setLastPos] = useState<Position | null>(null);
   const [gotFirstChange, setGotFirstChange] = useState(false);
   const [, setPoke] = useState({});
-  const cursor = useCursor(rep, clientID);
 
   let curPos = null;
   let userInfo = null;
   if (clientInfo) {
-    curPos = cursor;
+    curPos = clientInfo.cursor;
     userInfo = clientInfo.userInfo;
   }
 
@@ -42,11 +40,11 @@ export function Collaborator({
 
   if (curPos) {
     if (!lastPos) {
-      console.log(`Cursor ${clientID} - got initial position`, curPos);
+      console.debug(`Cursor ${clientID} - got initial position`, curPos);
       setLastPos({ pos: curPos, ts: Date.now() });
     } else {
       if (lastPos.pos.x != curPos.x || lastPos.pos.y != curPos.y) {
-        console.log(`Cursor ${clientID} - got change to`, curPos);
+        console.debug(`Cursor ${clientID} - got change to`, curPos);
         setLastPos({ pos: curPos, ts: Date.now() });
         setGotFirstChange(true);
       }
@@ -60,13 +58,13 @@ export function Collaborator({
 
   useEffect(() => {
     if (remaining > 0) {
-      console.log(`Cursor ${clientID} - setting timer for ${remaining}ms`);
+      console.debug(`Cursor ${clientID} - setting timer for ${remaining}ms`);
       const timerID = setTimeout(() => setPoke({}), remaining);
       return () => clearTimeout(timerID);
     }
   });
 
-  console.log(
+  console.debug(
     `Cursor ${clientID} - elapsed ${elapsed}, remaining: ${remaining}, visible: ${visible}`
   );
   if (!clientInfo || !curPos || !userInfo) {
