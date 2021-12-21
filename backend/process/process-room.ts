@@ -97,7 +97,7 @@ export async function processRoom(
         clientIDs,
         cache,
         frameStart,
-        frameStart + FRAME_LENGTH_MS
+        Math.min(frameStart + FRAME_LENGTH_MS, endTime)
       ))
     );
   }
