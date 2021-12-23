@@ -8,9 +8,9 @@ import { randomShape } from "../../frontend/shape";
 import { PushMessage, PushBody } from "../../protocol/push";
 import { resolver } from "frontend/resolver";
 import { pokeMessageSchema } from "protocol/poke";
-import { JSONType } from "protocol/json";
 import { NullableVersion, nullableVersionSchema } from "backend/types/version";
 import { sleep } from "backend/util/test-utils";
+import { TDigest } from "tdigest";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -94,6 +94,8 @@ export default function Home() {
         ws.addEventListener("open", () => {
           resolve(ws);
         });
+        const updateDelayDigest = new TDigest({ mode: "disc" });
+        const timestampDelayDigest = new TDigest({ mode: "disc" });
         let lastrecv = performance.now();
         let lastts = 0;
         ws.addEventListener("message", (e) => {
@@ -103,8 +105,12 @@ export default function Home() {
 
           const now = performance.now();
           const ts = pokeBody.timestamp;
-          console.log("time since lastrecv", now - lastrecv);
-          console.log("time since lastts", ts - lastts);
+          updateDelayDigest.push(now - lastrecv);
+          timestampDelayDigest.push(ts - lastts);
+          if (Math.random() < 0.1) {
+            console.log("lastrecv summary", updateDelayDigest.summary());
+            console.log("time since lastts", timestampDelayDigest.summary());
+          }
           lastrecv = now;
           lastts = ts;
 
