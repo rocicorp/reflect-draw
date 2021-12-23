@@ -1,4 +1,4 @@
-import { deepClone } from "../util/deep-clone";
+import { deepClone } from "../../util/deep-clone";
 import { JSONType } from "protocol/json";
 import { JSONValue } from "replicache";
 import { ZodType, ZodTypeDef } from "zod";

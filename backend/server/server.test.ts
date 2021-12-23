@@ -1,6 +1,6 @@
 import { ClientID, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
-import { Mocket, sleep } from "../util/test-utils";
+import { Mocket, sleep } from "../../util/test-utils";
 import { expect } from "chai";
 import { test } from "mocha";
 import { Server } from "./server";

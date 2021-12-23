@@ -9,8 +9,8 @@ import { PushMessage, PushBody } from "../../protocol/push";
 import { resolver } from "frontend/resolver";
 import { pokeMessageSchema } from "protocol/poke";
 import { NullableVersion, nullableVersionSchema } from "backend/types/version";
-import { sleep } from "backend/util/test-utils";
-import { TDigest } from "tdigest";
+import { sleep } from "util/test-utils";
+import { GapTracker } from "util/gap-tracker";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -94,25 +94,15 @@ export default function Home() {
         ws.addEventListener("open", () => {
           resolve(ws);
         });
-        const updateDelayDigest = new TDigest({ mode: "disc" });
-        const timestampDelayDigest = new TDigest({ mode: "disc" });
-        let lastrecv = performance.now();
-        let lastts = 0;
+        const updateTracker = new GapTracker("update");
+        const timestampTracker = new GapTracker("timestamp");
         ws.addEventListener("message", (e) => {
           const data = JSON.parse(e.data);
           const pokeMessage = pokeMessageSchema.parse(data);
           const pokeBody = pokeMessage[1];
 
-          const now = performance.now();
-          const ts = pokeBody.timestamp;
-          updateDelayDigest.push(now - lastrecv);
-          timestampDelayDigest.push(ts - lastts);
-          if (Math.random() < 0.1) {
-            console.log("lastrecv summary", updateDelayDigest.summary());
-            console.log("time since lastts", timestampDelayDigest.summary());
-          }
-          lastrecv = now;
-          lastts = ts;
+          updateTracker.push(performance.now());
+          timestampTracker.push(pokeBody.timestamp);
 
           const p: Poke = {
             baseCookie: pokeBody.baseCookie,

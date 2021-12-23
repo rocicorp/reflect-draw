@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { test } from "mocha";
 import { RoomMap } from "../types/room-state";
-import { client, Mocket, room, roomMap } from "../util/test-utils";
+import { client, Mocket, room, roomMap } from "../../util/test-utils";
 import { handleClose } from "./close";
 
 test("handleClose", async () => {

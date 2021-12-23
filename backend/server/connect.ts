@@ -8,7 +8,7 @@ import {
 } from "../types/client-record";
 import { ClientID, ClientState, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
-import { LogContext } from "../util/logger";
+import { LogContext } from "../../util/logger";
 
 export type MessageHandler = (
   roomID: RoomID,

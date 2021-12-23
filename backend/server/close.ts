@@ -1,6 +1,6 @@
 import { ClientID } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
-import { LogContext } from "../util/logger";
+import { LogContext } from "../../util/logger";
 
 export function handleClose(
   lc: LogContext,

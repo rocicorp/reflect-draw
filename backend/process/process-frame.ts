@@ -6,14 +6,13 @@ import { ClientPokeBody } from "../types/client-poke-body";
 import { getClientRecord, putClientRecord } from "../types/client-record";
 import { ClientID } from "../types/client-state";
 import { getVersion } from "../types/version";
-import { LogContext } from "../util/logger";
-import { must } from "../util/must";
-import { PeekIterator } from "../util/peek-iterator";
+import { LogContext } from "../../util/logger";
+import { must } from "../../util/must";
+import { PeekIterator } from "../../util/peek-iterator";
 import { MutatorMap, processMutation } from "./process-mutation";
-import { TDigest } from "tdigest";
+import { GapTracker } from "../../util/gap-tracker";
 
-const digest = new TDigest({ mode: "disc" });
-let lastFrameTime = 0;
+const tracker = new GapTracker("processFrame");
 
 // Processes zero or more mutations as a single "frame", returning pokes.
 // Pokes are returned if the version changes, even if there is no patch,
@@ -57,14 +56,7 @@ export async function processFrame(
     return [];
   }
 
-  if (lastFrameTime !== 0) {
-    const diff = startTime - lastFrameTime;
-    digest.push(diff);
-    if (Math.random() < 0.1) {
-      console.log("frame time", digest.summary());
-    }
-  }
-  lastFrameTime = startTime;
+  tracker.push(startTime);
 
   const patch = unwrapPatch(cache.pending());
   const ret: ClientPokeBody[] = [];

@@ -15,7 +15,7 @@ import {
   Mocket,
   room,
   roomMap,
-} from "../util/test-utils";
+} from "../../util/test-utils";
 import { handleConnection } from "./connect";
 
 setup(async () => {

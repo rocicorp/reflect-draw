@@ -4,7 +4,7 @@ import { Storage } from "../storage/storage";
 import { ClientMutation } from "../types/client-mutation";
 import { getClientRecord, putClientRecord } from "../types/client-record";
 import { putVersion, Version } from "../types/version";
-import { LogContext } from "../util/logger";
+import { LogContext } from "../../util/logger";
 
 export type Mutator = (tx: ReplicacheTransaction, args: any) => Promise<void>;
 export type MutatorMap = Map<string, Mutator>;

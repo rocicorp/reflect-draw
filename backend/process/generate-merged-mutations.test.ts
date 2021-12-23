@@ -3,7 +3,12 @@ import { ClientMap } from "../types/client-state";
 import { expect } from "chai";
 import { test } from "mocha";
 import { generateMergedMutations } from "./generate-merged-mutations";
-import { client, clientMutation, Mocket, mutation } from "../util/test-utils";
+import {
+  client,
+  clientMutation,
+  Mocket,
+  mutation,
+} from "../../util/test-utils";
 
 test("generateMergedMutations", () => {
   type Case = {

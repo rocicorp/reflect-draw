@@ -11,7 +11,7 @@ import {
 } from "../types/client-record";
 import { getUserValue } from "../types/user-value";
 import { getVersion } from "../types/version";
-import { clientMutation, clientRecord } from "../util/test-utils";
+import { clientMutation, clientRecord } from "../../util/test-utils";
 import { MutatorMap, processMutation } from "./process-mutation";
 
 test("processMutation", async () => {

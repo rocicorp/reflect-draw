@@ -10,8 +10,8 @@ import { ClientRecord, clientRecordKey } from "../types/client-record";
 import { ClientID } from "../types/client-state";
 import { UserValue, userValueKey } from "../types/user-value";
 import { Version, versionKey } from "../types/version";
-import { PeekIterator } from "../util/peek-iterator";
-import { clientMutation, clientRecord, userValue } from "../util/test-utils";
+import { PeekIterator } from "../../util/peek-iterator";
+import { clientMutation, clientRecord, userValue } from "../../util/test-utils";
 import { processFrame } from "./process-frame";
 
 test("processFrame", async () => {

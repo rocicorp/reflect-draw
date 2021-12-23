@@ -13,7 +13,7 @@ import {
 import { ClientMap } from "../types/client-state";
 import { getUserValue, UserValue } from "../types/user-value";
 import { getVersion, Version, versionKey } from "../types/version";
-import { client, clientRecord, mutation } from "../util/test-utils";
+import { client, clientRecord, mutation } from "../../util/test-utils";
 import { FRAME_LENGTH_MS, processRoom } from "./process-room";
 
 test("processRoom", async () => {
