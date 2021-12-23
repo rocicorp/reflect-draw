@@ -1,7 +1,10 @@
 import { z } from "zod";
 import { errorMessageSchema } from "./error";
-import { pokeBodySchema } from "./poke";
+import { pokeMessageSchema } from "./poke";
 
-export const downstreamSchema = z.union([pokeBodySchema, errorMessageSchema]);
+export const downstreamSchema = z.union([
+  pokeMessageSchema,
+  errorMessageSchema,
+]);
 
 export type Downstream = z.infer<typeof downstreamSchema>;

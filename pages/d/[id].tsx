@@ -7,12 +7,13 @@ import { randUserInfo } from "../../frontend/client-state";
 import { randomShape } from "../../frontend/shape";
 import { PushMessage, PushBody } from "../../protocol/push";
 import { resolver } from "frontend/resolver";
-import { pokeMessageSchema } from "protocol/poke";
+import { downstreamSchema } from "protocol/down";
 import { NullableVersion, nullableVersionSchema } from "backend/types/version";
 import { sleep } from "util/test-utils";
 import { GapTracker } from "util/gap-tracker";
 
 const pushTracker = new GapTracker("push");
+let lastMutationIDSent = -1;
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -46,15 +47,24 @@ export default function Home() {
           const msg: PushMessage = ["push", pushBody];
 
           // TODO: Replicache should do this to have correct time.
+          const newMutations = [];
+          const now = performance.now();
           for (const m of msg[1].mutations) {
-            m.timestamp = performance.now();
+            if (m.id > lastMutationIDSent) {
+              m.timestamp = now;
+              lastMutationIDSent = m.id;
+              newMutations.push(m);
+            }
           }
 
-          pushTracker.push(performance.now());
+          if (newMutations.length > 0) {
+            pushBody.mutations = newMutations;
+            pushTracker.push(now);
+            sleep(200).then(() => {
+              ws.send(JSON.stringify(msg));
+            });
+          }
 
-          sleep(200).then(() => {
-            ws.send(JSON.stringify(msg));
-          });
           return {
             errorMessage: "",
             httpStatusCode: 200,
@@ -102,8 +112,12 @@ export default function Home() {
         const timestampTracker = new GapTracker("timestamp");
         ws.addEventListener("message", (e) => {
           const data = JSON.parse(e.data);
-          const pokeMessage = pokeMessageSchema.parse(data);
-          const pokeBody = pokeMessage[1];
+          const downMessage = downstreamSchema.parse(data);
+          if (downMessage[0] === "error") {
+            throw new Error(downMessage[1]);
+          }
+
+          const pokeBody = downMessage[1];
 
           updateTracker.push(performance.now());
           timestampTracker.push(pokeBody.timestamp);
