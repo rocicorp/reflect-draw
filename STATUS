@@ -1,0 +1,15 @@
+status
+
+- delete doesn't work
+- we send pushes too frequently
+  - setting pushDelay to zero means we frequently send more than one push per frame, and we always send many duplicate mutations
+  - setting pushDelay to 16ms results in frequently missing a frame
+- need to look carefully at whether batching of mutations and timestamps working as intended
+- need to implement delay of mutation application on receive side
+- app-side integration is a disaster, need to think through changes necessary to replicache to support correctly
+- did not quite finish up unit testing for process-pending and process-until-done
+- a lot of the tests were broken by integrate changes
+- trying to integrate, open PR with miscellaneous problems fixed
+- sending mutations from future (lmid > present) is infinite loop
+- make log levels per fritz doc
+- make log level configurable
