@@ -10,6 +10,10 @@ import { LogContext } from "../util/logger";
 import { must } from "../util/must";
 import { PeekIterator } from "../util/peek-iterator";
 import { MutatorMap, processMutation } from "./process-mutation";
+import { TDigest } from "tdigest";
+
+const digest = new TDigest({ mode: "disc" });
+let lastFrameTime = 0;
 
 // Processes zero or more mutations as a single "frame", returning pokes.
 // Pokes are returned if the version changes, even if there is no patch,
@@ -52,6 +56,15 @@ export async function processFrame(
     lc.debug?.("no change in frame, skipping poke");
     return [];
   }
+
+  if (lastFrameTime !== 0) {
+    const diff = startTime - lastFrameTime;
+    digest.push(diff);
+    if (Math.random() < 0.1) {
+      console.log("frame time", digest.summary());
+    }
+  }
+  lastFrameTime = startTime;
 
   const patch = unwrapPatch(cache.pending());
   const ret: ClientPokeBody[] = [];
