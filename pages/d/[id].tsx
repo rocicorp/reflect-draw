@@ -12,6 +12,8 @@ import { NullableVersion, nullableVersionSchema } from "backend/types/version";
 import { sleep } from "util/test-utils";
 import { GapTracker } from "util/gap-tracker";
 
+const pushTracker = new GapTracker("push");
+
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
 
@@ -47,6 +49,8 @@ export default function Home() {
           for (const m of msg[1].mutations) {
             m.timestamp = performance.now();
           }
+
+          pushTracker.push(performance.now());
 
           sleep(200).then(() => {
             ws.send(JSON.stringify(msg));
