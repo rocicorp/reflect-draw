@@ -46,12 +46,9 @@ export default function Home() {
           const pushBody = (await req.json()) as PushBody;
           const msg: PushMessage = ["push", pushBody];
 
-          // TODO: Replicache should do this to have correct time.
           const newMutations = [];
-          const now = performance.now();
           for (const m of msg[1].mutations) {
             if (m.id > lastMutationIDSent) {
-              m.timestamp = now;
               lastMutationIDSent = m.id;
               newMutations.push(m);
             }
@@ -59,7 +56,7 @@ export default function Home() {
 
           if (newMutations.length > 0) {
             pushBody.mutations = newMutations;
-            pushTracker.push(now);
+            pushTracker.push(performance.now());
             sleep(200).then(() => {
               ws.send(JSON.stringify(msg));
             });
