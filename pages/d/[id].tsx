@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Poke, Puller, PullerResult, Replicache } from "replicache";
+import { Poke, PullerResult, Replicache } from "replicache";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../frontend/mutators";
@@ -11,9 +11,12 @@ import { downstreamSchema } from "protocol/down";
 import { NullableVersion, nullableVersionSchema } from "backend/types/version";
 import { sleep } from "util/test-utils";
 import { GapTracker } from "util/gap-tracker";
+import { LogContext } from "util/logger";
+import { nanoid } from "nanoid";
 
 const pushTracker = new GapTracker("push");
 let lastMutationIDSent = -1;
+let serverBehindBy = NaN;
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -108,6 +111,7 @@ export default function Home() {
         const updateTracker = new GapTracker("update");
         const timestampTracker = new GapTracker("timestamp");
         ws.addEventListener("message", (e) => {
+          const l = new LogContext("debug").addContext("req", nanoid());
           const data = JSON.parse(e.data);
           const downMessage = downstreamSchema.parse(data);
           if (downMessage[0] === "error") {
@@ -119,6 +123,18 @@ export default function Home() {
           updateTracker.push(performance.now());
           timestampTracker.push(pokeBody.timestamp);
 
+          if (isNaN(serverBehindBy)) {
+            serverBehindBy = performance.now() - pokeBody.timestamp;
+            l.debug?.(
+              "local clock is",
+              performance.now(),
+              "serverBehindBy",
+              serverBehindBy
+            );
+          }
+
+          const localTimestamp = pokeBody.timestamp + serverBehindBy;
+          const delay = Math.max(0, localTimestamp - performance.now());
           const p: Poke = {
             baseCookie: pokeBody.baseCookie,
             pullResponse: {
@@ -127,7 +143,12 @@ export default function Home() {
               cookie: pokeBody.cookie,
             },
           };
-          r.poke(p);
+          l.debug?.("localTimestamp of poke", localTimestamp);
+          l.debug?.("playing poke", p, "with delay", delay);
+
+          window.setTimeout(() => {
+            r.poke(p);
+          }, delay);
         });
         return await promise;
       })();
