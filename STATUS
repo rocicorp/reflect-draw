@@ -19,7 +19,6 @@ status
     merging the pending queues
   - each time we receive a push, the delay gets reset
   - need to rework how peek() works
-- delete is broken
 - clear is broken
 - implement alpha fading again
 

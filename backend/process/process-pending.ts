@@ -57,12 +57,12 @@ function sendPokes(
   pokes: Map<RoomID, ClientPokeBody[]>,
   rooms: RoomMap
 ) {
-  lc.debug?.("sending pokes", pokes);
   for (const [roomID, pokesForRoom] of pokes) {
     const roomState = must(rooms.get(roomID));
     for (const pokeBody of pokesForRoom) {
       const client = must(roomState.clients.get(pokeBody.clientID));
       const poke: PokeMessage = ["poke", pokeBody.poke];
+      lc.debug?.("sending client", pokeBody.clientID, "poke", pokeBody.poke);
       client.socket.send(JSON.stringify(poke));
     }
   }
