@@ -19,8 +19,6 @@ export type MessageHandler = (
 
 export type CloseHandler = (roomID: RoomID, clientID: ClientID) => void;
 
-export type Now = () => number;
-
 /**
  * Handles the connect message from a client, registering the client state in memory and updating the persistent client-record.
  * @param ws socket connection to requesting client
@@ -28,7 +26,6 @@ export type Now = () => number;
  * @param rooms currently running rooms
  * @param onMessage message handler for this connection
  * @param onClose callback for when connection closes
- * @param now returns the current time in milliseconds
  * @returns
  */
 export async function handleConnection(
@@ -37,8 +34,7 @@ export async function handleConnection(
   url: string,
   rooms: RoomMap,
   onMessage: MessageHandler,
-  onClose: CloseHandler,
-  now: Now
+  onClose: CloseHandler
 ) {
   const { result, error } = getConnectRequest(url);
   if (result === null) {
@@ -88,12 +84,9 @@ export async function handleConnection(
     onMessage(roomID, clientID, event.data.toString(), ws);
   ws.onclose = () => onClose(roomID, clientID);
 
-  const clockBehindByMs = now() - timestamp;
-  lc.debug?.("clock behind by", clockBehindByMs);
-
   const client: ClientState = {
     socket: ws,
-    clockBehindByMs,
+    clockBehindByMs: undefined,
     pending: [],
   };
   room.clients.set(clientID, client);

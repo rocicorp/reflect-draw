@@ -40,6 +40,7 @@ test("handleMessage", async () => {
         mutations: [mutation(1), mutation(2)],
         pushVersion: 1,
         schemaVersion: "",
+        timestamp: 42,
       },
     },
   ];

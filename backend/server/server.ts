@@ -74,8 +74,7 @@ export class Server {
         url,
         this._rooms,
         this.handleMessage.bind(this),
-        this.handleClose.bind(this),
-        this._now
+        this.handleClose.bind(this)
       );
     });
   }

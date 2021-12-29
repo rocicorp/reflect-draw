@@ -12,6 +12,7 @@ export const pushBodySchema = z.object({
   mutations: z.array(mutationSchema),
   pushVersion: z.number(),
   schemaVersion: z.string(),
+  timestamp: z.number(),
 });
 
 export const pushMessageSchema = z.tuple([z.literal("push"), pushBodySchema]);

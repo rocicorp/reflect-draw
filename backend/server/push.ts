@@ -4,6 +4,7 @@ import { RoomID, RoomMap } from "../types/room-state";
 import { LogContext } from "../../util/logger";
 import { sendError } from "../../util/socket";
 
+export type Now = () => number;
 export type ProcessUntilDone = () => void;
 
 /**
@@ -23,6 +24,7 @@ export function handlePush(
   clientID: ClientID,
   body: PushBody,
   ws: Socket,
+  now: Now,
   processUntilDone: ProcessUntilDone
 ) {
   lc.debug?.("handling push", JSON.stringify(body));
@@ -38,6 +40,14 @@ export function handlePush(
     lc.info?.("client not found");
     sendError(ws, `no such client: ${clientID}`);
     return;
+  }
+
+  if (client.clockBehindByMs === undefined) {
+    client.clockBehindByMs = now() - body.timestamp;
+    lc.debug?.(
+      "initializing clock offset: clock behind by",
+      client.clockBehindByMs
+    );
   }
 
   for (const m of body.mutations) {

@@ -118,8 +118,6 @@ test("handleConnection", async () => {
     },
   ];
 
-  const now = () => 42;
-
   for (const c of cases) {
     await transact(async (executor) => {
       if (c.existingRecord) {
@@ -138,8 +136,7 @@ test("handleConnection", async () => {
       c.url,
       rooms,
       onMessage,
-      onClose,
-      now
+      onClose
     );
 
     if (c.expectErrorResponse) {

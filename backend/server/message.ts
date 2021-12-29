@@ -35,7 +35,16 @@ export function handleMessage(
   const [type, body] = message!;
   switch (type) {
     case "push":
-      handlePush(lc, roomMap, roomID, clientID, body, ws, processUntilDone);
+      handlePush(
+        lc,
+        roomMap,
+        roomID,
+        clientID,
+        body,
+        ws,
+        () => performance.now(),
+        processUntilDone
+      );
       break;
     default:
       throw new Error(`Unknown message type: ${type}`);

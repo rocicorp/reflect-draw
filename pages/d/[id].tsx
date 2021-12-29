@@ -58,6 +58,7 @@ export default function Home() {
 
           if (newMutations.length > 0) {
             pushBody.mutations = newMutations;
+            pushBody.timestamp = performance.now();
             pushTracker.push(performance.now());
             ws.send(JSON.stringify(msg));
           }
