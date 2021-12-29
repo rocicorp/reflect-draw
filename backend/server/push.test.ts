@@ -4,6 +4,7 @@ import { RoomMap } from "../types/room-state";
 import { Mutation } from "../../protocol/push";
 import { client, Mocket, mutation, room, roomMap } from "../../util/test-utils";
 import { handlePush } from "./push";
+import { LogContext } from "../../util/logger";
 
 test("handlePush", async () => {
   const s1 = new Mocket();
@@ -172,7 +173,7 @@ test("handlePush", async () => {
       schemaVersion: "",
     };
     const rooms = c.existingRooms;
-    handlePush(rooms, "r1", "c1", push, s1, () => {});
+    handlePush(new LogContext("info"), rooms, "r1", "c1", push, s1, () => {});
     if (c.expectedError) {
       expect(s1.log, c.name).deep.equal([
         ["send", JSON.stringify(["error", c.expectedError])],

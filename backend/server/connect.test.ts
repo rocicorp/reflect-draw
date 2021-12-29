@@ -17,6 +17,7 @@ import {
   roomMap,
 } from "../../util/test-utils";
 import { handleConnection } from "./connect";
+import { LogContext } from "util/logger";
 
 setup(async () => {
   await withExecutor(async () => {
@@ -131,7 +132,15 @@ test("handleConnection", async () => {
     const onClose = () => {};
     const mocket = new Mocket();
 
-    await handleConnection(mocket, c.url, rooms, onMessage, onClose, now);
+    await handleConnection(
+      new LogContext("info"),
+      mocket,
+      c.url,
+      rooms,
+      onMessage,
+      onClose,
+      now
+    );
 
     if (c.expectErrorResponse) {
       expect(mocket.log, c.name).to.deep.equal([

@@ -3,6 +3,7 @@ import { test } from "mocha";
 import { RoomMap } from "../types/room-state";
 import { client, Mocket, room, roomMap } from "../../util/test-utils";
 import { handleClose } from "./close";
+import { LogContext } from "../../util/logger";
 
 test("handleClose", async () => {
   type Case = {
@@ -43,7 +44,7 @@ test("handleClose", async () => {
 
   for (const c of cases) {
     const rooms = c.existingRooms;
-    handleClose(rooms, "r1", "c1");
+    handleClose(new LogContext("info"), rooms, "r1", "c1");
     expect(rooms, c.name).deep.equal(c.expectedRooms);
   }
 });

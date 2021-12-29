@@ -60,7 +60,7 @@ export default function Home() {
           if (newMutations.length > 0) {
             pushBody.mutations = newMutations;
             pushTracker.push(performance.now());
-            sleep(200).then(() => {
+            sleep(2000).then(() => {
               ws.send(JSON.stringify(msg));
             });
           }
@@ -102,7 +102,7 @@ export default function Home() {
           baseCookie === null ? "" : String(baseCookie)
         );
         url.searchParams.set("ts", String(performance.now()));
-        await sleep(200);
+        await sleep(2000);
         const ws = new WebSocket(url.toString());
         const { promise, resolve } = resolver<WebSocket>();
         ws.addEventListener("open", () => {

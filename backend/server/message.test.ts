@@ -5,6 +5,7 @@ import { ClientID, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
 import { Mocket, mutation } from "../../util/test-utils";
 import { handleMessage } from "./message";
+import { LogContext } from "util/logger";
 
 test("handleMessage", async () => {
   type Case = {
@@ -63,7 +64,15 @@ test("handleMessage", async () => {
       expect(pWS, c.name).equal(s1);
       called = true;
     };
-    await handleMessage(handlePush, rooms, roomID, clientID, c.data, s1);
+    await handleMessage(
+      new LogContext("info"),
+      rooms,
+      roomID,
+      clientID,
+      c.data,
+      s1,
+      () => {}
+    );
     if (c.expectedError) {
       expect(s1.log.length, c.name).equal(1);
       const [type, message] = s1.log[0];

@@ -24,6 +24,7 @@ import {
 } from "../../util/test-utils";
 import { processPending } from "./process-pending";
 import { FRAME_LENGTH_MS } from "./process-room";
+import { LogContext } from "../../util/logger";
 
 test("processPending", async () => {
   type Case = {
@@ -301,7 +302,13 @@ test("processPending", async () => {
         (clientState.socket as Mocket).log.length = 0;
       }
     }
-    const p = processPending(c.rooms, mutators, startTime, endTime);
+    const p = processPending(
+      new LogContext("info"),
+      c.rooms,
+      mutators,
+      startTime,
+      endTime
+    );
     if (c.expectedError) {
       try {
         await p;

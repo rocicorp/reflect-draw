@@ -15,6 +15,7 @@ import { getUserValue, UserValue } from "../types/user-value";
 import { getVersion, Version, versionKey } from "../types/version";
 import { client, clientRecord, mutation } from "../../util/test-utils";
 import { FRAME_LENGTH_MS, processRoom } from "./process-room";
+import { LogContext } from "../../util/logger";
 
 test("processRoom", async () => {
   type Case = {
@@ -306,6 +307,7 @@ test("processRoom", async () => {
       }
 
       const p = processRoom(
+        new LogContext("info"),
         roomID,
         c.clients,
         mutators,

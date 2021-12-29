@@ -13,6 +13,7 @@ import { getUserValue } from "../types/user-value";
 import { getVersion } from "../types/version";
 import { clientMutation, clientRecord } from "../../util/test-utils";
 import { MutatorMap, processMutation } from "./process-mutation";
+import { LogContext } from "../../util/logger";
 
 test("processMutation", async () => {
   type Case = {
@@ -101,7 +102,13 @@ test("processMutation", async () => {
 
     let err: string | undefined;
     try {
-      await processMutation(c.mutation, mutators, storage, version);
+      await processMutation(
+        new LogContext("info"),
+        c.mutation,
+        mutators,
+        storage,
+        version
+      );
     } catch (e) {
       err = String(e);
     }

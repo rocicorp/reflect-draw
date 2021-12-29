@@ -13,6 +13,7 @@ import { Version, versionKey } from "../types/version";
 import { PeekIterator } from "../../util/peek-iterator";
 import { clientMutation, clientRecord, userValue } from "../../util/test-utils";
 import { processFrame } from "./process-frame";
+import { LogContext } from "../../util/logger";
 
 test("processFrame", async () => {
   const records = new Map([
@@ -225,6 +226,7 @@ test("processFrame", async () => {
     }
 
     const result = await processFrame(
+      new LogContext("info"),
       new PeekIterator(c.mutations[Symbol.iterator]()),
       mutators,
       c.clients,
