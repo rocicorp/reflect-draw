@@ -9,7 +9,6 @@ import { PushMessage, PushBody } from "../../protocol/push";
 import { resolver } from "frontend/resolver";
 import { downstreamSchema } from "protocol/down";
 import { NullableVersion, nullableVersionSchema } from "backend/types/version";
-import { sleep } from "util/test-utils";
 import { GapTracker } from "util/gap-tracker";
 import { LogContext } from "util/logger";
 import { nanoid } from "nanoid";
@@ -60,9 +59,7 @@ export default function Home() {
           if (newMutations.length > 0) {
             pushBody.mutations = newMutations;
             pushTracker.push(performance.now());
-            sleep(2000).then(() => {
-              ws.send(JSON.stringify(msg));
-            });
+            ws.send(JSON.stringify(msg));
           }
 
           return {
@@ -102,7 +99,6 @@ export default function Home() {
           baseCookie === null ? "" : String(baseCookie)
         );
         url.searchParams.set("ts", String(performance.now()));
-        await sleep(2000);
         const ws = new WebSocket(url.toString());
         const { promise, resolve } = resolver<WebSocket>();
         ws.addEventListener("open", () => {
