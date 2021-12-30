@@ -9,6 +9,7 @@ import {
 import { ClientID, ClientState, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
 import { LogContext } from "../../util/logger";
+import { ConnectedMessage } from "protocol/connected";
 
 export type MessageHandler = (
   roomID: RoomID,
@@ -90,6 +91,9 @@ export async function handleConnection(
     pending: [],
   };
   room.clients.set(clientID, client);
+
+  const connectedMessage: ConnectedMessage = ["connected", {}];
+  ws.send(JSON.stringify(connectedMessage));
 }
 
 export function getConnectRequest(urlString: string) {

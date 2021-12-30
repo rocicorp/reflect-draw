@@ -171,9 +171,19 @@ test("handlePush", async () => {
       mutations: c.mutations,
       pushVersion: 0,
       schemaVersion: "",
+      timestamp: 42,
     };
     const rooms = c.existingRooms;
-    handlePush(new LogContext("info"), rooms, "r1", "c1", push, s1, () => {});
+    handlePush(
+      new LogContext("info"),
+      rooms,
+      "r1",
+      "c1",
+      push,
+      s1,
+      () => 42,
+      () => {}
+    );
     if (c.expectedError) {
       expect(s1.log, c.name).deep.equal([
         ["send", JSON.stringify(["error", c.expectedError])],

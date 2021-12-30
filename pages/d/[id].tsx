@@ -102,17 +102,21 @@ export default function Home() {
         url.searchParams.set("ts", String(performance.now()));
         const ws = new WebSocket(url.toString());
         const { promise, resolve } = resolver<WebSocket>();
-        ws.addEventListener("open", () => {
-          resolve(ws);
-        });
         const updateTracker = new GapTracker("update");
         const timestampTracker = new GapTracker("timestamp");
         ws.addEventListener("message", (e) => {
           const l = new LogContext("debug").addContext("req", nanoid());
           const data = JSON.parse(e.data);
           const downMessage = downstreamSchema.parse(data);
+          if (downMessage[0] === "connected") {
+            resolve(ws);
+            return;
+          }
           if (downMessage[0] === "error") {
             throw new Error(downMessage[1]);
+          }
+          if (downMessage[0] !== "poke") {
+            throw new Error(`Unexpected message: ${downMessage}`);
           }
 
           const pokeBody = downMessage[1];
