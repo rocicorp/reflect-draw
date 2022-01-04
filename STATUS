@@ -1,4 +1,19 @@
-status
+# Now
+
+- connection management
+- reboot server when it crashes
+- continuous testing and deploy
+- did not quite finish up unit testing for process-pending and process-until-done
+- a lot of the tests were broken by integrate changes
+- stacking
+- color picking
+- new tweet + make public? :)
+- get feedback from customers on usage preferences:
+  - use as service
+  - use as library
+  - use as pattern?
+
+# Next
 
 - generally speaking the interface to replicache needs to be reworked:
   - need a proper "connect" message or a way to get the cookie other than faking the puller
@@ -6,10 +21,6 @@ status
   - need pusher to only send new items
   - (not needed for this but useful) - pusher should be already parsed
   - poke needs support for delay
-- need to implement reconnection
-- did not quite finish up unit testing for process-pending and process-until-done
-- a lot of the tests were broken by integrate changes
-- sending mutations from future (lmid > present) is infinite loop
 - make log levels per fritz doc
 - make log level configurable
 - idea for refactoring top level
@@ -17,8 +28,6 @@ status
     merging the pending queues
   - each time we receive a push, the delay gets reset
   - need to rework how peek() works
-- clear is broken
-- implement alpha fading again
 
 later:
 
