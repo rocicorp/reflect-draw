@@ -1,7 +1,5 @@
 status
 
-- test on remote server!!!
-- delete doesn't work
 - generally speaking the interface to replicache needs to be reworked:
   - need a proper "connect" message or a way to get the cookie other than faking the puller
   - need to get rid of backoff or be able to bypass
