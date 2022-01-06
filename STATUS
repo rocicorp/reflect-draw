@@ -2,16 +2,12 @@
 
 - connection management
 - reboot server when it crashes
-- continuous testing and deploy
-- did not quite finish up unit testing for process-pending and process-until-done
-- a lot of the tests were broken by integrate changes
-- stacking
-- color picking
+- fix unit tests
+- complete unit tests
+- continuous deploy
+- factor out server library
+- factor client changes down into replicache
 - new tweet + make public? :)
-- get feedback from customers on usage preferences:
-  - use as service
-  - use as library
-  - use as pattern?
 
 # Next
 

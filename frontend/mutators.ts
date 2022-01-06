@@ -1,3 +1,4 @@
+import { WriteTransaction } from "replicache";
 import {
   initClientState,
   setCursor,
@@ -26,4 +27,5 @@ export const mutators = {
   overShape,
   selectShape,
   initShapes,
+  nop: async (_: WriteTransaction) => {},
 };
