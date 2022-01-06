@@ -81,11 +81,19 @@ export class Connection {
 
     ws.addEventListener("close", (e) => {
       this._l.info?.("socket closed", e);
-      this._state = "DISCONNECTED";
-      this._socket = undefined;
-      this._serverBehindBy = undefined;
-      this._lastMutationIDSent = -1;
+      this._disconnect();
     });
+  }
+
+  private _disconnect() {
+    if (this._socket) {
+      this._socket.close();
+    }
+
+    this._state = "DISCONNECTED";
+    this._socket = undefined;
+    this._serverBehindBy = undefined;
+    this._lastMutationIDSent = -1;
   }
 
   private _handlePoke(l: LogContext, pokeBody: PokeBody) {
@@ -115,8 +123,17 @@ export class Connection {
     l.debug?.("localTimestamp of poke", localTimestamp);
     l.debug?.("playing poke", p, "with delay", delay);
 
-    window.setTimeout(() => {
-      this._rep.poke(p);
+    window.setTimeout(async () => {
+      try {
+        await this._rep.poke(p);
+      } catch (e) {
+        if (String(e).indexOf("unexpected base cookie for poke") > -1) {
+          this._l.info?.("out of order poke, disconnecting");
+          this._disconnect();
+          return;
+        }
+        throw e;
+      }
     }, delay);
   }
 
