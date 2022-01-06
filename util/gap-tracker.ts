@@ -10,7 +10,7 @@ export class GapTracker {
   constructor(name: string, summaryFrequencyMs = 1000) {
     this._name = name;
     this._summaryFrequencyMs = summaryFrequencyMs;
-    this._digest = new TDigest({ mode: "disc" });
+    this._digest = new TDigest();
   }
 
   push(value: number) {
