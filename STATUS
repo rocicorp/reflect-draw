@@ -1,11 +1,11 @@
 # Now
 
 - connection management
+- factor out server library
 - reboot server when it crashes
 - fix unit tests
 - complete unit tests
 - continuous deploy
-- factor out server library
 - factor client changes down into replicache
 - new tweet + make public? :)
 

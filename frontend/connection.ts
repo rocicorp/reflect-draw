@@ -16,36 +16,53 @@ const pushTracker = new GapTracker("push");
 const updateTracker = new GapTracker("update");
 const timestampTracker = new GapTracker("timestamp");
 
+export type ConnectionState = "DISCONNECTED" | "CONNECTING" | "CONNECTED";
+
 export class Connection {
   private _rep: Replicache<M>;
   private _socket?: WebSocket;
   private _serverBehindBy?: number;
   private _lastMutationIDSent: number;
   private _roomID: string;
+  private _l: LogContext;
+  private _state: ConnectionState;
 
   constructor(rep: Replicache<M>, roomID: string) {
     this._rep = rep;
     this._rep.pusher = (req: Request) => this._pusher(req);
     this._roomID = roomID;
+    this._l = new LogContext("debug").addContext("roomID", roomID);
     this._lastMutationIDSent = -1;
+    this._state = "DISCONNECTED";
+
     this._connect();
   }
 
   private async _connect() {
-    this._socket = undefined;
-    this._serverBehindBy = undefined;
-    this._lastMutationIDSent = -1;
+    if (this._state === "CONNECTING") {
+      this._l.debug?.("Skipping duplicate connect request");
+      return;
+    }
+    this._l.info?.("Connecting...");
+
+    this._state = "CONNECTING";
 
     const baseCookie = await getBaseCookie(this._rep);
     const ws = createSocket(baseCookie, await this._rep.clientID, this._roomID);
 
     ws.addEventListener("message", (e) => {
-      const l = new LogContext("debug").addContext("req", nanoid());
+      const l = this._l.addContext("req", nanoid());
       const data = JSON.parse(e.data);
       const downMessage = downstreamSchema.parse(data);
 
       if (downMessage[0] === "connected") {
+        l.info?.("Connected");
+
+        this._state = "CONNECTED";
         this._socket = ws;
+        this._serverBehindBy = undefined;
+        this._lastMutationIDSent = -1;
+
         forcePush(this._rep);
         return;
       }
@@ -60,6 +77,14 @@ export class Connection {
 
       const pokeBody = downMessage[1];
       this._handlePoke(l, pokeBody);
+    });
+
+    ws.addEventListener("close", (e) => {
+      this._l.info?.("socket closed", e);
+      this._state = "DISCONNECTED";
+      this._socket = undefined;
+      this._serverBehindBy = undefined;
+      this._lastMutationIDSent = -1;
     });
   }
 
@@ -97,7 +122,7 @@ export class Connection {
 
   private async _pusher(req: Request) {
     if (!this._socket) {
-      console.log("Cannot push now because not connected (no socket)");
+      this._connect();
       return {
         errorMessage: "",
         httpStatusCode: 200,
