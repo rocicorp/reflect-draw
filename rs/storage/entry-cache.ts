@@ -1,5 +1,5 @@
-import { JSONType } from "protocol/json";
-import { Patch } from "protocol/poke";
+import { JSONType } from "../protocol/json";
+import { Patch } from "../protocol/poke";
 import { JSONValue } from "replicache";
 import { ZodSchema } from "zod";
 import { Storage } from "./storage";

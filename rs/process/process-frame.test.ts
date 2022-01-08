@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { test } from "mocha";
-import { JSONType } from "protocol/json";
+import { JSONType } from "../protocol/json";
 import { WriteTransaction } from "replicache";
 import { z } from "zod";
 import { MemStorage } from "../storage/mem-storage";

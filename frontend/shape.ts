@@ -1,7 +1,7 @@
 import { ReadTransaction, WriteTransaction } from "replicache";
 import { nanoid } from "nanoid";
 import { randInt } from "./rand";
-import { Shape, shapeSchema } from "../protocol/shape";
+import { Shape, shapeSchema } from "../rs/protocol/shape";
 
 export async function getShape(
   tx: ReadTransaction,

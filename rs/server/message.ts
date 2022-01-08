@@ -1,4 +1,4 @@
-import { upstreamSchema } from "../../protocol/up";
+import { upstreamSchema } from "../protocol/up";
 import { ClientID, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
 import { LogContext } from "../../util/logger";

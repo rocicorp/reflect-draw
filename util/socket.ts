@@ -1,4 +1,4 @@
-import { Downstream } from "protocol/down";
+import { Downstream } from "rs/protocol/down";
 import { Socket } from "../rs/types/client-state";
 
 export function sendError(ws: Socket, body: string) {

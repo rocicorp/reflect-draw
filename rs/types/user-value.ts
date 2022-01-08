@@ -1,4 +1,4 @@
-import { jsonSchema } from "../../protocol/json";
+import { jsonSchema } from "../protocol/json";
 import { versionSchema } from "./version";
 import { Storage } from "../storage/storage";
 import { z } from "zod";

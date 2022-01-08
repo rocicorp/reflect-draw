@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { test } from "mocha";
-import { PokeBody } from "protocol/poke";
+import { PokeBody } from "../protocol/poke";
 import { WriteTransaction } from "replicache";
 import { createDatabase } from "../db/data";
 import { transact } from "../db/pg";

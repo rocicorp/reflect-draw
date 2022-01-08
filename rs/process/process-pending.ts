@@ -1,7 +1,7 @@
 // Processes all pending mutations from [[clients]] that are ready to be
 // processed in one or more frames, up to [[endTime]] and sends necessary
 
-import { PokeMessage } from "../../protocol/poke";
+import { PokeMessage } from "../protocol/poke";
 import { transact } from "../db/pg";
 import { ClientPokeBody } from "../types/client-poke-body";
 import { RoomID, RoomMap } from "../types/room-state";

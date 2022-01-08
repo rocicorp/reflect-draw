@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { test } from "mocha";
 import { RoomMap } from "../types/room-state";
-import { Mutation } from "../../protocol/push";
+import { Mutation } from "../protocol/push";
 import { client, Mocket, mutation, room, roomMap } from "../../util/test-utils";
 import { handlePush } from "./push";
 import { LogContext } from "../../util/logger";

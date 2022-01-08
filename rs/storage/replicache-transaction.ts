@@ -1,15 +1,14 @@
 import { JSONValue, ScanResult, WriteTransaction } from "replicache";
 import { Version } from "../types/version";
-import { EntryCache } from "./entry-cache";
 import {
   UserValue,
   userValueKey,
   userValuePrefix,
   userValueSchema,
 } from "../types/user-value";
-import { JSONType } from "protocol/json";
+import { JSONType } from "../protocol/json";
 import { ClientID } from "../types/client-state";
-import { Patch } from "protocol/poke";
+import { Patch } from "../protocol/poke";
 import { Storage } from "./storage";
 
 /**

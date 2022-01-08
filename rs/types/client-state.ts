@@ -1,4 +1,4 @@
-import { Mutation } from "protocol/push";
+import { Mutation } from "../protocol/push";
 import { CloseEvent, MessageEvent } from "ws";
 
 export type ClientID = string;

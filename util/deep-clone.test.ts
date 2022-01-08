@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { test } from "mocha";
-import { JSONType } from "protocol/json";
+import { JSONType } from "rs/protocol/json";
 import { deepClone } from "./deep-clone";
 
 test("deepClone", () => {

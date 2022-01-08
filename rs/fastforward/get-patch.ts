@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Patch } from "../../protocol/poke";
+import { Patch } from "../protocol/poke";
 import { Executor } from "../db/pg";
 import { userValuePrefix, userValueSchema } from "../types/user-value";
 import { NullableVersion } from "../types/version";
