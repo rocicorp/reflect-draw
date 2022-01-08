@@ -1,5 +1,5 @@
-import { mutators } from "../../datamodel/mutators";
-import { MutatorMap } from "../process/process-mutation";
+import { processPending } from "../process/process-pending";
+import { Mutator, MutatorMap } from "../process/process-mutation";
 import { FRAME_LENGTH_MS } from "../process/process-room";
 import { ClientID, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
@@ -34,13 +34,16 @@ export class Server {
   private _now: Now;
   private _setTimeout: SetTimeout;
   private _processing = false;
+  private _mutators: MutatorMap;
 
   constructor(
-    rooms: RoomMap,
-    processHandler: ProcessHandler,
-    now: Now,
-    setTimeout: SetTimeout
+    mutators: Record<string, Mutator>,
+    rooms: RoomMap = new Map(),
+    processHandler: ProcessHandler = processPending,
+    now: Now = performance.now,
+    setTimeout: SetTimeout = globalThis.setTimeout
   ) {
+    this._mutators = new Map([...Object.entries(mutators)]);
     this._rooms = rooms;
     this._processHandler = processHandler;
     this._now = now;
@@ -123,8 +126,7 @@ export class Server {
       await this._processHandler(
         lc,
         this.rooms,
-        // TODO: client and server should agree whether this thing is an object or map.
-        new Map([...Object.entries(mutators)]),
+        this._mutators,
         simStartTime,
         simEndTime
       );

@@ -1,9 +1,9 @@
 import { Command } from "commander";
+import { mutators } from "../datamodel/mutators";
 import { createServer } from "http";
 import next from "next";
 import { parse } from "url";
 import { WebSocket } from "ws";
-import { processPending } from "../rs/process/process-pending";
 import { Server } from "../rs/server/server";
 
 const dev = process.env.NODE_ENV !== "production";
@@ -33,7 +33,7 @@ app.prepare().then(() => {
   );
   const webSocketServer = new WebSocket.Server({ noServer: true });
 
-  const rs = new Server(new Map(), processPending, performance.now, setTimeout);
+  const rs = new Server(mutators);
 
   httpServer.on("upgrade", (req, socket, head) => {
     const { pathname } = parse(req.url, true);
