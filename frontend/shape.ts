@@ -1,7 +1,19 @@
 import { ReadTransaction, WriteTransaction } from "replicache";
 import { nanoid } from "nanoid";
 import { randInt } from "./rand";
-import { Shape, shapeSchema } from "../rs/protocol/shape";
+import { z } from "zod";
+
+export const shapeSchema = z.object({
+  type: z.literal("rect"),
+  x: z.number(),
+  y: z.number(),
+  width: z.number(),
+  height: z.number(),
+  rotate: z.number(),
+  fill: z.string(),
+});
+
+export type Shape = z.infer<typeof shapeSchema>;
 
 export async function getShape(
   tx: ReadTransaction,

@@ -1,11 +1,10 @@
 import { Command } from "commander";
-import { createServer, IncomingMessage } from "http";
+import { createServer } from "http";
 import next from "next";
 import { parse } from "url";
 import { WebSocket } from "ws";
 import { processPending } from "../rs/process/process-pending";
 import { Server } from "../rs/server/server";
-import { Socket } from "../rs/types/client-state";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
