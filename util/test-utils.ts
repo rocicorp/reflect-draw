@@ -1,9 +1,9 @@
 import { JSONType } from "protocol/json";
 import { Mutation } from "protocol/push";
-import { ClientMutation } from "../backend/types/client-mutation";
-import { ClientID, ClientState, Socket } from "../backend/types/client-state";
-import { RoomID, RoomMap, RoomState } from "../backend/types/room-state";
-import { NullableVersion } from "../backend/types/version";
+import { ClientMutation } from "../rs/types/client-mutation";
+import { ClientID, ClientState, Socket } from "../rs/types/client-state";
+import { RoomID, RoomMap, RoomState } from "../rs/types/room-state";
+import { NullableVersion } from "../rs/types/version";
 
 export function roomMap(...rooms: [RoomID, RoomState][]): RoomMap {
   return new Map(rooms);

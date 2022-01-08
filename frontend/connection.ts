@@ -1,10 +1,7 @@
 import { nanoid } from "nanoid";
 import { PingMessage } from "protocol/ping";
 import { Replicache, Poke, PullerResult } from "replicache";
-import {
-  NullableVersion,
-  nullableVersionSchema,
-} from "../backend/types/version";
+import { NullableVersion, nullableVersionSchema } from "../rs/types/version";
 import { downstreamSchema } from "../protocol/down";
 import { PokeBody } from "../protocol/poke";
 import { PushBody, PushMessage } from "../protocol/push";
@@ -238,7 +235,7 @@ function createSocket(
   roomID: string
 ) {
   const url = new URL(location.href);
-  url.pathname = "/";
+  url.pathname = "/rs";
   url.protocol = url.protocol.replace("http", "ws");
   url.searchParams.set("clientID", clientID);
   url.searchParams.set("roomID", roomID);

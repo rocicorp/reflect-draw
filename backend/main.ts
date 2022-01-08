@@ -3,9 +3,9 @@ import { createServer, IncomingMessage } from "http";
 import next from "next";
 import { parse } from "url";
 import { WebSocket } from "ws";
-import { processPending } from "./process/process-pending";
-import { Server } from "./server/server";
-import { Socket } from "./types/client-state";
+import { processPending } from "../rs/process/process-pending";
+import { Server } from "../rs/server/server";
+import { Socket } from "../rs/types/client-state";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -34,25 +34,15 @@ app.prepare().then(() => {
   );
   const webSocketServer = new WebSocket.Server({ noServer: true });
 
-  const replicacheServer = new Server(
-    new Map(),
-    processPending,
-    performance.now,
-    setTimeout
-  );
+  const rs = new Server(new Map(), processPending, performance.now, setTimeout);
 
   httpServer.on("upgrade", (req, socket, head) => {
     const { pathname } = parse(req.url, true);
-    if (pathname !== "/_next/webpack-hmr") {
+    if (pathname === "/rs") {
       webSocketServer.handleUpgrade(req, socket, head, (ws) => {
-        // TODO: Not sure if this indirection through the connection event is necessary?
-        webSocketServer.emit("connection", ws, req);
+        rs.handleConnection(ws, req.url!);
       });
     }
-  });
-
-  webSocketServer.on("connection", (ws: Socket, req: IncomingMessage) => {
-    replicacheServer.handleConnection(ws, req.url!);
   });
 
   httpServer.listen(port, () => {

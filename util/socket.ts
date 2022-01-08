@@ -1,5 +1,5 @@
 import { Downstream } from "protocol/down";
-import { Socket } from "../backend/types/client-state";
+import { Socket } from "../rs/types/client-state";
 
 export function sendError(ws: Socket, body: string) {
   const message: Downstream = ["error", body];

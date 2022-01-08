@@ -1,4 +1,3 @@
-import { parse } from "url";
 import { mutators } from "../../frontend/mutators";
 import { MutatorMap } from "../process/process-mutation";
 import { FRAME_LENGTH_MS } from "../process/process-room";
@@ -58,12 +57,6 @@ export class Server {
       "req",
       Math.random().toString(36).substr(2)
     );
-
-    const parsed = parse(url);
-    if (parsed.pathname !== "/") {
-      lc.debug?.("connection request for non-replidraw url - ignoring", url);
-      return;
-    }
 
     lc.debug?.("connection request", url, "waiting for lock");
     await this._lock.withLock(async () => {

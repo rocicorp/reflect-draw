@@ -1,4 +1,4 @@
-import { ClientID, Socket } from "backend/types/client-state";
+import { ClientID, Socket } from "rs/types/client-state";
 import { PongMessage } from "protocol/pong";
 import { LogContext } from "util/logger";
 

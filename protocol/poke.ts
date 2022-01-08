@@ -1,4 +1,4 @@
-import { nullableVersionSchema, versionSchema } from "../backend/types/version";
+import { nullableVersionSchema, versionSchema } from "../rs/types/version";
 import { z } from "zod";
 import { jsonSchema } from "./json";
 
