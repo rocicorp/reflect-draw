@@ -7,8 +7,8 @@ import { PokeBody } from "../rs/protocol/poke";
 import { PushBody, PushMessage } from "../rs/protocol/push";
 import { GapTracker } from "../util/gap-tracker";
 import { LogContext } from "../util/logger";
-import { M } from "./mutators";
-import { resolver } from "./resolver";
+import { M } from "../datamodel/mutators";
+import { resolver } from "../util/resolver";
 import { sleep } from "../util/sleep";
 
 const pushTracker = new GapTracker("push");

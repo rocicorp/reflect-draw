@@ -1,4 +1,4 @@
-import { mutators } from "../../frontend/mutators";
+import { mutators } from "../../datamodel/mutators";
 import { MutatorMap } from "../process/process-mutation";
 import { FRAME_LENGTH_MS } from "../process/process-room";
 import { ClientID, Socket } from "../types/client-state";

@@ -1,5 +1,5 @@
 import { ReadTransaction, WriteTransaction } from "replicache";
-import { randInt } from "./rand";
+import { randInt } from "../util/rand";
 
 const colors = [
   "#f94144",

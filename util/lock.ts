@@ -1,4 +1,4 @@
-import { resolver } from "../frontend/resolver";
+import { resolver } from "./resolver";
 
 // This is lifted from Replicache. Perhaps should be refactored into shared repo?
 // Same with resolver.ts.

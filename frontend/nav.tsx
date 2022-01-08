@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./nav.module.css";
-import { randomShape } from "./shape";
+import { randomShape } from "../datamodel/shape";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useUserInfo } from "./subscriptions";
+import { useUserInfo } from "../datamodel/subscriptions";
 import { Replicache } from "replicache";
-import { M } from "./mutators";
+import { M } from "../datamodel/mutators";
 
 export function Nav({ rep }: { rep: Replicache<M> }) {
   const [aboutVisible, showAbout] = useState(false);

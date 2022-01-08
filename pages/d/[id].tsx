@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Replicache } from "replicache";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
-import { M, mutators } from "../../frontend/mutators";
-import { randUserInfo } from "../../frontend/client-state";
-import { randomShape } from "../../frontend/shape";
+import { M, mutators } from "../../datamodel/mutators";
+import { randUserInfo } from "../../datamodel/client-state";
+import { randomShape } from "../../datamodel/shape";
 import { Connection } from "frontend/connection";
 
 export default function Home() {

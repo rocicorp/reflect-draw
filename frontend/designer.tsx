@@ -11,9 +11,9 @@ import {
   useOverShapeID,
   useSelectedShapeID,
   useCollaboratorIDs,
-} from "./subscriptions";
+} from "../datamodel/subscriptions";
 import { Replicache } from "replicache";
-import { M } from "./mutators";
+import { M } from "../datamodel/mutators";
 
 export function Designer({ rep }: { rep: Replicache<M> }) {
   const ids = useShapeIDs(rep);

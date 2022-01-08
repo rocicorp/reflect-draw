@@ -1,6 +1,6 @@
 import { ReadTransaction, WriteTransaction } from "replicache";
 import { nanoid } from "nanoid";
-import { randInt } from "./rand";
+import { randInt } from "../util/rand";
 import { z } from "zod";
 
 export const shapeSchema = z.object({

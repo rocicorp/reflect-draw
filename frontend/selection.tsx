@@ -1,8 +1,8 @@
 import { Rect } from "./rect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Replicache } from "replicache";
-import { M } from "./mutators";
-import { useShapeByID } from "./subscriptions";
+import { M } from "../datamodel/mutators";
+import { useShapeByID } from "../datamodel/subscriptions";
 
 export function Selection({
   rep,
