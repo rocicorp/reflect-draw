@@ -21,10 +21,10 @@ import {
   mutation,
   room,
   roomMap,
-} from "../../util/test-utils";
+} from "../util/test-utils";
 import { processPending } from "./process-pending";
 import { FRAME_LENGTH_MS } from "./process-room";
-import { LogContext } from "../../util/logger";
+import { LogContext } from "../util/logger";
 
 test("processPending", async () => {
   type Case = {

@@ -3,9 +3,9 @@ import { test } from "mocha";
 import { PushBody } from "../protocol/push";
 import { ClientID, Socket } from "../types/client-state";
 import { RoomID, RoomMap } from "../types/room-state";
-import { Mocket, mutation } from "../../util/test-utils";
+import { Mocket, mutation } from "../util/test-utils";
 import { handleMessage } from "./message";
-import { LogContext } from "util/logger";
+import { LogContext } from "../util/logger";
 
 test("handleMessage", async () => {
   type Case = {

@@ -11,9 +11,9 @@ import {
 } from "../types/client-record";
 import { getUserValue } from "../types/user-value";
 import { getVersion } from "../types/version";
-import { clientMutation, clientRecord } from "../../util/test-utils";
+import { clientMutation, clientRecord } from "../util/test-utils";
 import { MutatorMap, processMutation } from "./process-mutation";
-import { LogContext } from "../../util/logger";
+import { LogContext } from "../util/logger";
 
 test("processMutation", async () => {
   type Case = {

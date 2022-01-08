@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { test } from "mocha";
 import { RoomMap } from "../types/room-state";
-import { client, Mocket, room, roomMap } from "../../util/test-utils";
+import { client, Mocket, room, roomMap } from "../util/test-utils";
 import { handleClose } from "./close";
-import { LogContext } from "../../util/logger";
+import { LogContext } from "../util/logger";
 
 test("handleClose", async () => {
   type Case = {

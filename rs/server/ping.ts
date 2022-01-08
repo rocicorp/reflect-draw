@@ -1,6 +1,6 @@
 import { Socket } from "../types/client-state";
 import { PongMessage } from "../protocol/pong";
-import { LogContext } from "util/logger";
+import { LogContext } from "../util/logger";
 
 /**
  * handles the 'ping' upstream message by sending a pong!

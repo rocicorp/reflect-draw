@@ -1,5 +1,5 @@
 import { Storage } from "../storage/storage";
-import { must } from "../../util/must";
+import { must } from "../util/must";
 import { z } from "zod";
 
 export const versionSchema = z.number();

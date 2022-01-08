@@ -1,4 +1,4 @@
-import { JSONType } from "../rs/protocol/json";
+import { JSONType } from "../protocol/json";
 import { hasOwn } from "./has-own";
 
 export function deepClone(value: JSONType): JSONType {

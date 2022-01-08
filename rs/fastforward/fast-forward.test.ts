@@ -9,7 +9,7 @@ import { ClientID } from "../types/client-state";
 import { RoomID } from "../types/room-state";
 import { putUserValue, UserValue } from "../types/user-value";
 import { Version } from "../types/version";
-import { must } from "../../util/must";
+import { must } from "../util/must";
 import { expect } from "chai";
 import { setup, test } from "mocha";
 import { createDatabase } from "../db/data";

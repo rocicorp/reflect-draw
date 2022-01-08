@@ -5,7 +5,7 @@
 
 import { ClientMutation } from "../types/client-mutation";
 import { ClientMap } from "../types/client-state";
-import { PeekIterator } from "../../util/peek-iterator";
+import { PeekIterator } from "../util/peek-iterator";
 import { assert } from "console";
 
 // - we merge sort those lists, but the merge function is the server timestamp

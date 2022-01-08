@@ -6,11 +6,11 @@ import { ClientPokeBody } from "../types/client-poke-body";
 import { getClientRecord, putClientRecord } from "../types/client-record";
 import { ClientID } from "../types/client-state";
 import { getVersion } from "../types/version";
-import { LogContext } from "../../util/logger";
-import { must } from "../../util/must";
-import { PeekIterator } from "../../util/peek-iterator";
+import { LogContext } from "../util/logger";
+import { must } from "../util/must";
+import { PeekIterator } from "../util/peek-iterator";
 import { MutatorMap, processMutation } from "./process-mutation";
-import { GapTracker } from "../../util/gap-tracker";
+import { GapTracker } from "../util/gap-tracker";
 
 const tracker = new GapTracker("processFrame");
 

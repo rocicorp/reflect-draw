@@ -6,7 +6,7 @@ import { NullableVersion, Version } from "../types/version";
 import { ClientPokeBody } from "../types/client-poke-body";
 import { getPatch } from "./get-patch";
 import { Patch } from "../protocol/poke";
-import { must } from "../../util/must";
+import { must } from "../util/must";
 
 export type GetClientRecord = (clientID: ClientID) => Promise<ClientRecord>;
 
