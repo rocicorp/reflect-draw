@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid";
+import { PingMessage } from "protocol/ping";
 import { Replicache, Poke, PullerResult } from "replicache";
 import {
   NullableVersion,
@@ -11,6 +12,7 @@ import { GapTracker } from "../util/gap-tracker";
 import { LogContext } from "../util/logger";
 import { M } from "./mutators";
 import { resolver } from "./resolver";
+import { sleep } from "../util/sleep";
 
 const pushTracker = new GapTracker("push");
 const updateTracker = new GapTracker("update");
@@ -26,6 +28,7 @@ export class Connection {
   private _roomID: string;
   private _l: LogContext;
   private _state: ConnectionState;
+  private _onPong: () => void = () => {};
 
   constructor(rep: Replicache<M>, roomID: string) {
     this._rep = rep;
@@ -34,16 +37,15 @@ export class Connection {
     this._l = new LogContext("debug").addContext("roomID", roomID);
     this._lastMutationIDSent = -1;
     this._state = "DISCONNECTED";
-
-    this._connect();
+    this._watchdog();
   }
 
-  private async _connect() {
+  private async _connect(l: LogContext) {
     if (this._state === "CONNECTING") {
-      this._l.debug?.("Skipping duplicate connect request");
+      l.debug?.("Skipping duplicate connect request");
       return;
     }
-    this._l.info?.("Connecting...");
+    l.info?.("Connecting...");
 
     this._state = "CONNECTING";
 
@@ -51,7 +53,9 @@ export class Connection {
     const ws = createSocket(baseCookie, await this._rep.clientID, this._roomID);
 
     ws.addEventListener("message", (e) => {
-      const l = this._l.addContext("req", nanoid());
+      l.addContext("req", nanoid());
+      l.debug?.("received message", e.data);
+
       const data = JSON.parse(e.data);
       const downMessage = downstreamSchema.parse(data);
 
@@ -71,6 +75,11 @@ export class Connection {
         throw new Error(downMessage[1]);
       }
 
+      if (downMessage[0] == "pong") {
+        this._onPong();
+        return;
+      }
+
       if (downMessage[0] !== "poke") {
         throw new Error(`Unexpected message: ${downMessage}`);
       }
@@ -80,16 +89,12 @@ export class Connection {
     });
 
     ws.addEventListener("close", (e) => {
-      this._l.info?.("socket closed", e);
+      l.info?.("got socket close event", e);
       this._disconnect();
     });
   }
 
   private _disconnect() {
-    if (this._socket) {
-      this._socket.close();
-    }
-
     this._state = "DISCONNECTED";
     this._socket = undefined;
     this._serverBehindBy = undefined;
@@ -129,7 +134,7 @@ export class Connection {
       } catch (e) {
         if (String(e).indexOf("unexpected base cookie for poke") > -1) {
           this._l.info?.("out of order poke, disconnecting");
-          this._disconnect();
+          this._socket?.close();
           return;
         }
         throw e;
@@ -139,7 +144,7 @@ export class Connection {
 
   private async _pusher(req: Request) {
     if (!this._socket) {
-      this._connect();
+      this._connect(this._l);
       return {
         errorMessage: "",
         httpStatusCode: 200,
@@ -168,6 +173,39 @@ export class Connection {
       errorMessage: "",
       httpStatusCode: 200,
     };
+  }
+
+  private async _watchdog() {
+    while (true) {
+      const l = this._l.addContext("req", nanoid());
+      l.debug?.("watchdog fired");
+      if (this._state === "CONNECTED") {
+        await this._ping(l);
+      } else {
+        this._connect(l);
+      }
+      await sleep(5000);
+    }
+  }
+
+  private async _ping(l: LogContext) {
+    l.debug?.("pinging");
+    const { promise, resolve } = resolver();
+    this._onPong = resolve;
+    const pingMessage: PingMessage = ["ping", {}];
+    const t0 = performance.now();
+    this._socket!.send(JSON.stringify(pingMessage));
+    const connected = await Promise.race([
+      promise.then(() => true),
+      sleep(2000).then(() => false),
+    ]);
+    const delta = performance.now() - t0;
+    if (connected) {
+      l.debug?.("ping succeeded in", delta, "ms");
+    } else {
+      l.debug?.("ping failed in", delta, "ms - disconnecting");
+      this._socket?.close();
+    }
   }
 }
 

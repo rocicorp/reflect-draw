@@ -4,10 +4,11 @@ import { RoomID, RoomMap } from "../types/room-state";
 import { LogContext } from "../../util/logger";
 import { sendError } from "../../util/socket";
 import { handlePush, ProcessUntilDone } from "./push";
+import { handlePing } from "./ping";
 
 /**
  * Handles an upstream message coming into the server by dispatching to the
- * appropriate handler. Currently there's just one handler :).
+ * appropriate handler.
  * @param handlePush handles a push message
  * @param roomMap currently running rooms
  * @param roomID destination room
@@ -25,29 +26,33 @@ export function handleMessage(
   ws: Socket,
   processUntilDone: ProcessUntilDone
 ) {
-  const { result: message, error } = getMessage(data);
-  if (error) {
-    lc.info?.("invalid message", error);
-    sendError(ws, error);
+  const msg = getMessage(data);
+  if (msg.error) {
+    lc.info?.("invalid message", msg.error);
+    sendError(ws, msg.error);
     return;
   }
 
-  const [type, body] = message!;
-  switch (type) {
+  const message = msg.result!;
+
+  switch (message[0]) {
+    case "ping":
+      handlePing(lc, ws);
+      break;
     case "push":
       handlePush(
         lc,
         roomMap,
         roomID,
         clientID,
-        body,
+        message[1],
         ws,
         () => performance.now(),
         processUntilDone
       );
       break;
     default:
-      throw new Error(`Unknown message type: ${type}`);
+      throw new Error(`Unknown message type: ${message[0]}`);
   }
 }
 
