@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { test } from "mocha";
 import { resolver } from "../frontend/resolver";
 import { Lock } from "./lock";
-import { sleep } from "./test-utils";
+import { sleep } from "./sleep";
 
 test("Lock", async () => {
   type Task = () => Promise<void>;

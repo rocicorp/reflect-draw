@@ -77,10 +77,6 @@ export function clientRecord(
   };
 }
 
-export function sleep(ms: number = 0) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export function userValue(value: JSONType, version = 1, deleted = false) {
   return {
     value,
