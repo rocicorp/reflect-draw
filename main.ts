@@ -1,10 +1,10 @@
 import { Command } from "commander";
-import { mutators } from "../datamodel/mutators";
+import { mutators } from "./datamodel/mutators";
 import { createServer } from "http";
 import next from "next";
 import { parse } from "url";
 import { WebSocket } from "ws";
-import { Server } from "../rs/server/server";
+import { Server } from "./rs/server/server";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });

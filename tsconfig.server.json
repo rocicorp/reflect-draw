@@ -7,5 +7,5 @@
     "isolatedModules": false,
     "noEmit": false
   },
-  "include": ["backend/**/*.ts", "misc.d.ts"]
+  "include": ["main.ts", "misc.d.ts"]
 }
