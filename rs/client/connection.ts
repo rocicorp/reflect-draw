@@ -1,13 +1,13 @@
 import { nanoid } from "nanoid";
-import { PingMessage } from "rs/protocol/ping";
+import { PingMessage } from "../protocol/ping";
 import { Replicache, Poke, PullerResult } from "replicache";
-import { NullableVersion, nullableVersionSchema } from "../rs/types/version";
-import { downstreamSchema } from "../rs/protocol/down";
-import { PokeBody } from "../rs/protocol/poke";
-import { PushBody, PushMessage } from "../rs/protocol/push";
+import { NullableVersion, nullableVersionSchema } from "../types/version";
+import { downstreamSchema } from "../protocol/down";
+import { PokeBody } from "../protocol/poke";
+import { PushBody, PushMessage } from "../protocol/push";
 import { GapTracker } from "../util/gap-tracker";
 import { LogContext } from "../util/logger";
-import { M } from "../datamodel/mutators";
+import { M } from "../../datamodel/mutators";
 import { resolver } from "../util/resolver";
 import { sleep } from "../util/sleep";
 
