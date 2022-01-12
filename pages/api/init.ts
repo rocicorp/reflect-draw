@@ -1,4 +1,4 @@
-import { createDatabase } from "../../rs/db/data";
+import { createDatabase } from "reps";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

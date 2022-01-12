@@ -12,7 +12,7 @@ import {
   useSelectedShapeID,
   useCollaboratorIDs,
 } from "../datamodel/subscriptions";
-import { Replicache } from "replicache";
+import { Replicache } from "reps/out/client";
 import { M } from "../datamodel/mutators";
 
 export function Designer({ rep }: { rep: Replicache<M> }) {

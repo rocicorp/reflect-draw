@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, TouchEventHandler } from "react";
-import { Replicache } from "replicache";
+import { Replicache } from "reps/out/client";
 import { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
 

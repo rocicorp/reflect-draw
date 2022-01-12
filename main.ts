@@ -4,7 +4,7 @@ import { createServer } from "http";
 import next from "next";
 import { parse } from "url";
 import { WebSocket } from "ws";
-import { Server } from "./rs/server/server";
+import { Server } from "reps";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -33,13 +33,13 @@ app.prepare().then(() => {
   );
   const webSocketServer = new WebSocket.Server({ noServer: true });
 
-  const rs = new Server(mutators);
+  const reps = new Server(mutators);
 
   httpServer.on("upgrade", (req, socket, head) => {
     const { pathname } = parse(req.url, true);
     if (pathname === "/rs") {
       webSocketServer.handleUpgrade(req, socket, head, (ws) => {
-        rs.handleConnection(ws, req.url!);
+        reps.handleConnection(ws, req.url!);
       });
     }
   });
