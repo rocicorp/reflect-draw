@@ -18,6 +18,8 @@
     "jsx": "preserve",
     "incremental": true,
     "outDir": "dist",
+    "isolatedModules": true,
+    "noEmit": false
   },
   "include": [
     "next-env.d.ts",

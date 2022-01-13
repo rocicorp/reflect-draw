@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon",
-    "build": "rm -rf dist && next build && tsc --project tsconfig.server.json",
+    "build": "rm -rf dist && next build && tsc --project tsconfig.json",
     "start": "cross-env NODE_ENV=production node dist/main.js",
     "format": "prettier --write './**/*.{js,jsx,json,ts,tsx,html,css,md}'",
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'backend/**/*.test.ts'"
