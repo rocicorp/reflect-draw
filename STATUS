@@ -1,11 +1,12 @@
 # TODO
 
-- still observing not quite 60fps - debug
-- debug concurrent dragging not work as expected
-- feature: click effects
-- fix unit tests
-- complete unit tests
+- We still aren’t _quite_ 60fps. On my laptop we drop about 1/4 frames on the _source_ (eep!) side. This is replicated just about perfectly to destination.
+- Concurrent dragging of objects doesn’t work as expected — expect object to travel at sum of vectors, but it seems glitchy. Either fix or else make so only current selection holder can drag object (I’m told this is what figma does).
+- Want to add click effects to really demonstrate 60fps!
+- Many unit tests aren’t working. Last-minute refactoring broke interfaces.
+- We need to pull `reps/client` down into Replicache itself
+- Move off of next.js it’s not doing anything for us
+- It would be cool to validate the push argument types automatically somehow
+- After being offline and reconnecting, something is wrong with buffer calculation so we end up feeling laggy and refresh is needed to recover
 - continuous deploy
-- factor client changes down into replicache + new replicache interface
-- new tweet + make public? :)
 - logging: make levels per fritz doc, make configurable
