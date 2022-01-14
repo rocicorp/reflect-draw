@@ -36,7 +36,7 @@ app.prepare().then(() => {
   const reps = new Server(mutators);
 
   httpServer.on("upgrade", (req, socket, head) => {
-    const { pathname } = parse(req.url, true);
+    const { pathname } = parse(req.url!, true);
     if (pathname === "/rs") {
       webSocketServer.handleUpgrade(req, socket, head, (ws) => {
         reps.handleConnection(ws, req.url!);
