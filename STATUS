@@ -2,6 +2,7 @@
 
 - We still aren’t _quite_ 60fps. On my laptop we drop about 1/4 frames on the _source_ (eep!) side. This is replicated just about perfectly to destination.
 - Concurrent dragging of objects doesn’t work as expected — expect object to travel at sum of vectors, but it seems glitchy. Either fix or else make so only current selection holder can drag object (I’m told this is what figma does).
+- Click effects to show off 60fps
 - Want to add click effects to really demonstrate 60fps!
 - Many unit tests aren’t working. Last-minute refactoring broke interfaces.
 - We need to pull `reps/client` down into Replicache itself
