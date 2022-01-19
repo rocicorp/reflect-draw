@@ -11,3 +11,4 @@
 - After being offline and reconnecting, something is wrong with buffer calculation so we end up feeling laggy and refresh is needed to recover
 - continuous deploy
 - logging: make levels per fritz doc, make configurable
+- scan not yet implemented for server side tx
