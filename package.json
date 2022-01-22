@@ -21,7 +21,9 @@
     "jest-environment-miniflare": "^2.0.0",
     "miniflare": "^2.0.0",
     "prettier": "^2.4.1",
+    "replicache": "file:replicache-8.0.0.tgz",
     "ts-jest": "^27.0.7",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "zod": "^3.11.6"
   }
 }
