@@ -6,6 +6,7 @@
   "module": "./dist/index.mjs",
   "scripts": {
     "build": "node build.js",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx src/",
     "dev": "miniflare --live-reload --debug",
     "test": "npm run build && node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "types:check": "tsc && tsc -p test/tsconfig.json"
@@ -14,6 +15,9 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "eslint": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
     "@cloudflare/workers-types": "^3.1.1",
     "@types/jest": "^27.0.2",
     "esbuild": "^0.13.13",
