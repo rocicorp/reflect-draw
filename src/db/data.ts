@@ -9,12 +9,6 @@ import { ZodSchema } from "zod";
 const options = {
   // We already the currency at a higher level in the game loop.
   allowConcurrency: true,
-  // Our current code caches at a higher level using the cache stack of
-  // abstractions. We need the write part of the cache because we need to
-  // control transactionality of writes, but we don't need the read side if
-  // DO can do it for us.
-  // TODO: Consider flipping this and remove read caching.
-  noCache: true,
   // Only for writes: We need to carefully consider transactionality and when we
   // return responses.
   allowUnconfirmed: true,

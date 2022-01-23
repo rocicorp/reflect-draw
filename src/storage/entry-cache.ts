@@ -10,6 +10,8 @@ import { Storage } from "./storage";
  *
  * This is designed to be stacked: EntryCache itself implements Storage so that
  * you can create multiple layers of caches and control when they flush.
+ *
+ * TODO: We can remove the read side of this since DO does caching itself internally!
  */
 export class EntryCache implements Storage {
   private _storage: Storage;
