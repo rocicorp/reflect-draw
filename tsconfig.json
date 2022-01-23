@@ -13,5 +13,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "bindings.d.ts", "test/storage/replicache-transaction.test.ts", "test/storage/entry-cache.text.ts", "test/storage/db-storage.test.ts", "test/util/test-utils.ts", "test/util/peek-iterator.test.ts", "test/util/lock.test.ts", "test/util/deep-clone.test.ts", "test/db/data.test.ts", "test/ff/fast-forward.test.ts", "test/ff/get-patch.test.ts"]
+  "include": ["src/**/*", "bindings.d.ts", "test/**/*"]
 }
