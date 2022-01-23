@@ -138,15 +138,12 @@ test("delEntry", async () => {
   ];
 
   for (const c of cases) {
-    storage.delete("foo");
+    await storage.delete("foo");
     if (c.exists) {
-      storage.put("foo", 42);
+      await storage.put("foo", 42);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any | undefined;
-    await delEntry(storage, "foo").catch((e) => (error = String(e)));
-
+    await delEntry(storage, "foo");
     const value = storage.get("foo");
     expect(value).toBeUndefined;
   }
