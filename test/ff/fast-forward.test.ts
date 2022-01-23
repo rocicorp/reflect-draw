@@ -6,7 +6,6 @@ import {
   putClientRecord,
 } from "../../src/types/client-record";
 import { ClientID } from "../../src/types/client-state";
-import { RoomID } from "../../src/types/room-state";
 import { putUserValue, UserValue } from "../../src/types/user-value";
 import { must } from "../../src/util/must";
 import { fastForwardRoom } from "../../src/ff/fast-forward";
@@ -19,7 +18,6 @@ test("fastForward", async () => {
     name: string;
     state: Map<string, UserValue>;
     clientRecords: Map<string, ClientRecord>;
-    roomID: RoomID;
     clients: ClientID[];
     timestamp: number;
     expectedError?: string;
@@ -31,7 +29,6 @@ test("fastForward", async () => {
       name: "no clients",
       state: new Map([["foo", { value: "bar", version: 1, deleted: false }]]),
       clientRecords: new Map([["c1", { lastMutationID: 1, baseCookie: 0 }]]),
-      roomID: "r1",
       clients: [],
       timestamp: 1,
       expectedPokes: [],
@@ -40,7 +37,6 @@ test("fastForward", async () => {
       name: "no data",
       state: new Map(),
       clientRecords: new Map([["c1", { lastMutationID: 1, baseCookie: 0 }]]),
-      roomID: "r1",
       clients: ["c1"],
       timestamp: 1,
       expectedPokes: [
@@ -60,7 +56,6 @@ test("fastForward", async () => {
       name: "up to date",
       state: new Map(),
       clientRecords: new Map([["c1", { lastMutationID: 1, baseCookie: 42 }]]),
-      roomID: "r1",
       clients: ["c1"],
       timestamp: 1,
       expectedPokes: [],
@@ -72,7 +67,6 @@ test("fastForward", async () => {
         ["hot", { value: "dog", version: 42, deleted: true }],
       ]),
       clientRecords: new Map([["c1", { lastMutationID: 3, baseCookie: 41 }]]),
-      roomID: "r1",
       clients: ["c1"],
       timestamp: 1,
       expectedPokes: [
@@ -108,7 +102,6 @@ test("fastForward", async () => {
         ["c1", { lastMutationID: 3, baseCookie: 40 }],
         ["c2", { lastMutationID: 1, baseCookie: 41 }],
       ]),
-      roomID: "r1",
       clients: ["c1", "c2"],
       timestamp: 1,
       expectedPokes: [
@@ -159,7 +152,6 @@ test("fastForward", async () => {
         ["c1", { lastMutationID: 3, baseCookie: 40 }],
         ["c2", { lastMutationID: 1, baseCookie: 41 }],
       ]),
-      roomID: "r1",
       clients: ["c1"],
       timestamp: 1,
       expectedPokes: [
