@@ -1,31 +1,30 @@
-import { DurableStorage } from "../storage/durable-storage";
+import { parse } from "url";
+import { transact } from "../db/pg";
+import { DBStorage } from "../storage/db-storage";
 import {
   ClientRecord,
   clientRecordKey,
   clientRecordSchema,
 } from "../types/client-record";
-import {
-  ClientID,
-  ClientMap,
-  ClientState,
-  Socket,
-} from "../types/client-state";
+import { ClientID, ClientState, Socket } from "../types/client-state";
+import { RoomID, RoomMap } from "../types/room-state";
 import { LogContext } from "../util/logger";
 import { ConnectedMessage } from "../protocol/connected";
 
 export type MessageHandler = (
+  roomID: RoomID,
   clientID: ClientID,
   data: string,
   ws: Socket
 ) => void;
 
-export type CloseHandler = (clientID: ClientID) => void;
+export type CloseHandler = (roomID: RoomID, clientID: ClientID) => void;
 
 /**
  * Handles the connect message from a client, registering the client state in memory and updating the persistent client-record.
  * @param ws socket connection to requesting client
  * @param url raw URL of connect request
- * @param clients currently running clients
+ * @param rooms currently running rooms
  * @param onMessage message handler for this connection
  * @param onClose callback for when connection closes
  * @returns
@@ -33,9 +32,8 @@ export type CloseHandler = (clientID: ClientID) => void;
 export async function handleConnection(
   lc: LogContext,
   ws: Socket,
-  durable: DurableObjectStorage,
-  url: URL,
-  clients: ClientMap,
+  url: string,
+  rooms: RoomMap,
   onMessage: MessageHandler,
   onClose: CloseHandler
 ) {
@@ -48,53 +46,72 @@ export async function handleConnection(
     return;
   }
 
-  lc = lc.addContext("client", result.clientID);
+  lc = lc
+    .addContext("room", result.roomID)
+    .addContext("client", result.clientID);
   lc.debug?.("parsed request", result);
 
-  const { clientID, baseCookie } = result;
-  const storage = new DurableStorage(durable);
-  const existingRecord = await storage.get(
-    clientRecordKey(clientID),
-    clientRecordSchema
-  );
-  lc.debug?.("Existing client record", existingRecord);
-  const lastMutationID = existingRecord?.lastMutationID ?? 0;
-  const record: ClientRecord = {
-    baseCookie,
-    lastMutationID,
-  };
-  await storage.put(clientRecordKey(clientID), record);
-  lc.debug?.("Put client record", record);
+  const { clientID, roomID, baseCookie } = result;
+  await transact(lc, async (executor) => {
+    const storage = new DBStorage(executor, roomID);
+    const existingRecord = await storage.get(
+      clientRecordKey(clientID),
+      clientRecordSchema
+    );
+    lc.debug?.("Existing client record", existingRecord);
+    const lastMutationID = existingRecord?.lastMutationID ?? 0;
+    const record: ClientRecord = {
+      baseCookie,
+      lastMutationID,
+    };
+    await storage.put(clientRecordKey(clientID), record);
+    lc.debug?.("Put client record", record);
+  });
+  let room = rooms.get(roomID);
+  if (!room) {
+    room = {
+      clients: new Map(),
+    };
+    rooms.set(roomID, room);
+  }
 
   // Add or update ClientState.
-  const existing = clients.get(clientID);
+  const existing = room.clients.get(clientID);
   if (existing) {
     lc.debug?.("Closing old socket");
     existing.socket.close();
   }
 
-  ws.onmessage = (event) => onMessage(clientID, event.data.toString(), ws);
-  ws.onclose = () => onClose(clientID);
+  ws.onmessage = (event) =>
+    onMessage(roomID, clientID, event.data.toString(), ws);
+  ws.onclose = () => onClose(roomID, clientID);
 
   const client: ClientState = {
     socket: ws,
     clockBehindByMs: undefined,
     pending: [],
   };
-  clients.set(clientID, client);
+  room.clients.set(clientID, client);
 
   const connectedMessage: ConnectedMessage = ["connected", {}];
   ws.send(JSON.stringify(connectedMessage));
 }
 
-export function getConnectRequest(url: URL) {
+export function getConnectRequest(urlString: string) {
+  const url = parse(urlString, true);
+
   const getParam = (name: string, required: boolean) => {
-    const value = url.searchParams.get(name);
-    if (value === "" || value === null) {
+    const value = url.query[name];
+    if (value === "") {
       if (required) {
         throw new Error(`invalid querystring - missing ${name}`);
       }
       return null;
+    }
+    if (typeof value !== "string") {
+      throw new Error(
+        `invalid querystring parameter ${name}, url: ${urlString}, got: ${value}`
+      );
     }
     return value;
   };
@@ -106,13 +123,15 @@ export function getConnectRequest(url: URL) {
     const int = parseInt(value);
     if (isNaN(int)) {
       throw new Error(
-        `invalid querystring parameter ${name}, url: ${url}, got: ${value}`
+        `invalid querystring parameter ${name}, url: ${urlString}, got: ${value}`
       );
     }
     return int;
   };
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const roomID = getParam("roomID", true)!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const clientID = getParam("clientID", true)!;
     const baseCookie = getIntegerParam("baseCookie", false);
@@ -122,6 +141,7 @@ export function getConnectRequest(url: URL) {
     return {
       result: {
         clientID,
+        roomID,
         baseCookie,
         timestamp,
       },

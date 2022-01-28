@@ -1,11 +1,11 @@
 import { Mutation } from "../protocol/push";
+import { CloseEvent, MessageEvent } from "ws";
 
 export type ClientID = string;
 
 export type ClientMap = Map<ClientID, ClientState>;
 
 export interface Socket {
-  accept(): void;
   send(data: string): void;
   close(): void;
   onclose?: (event: CloseEvent) => void;
