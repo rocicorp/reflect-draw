@@ -1,9 +1,11 @@
 import { upstreamSchema } from "../protocol/up";
-import { ClientID, ClientMap, Socket } from "../types/client-state";
+import { ClientID, Socket } from "../types/client-state";
+import { RoomID, RoomMap } from "../types/room-state";
 import { LogContext } from "../util/logger";
 import { sendError } from "../util/socket";
 import { handlePush, ProcessUntilDone } from "./push";
 import { handlePing } from "./ping";
+import { performance } from "perf_hooks";
 
 /**
  * Handles an upstream message coming into the server by dispatching to the
@@ -18,7 +20,8 @@ import { handlePing } from "./ping";
  */
 export function handleMessage(
   lc: LogContext,
-  clientMap: ClientMap,
+  roomMap: RoomMap,
+  roomID: RoomID,
   clientID: ClientID,
   data: string,
   ws: Socket,
@@ -41,11 +44,12 @@ export function handleMessage(
     case "push":
       handlePush(
         lc,
-        clientMap,
+        roomMap,
+        roomID,
         clientID,
         message[1],
         ws,
-        () => Date.now(),
+        () => performance.now(),
         processUntilDone
       );
       break;

@@ -22,7 +22,7 @@ export async function processMutation(
   storage: Storage,
   version: Version
 ): Promise<void> {
-  const t0 = Date.now();
+  const t0 = performance.now();
   try {
     lc.debug?.(
       "processing mutation",
@@ -66,6 +66,6 @@ export async function processMutation(
     await putVersion(version, cache);
     await cache.flush();
   } finally {
-    lc.debug?.(`processMutation took ${Date.now() - t0} ms`);
+    lc.debug?.(`processMutation took ${performance.now() - t0} ms`);
   }
 }

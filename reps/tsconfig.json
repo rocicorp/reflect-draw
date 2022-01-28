@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "lib": ["esnext"],
-    "types": ["@cloudflare/workers-types"],
-    "moduleResolution": "node",
+    "baseUrl": ".",
+    "target": "es2017",
+    "lib": ["dom", "esnext"],
+    "declaration": true,
     "strict": true,
-    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "incremental": true
   },
-  "include": ["src/**/*", "bindings.d.ts", "test/**/*"]
+  "include": ["next-env.d.ts", "**/*.ts"],
+  "exclude": ["dist", "node_modules", "out"]
 }
