@@ -1,7 +1,7 @@
 {
-  "name": "miniflare-typescript-esbuild-jest",
-  "version": "1.0.0",
-  "description": "Example project using Miniflare, TypeScript, esbuild and Jest",
+  "name": "reps",
+  "version": "0.1.0",
+  "description": "Replicache multiplayer server",
   "type": "module",
   "module": "./dist/index.mjs",
   "scripts": {
