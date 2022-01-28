@@ -6,7 +6,6 @@
 import { ClientMutation } from "../types/client-mutation";
 import { ClientMap } from "../types/client-state";
 import { PeekIterator } from "../util/peek-iterator";
-import { assert } from "console";
 
 // - we merge sort those lists, but the merge function is the server timestamp
 export function* generateMergedMutations(clients: ClientMap) {
@@ -47,7 +46,9 @@ export function* generateMergedMutations(clients: ClientMap) {
       break;
     }
     const { value, done } = next.peek();
-    assert(!done);
+    if (done) {
+      throw new Error("unexpected state");
+    }
     yield value as ClientMutation;
     next.next();
     insertIterator(next);
