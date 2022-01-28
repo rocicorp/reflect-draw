@@ -44,6 +44,8 @@ export function clientMutation(
 }
 
 export class Mocket implements Socket {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  accept(): void {}
   log: string[][] = [];
   send(data: string): void {
     this.log.push(["send", data]);
