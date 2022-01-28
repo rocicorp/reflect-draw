@@ -1,13 +1,11 @@
 // Processes zero or more mutations against a room, returning necessary pokes
 
-import { Executor } from "../db/pg";
-import { fastForwardRoom } from "../fastforward/fast-forward";
-import { DBStorage } from "../storage/db-storage";
+import { fastForwardRoom } from "../ff/fast-forward";
+import { DurableStorage } from "../storage/durable-storage";
 import { EntryCache } from "../storage/entry-cache";
 import { ClientPokeBody } from "../types/client-poke-body";
 import { getClientRecord, putClientRecord } from "../types/client-record";
 import { ClientID, ClientMap } from "../types/client-state";
-import { RoomID } from "../types/room-state";
 import { getVersion, putVersion } from "../types/version";
 import { LogContext } from "../util/logger";
 import { must } from "../util/must";
@@ -30,21 +28,19 @@ export const FRAME_LENGTH_MS = 1000 / 60;
  */
 export async function processRoom(
   lc: LogContext,
-  roomID: RoomID,
   clients: ClientMap,
   mutators: MutatorMap,
   startTime: number,
   endTime: number,
-  executor: Executor
+  durable: DurableObjectStorage
 ): Promise<ClientPokeBody[]> {
-  const storage = new DBStorage(executor, roomID);
+  const storage = new DurableStorage(durable);
   const cache = new EntryCache(storage);
 
   // TODO: can/should we pass `clients` to fastForward instead?
   const clientIDs = [...clients.keys()];
   lc.debug?.(
     "processing room",
-    roomID,
     "clientIDs",
     clientIDs,
     "startTime",
@@ -68,11 +64,10 @@ export async function processRoom(
   lc.debug?.("currentVersion", currentVersion);
 
   const pokes: ClientPokeBody[] = await fastForwardRoom(
-    roomID,
     clientIDs,
     gcr,
     currentVersion,
-    executor,
+    durable,
     startTime
   );
   lc.debug?.("pokes from fastforward", JSON.stringify(pokes));

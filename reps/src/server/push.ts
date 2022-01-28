@@ -1,6 +1,5 @@
 import { PushBody } from "../protocol/push";
-import { ClientID, Socket } from "../types/client-state";
-import { RoomID, RoomMap } from "../types/room-state";
+import { ClientID, ClientMap, Socket } from "../types/client-state";
 import { LogContext } from "../util/logger";
 import { sendError } from "../util/socket";
 
@@ -19,8 +18,7 @@ export type ProcessUntilDone = () => void;
  */
 export function handlePush(
   lc: LogContext,
-  rooms: RoomMap,
-  roomID: RoomID,
+  clients: ClientMap,
   clientID: ClientID,
   body: PushBody,
   ws: Socket,
@@ -28,14 +26,8 @@ export function handlePush(
   processUntilDone: ProcessUntilDone
 ) {
   lc.debug?.("handling push", JSON.stringify(body));
-  const room = rooms.get(roomID);
-  if (!room) {
-    lc.info?.("room not found");
-    sendError(ws, `no such room: ${roomID}`);
-    return;
-  }
 
-  const client = room.clients.get(clientID);
+  const client = clients.get(clientID);
   if (!client) {
     lc.info?.("client not found");
     sendError(ws, `no such client: ${clientID}`);
