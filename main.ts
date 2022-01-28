@@ -33,7 +33,7 @@ app.prepare().then(() => {
   );
   const webSocketServer = new WebSocket.Server({ noServer: true });
 
-  const reps = new Server(mutators, "debug");
+  const reps = new Server(mutators);
 
   httpServer.on("upgrade", (req, socket, head) => {
     const { pathname } = parse(req.url!, true);
