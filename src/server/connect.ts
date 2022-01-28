@@ -34,7 +34,7 @@ export async function handleConnection(
   lc: LogContext,
   ws: Socket,
   durable: DurableObjectStorage,
-  url: string,
+  url: URL,
   clients: ClientMap,
   onMessage: MessageHandler,
   onClose: CloseHandler
@@ -87,9 +87,7 @@ export async function handleConnection(
   ws.send(JSON.stringify(connectedMessage));
 }
 
-export function getConnectRequest(urlString: string) {
-  const url = new URL(urlString);
-
+export function getConnectRequest(url: URL) {
   const getParam = (name: string, required: boolean) => {
     const value = url.searchParams.get(name);
     if (value === "" || value === null) {
@@ -108,7 +106,7 @@ export function getConnectRequest(urlString: string) {
     const int = parseInt(value);
     if (isNaN(int)) {
       throw new Error(
-        `invalid querystring parameter ${name}, url: ${urlString}, got: ${value}`
+        `invalid querystring parameter ${name}, url: ${url}, got: ${value}`
       );
     }
     return int;

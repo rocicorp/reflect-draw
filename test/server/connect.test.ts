@@ -99,7 +99,7 @@ test("handleConnection", async () => {
       new LogContext("info"),
       mocket,
       durable,
-      c.url,
+      new URL(c.url),
       c.existingClients,
       onMessage,
       onClose

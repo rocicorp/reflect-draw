@@ -1,5 +1,5 @@
 import { processPending } from "../process/process-pending";
-import { Mutator, MutatorMap } from "../process/process-mutation";
+import { MutatorMap } from "../process/process-mutation";
 import { FRAME_LENGTH_MS } from "../process/process-room";
 import { ClientID, ClientMap, Socket } from "../types/client-state";
 import { Lock } from "../util/lock";
@@ -29,7 +29,6 @@ export type ProcessHandler = (
 ) => Promise<void>;
 
 export class Server {
-  private readonly _durable: DurableObjectStorage;
   private readonly _clients: ClientMap = new Map();
   private readonly _lock = new Lock();
   private readonly _processHandler: ProcessHandler;
@@ -39,37 +38,46 @@ export class Server {
   private readonly _logLevel: LogLevel;
   private _processing = false;
 
-  constructor(
-    durable: DurableObjectStorage,
-    mutators: Record<string, Mutator>,
-    logLevel = "info" as LogLevel,
-    clients: ClientMap = new Map(),
-    processHandler: ProcessHandler = processPending,
-    now: Now = Date.now,
-    setTimeout: SetTimeout = globalThis.setTimeout
-  ) {
-    this._durable = durable;
-    this._mutators = new Map([...Object.entries(mutators)]);
-    this._logLevel = logLevel;
-    this._clients = clients;
-    this._processHandler = processHandler;
-    this._now = now;
+  constructor(private readonly _state: DurableObjectState) {
+    // TODO: inject somehow
+    this._mutators = new Map([...Object.entries({})]) as MutatorMap;
+    this._logLevel = "debug";
+    this._clients = new Map();
+    this._processHandler = processPending;
+    this._now = Date.now;
     this._setTimeout = setTimeout;
   }
 
-  async handleConnection(ws: Socket, url: string) {
+  async fetch(request: Request) {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/connect") {
+      if (request.headers.get("Upgrade") !== "websocket") {
+        return new Response("expected websocket", { status: 400 });
+      }
+      const pair = new WebSocketPair();
+      void this.handleConnection(pair[1], url);
+      return new Response(null, { status: 101, webSocket: pair[0] });
+    }
+
+    throw new Error("unexpected path");
+  }
+
+  async handleConnection(ws: Socket, url: URL) {
     const lc = new LogContext(this._logLevel).addContext(
       "req",
       Math.random().toString(36).substr(2)
     );
 
-    lc.debug?.("connection request", url, "waiting for lock");
+    lc.debug?.("connection request", url.toString(), "waiting for lock");
+    ws.accept();
+
     await this._lock.withLock(async () => {
       lc.debug?.("received lock");
       await handleConnection(
         lc,
         ws,
-        this._durable,
+        this._state.storage,
         url,
         this._clients,
         this.handleMessage.bind(this),
@@ -123,7 +131,7 @@ export class Server {
       const simStartTime = simEndTime - PROCESS_INTERVAL_MS;
       await this._processHandler(
         lc,
-        this._durable,
+        this._state.storage,
         this._clients,
         this._mutators,
         simStartTime,

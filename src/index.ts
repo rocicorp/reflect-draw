@@ -18,10 +18,8 @@ export async function handleRequest(request: Request, env: Bindings) {
   // Forward the request to the named Durable Object...
   const { server } = env;
   const id = server.idFromName(roomID);
-  console.log("id", id);
   const stub = server.get(id);
-  console.log("stub", stub);
-  return stub.fetch(url.toString());
+  return stub.fetch(request);
 }
 
 const worker: ExportedHandler<Bindings> = { fetch: handleRequest };
