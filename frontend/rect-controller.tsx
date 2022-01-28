@@ -1,7 +1,7 @@
 import { Rect } from "./rect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { useShapeByID } from "../datamodel/subscriptions";
-import { Replicache } from "reps/out/client";
+import { Replicache } from "reps/client";
 import { M } from "../datamodel/mutators";
 
 // TODO: In the future I imagine this becoming ShapeController and

@@ -1,4 +1,4 @@
-import { ReadTransaction, WriteTransaction } from "reps/out/client";
+import { ReadTransaction, WriteTransaction } from "../../reps/src/client";
 import { nanoid } from "nanoid";
 import { randInt } from "../util/rand";
 import { z } from "zod";

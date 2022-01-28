@@ -5,7 +5,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useUserInfo } from "../datamodel/subscriptions";
-import { Replicache } from "reps/out/client";
+import { Replicache } from "reps/client";
 import { M } from "../datamodel/mutators";
 
 export function Nav({ rep }: { rep: Replicache<M> }) {

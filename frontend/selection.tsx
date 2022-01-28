@@ -1,6 +1,6 @@
 import { Rect } from "./rect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
-import { Replicache } from "reps/out/client";
+import { Replicache } from "reps/client";
 import { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
 

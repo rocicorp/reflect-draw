@@ -1,4 +1,4 @@
-import { WriteTransaction } from "reps/out/client";
+import { WriteTransaction } from "../../reps/src/client";
 import {
   initClientState,
   setCursor,
