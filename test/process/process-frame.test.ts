@@ -14,8 +14,8 @@ import { clientMutation, clientRecord, userValue } from "../util/test-utils";
 import { processFrame } from "../../src/process/process-frame";
 import { LogContext } from "../../src/util/logger";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("processFrame", async () => {
   const records = new Map([

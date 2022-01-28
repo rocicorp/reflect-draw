@@ -15,8 +15,8 @@ import {
 } from "../../src/process/process-mutation";
 import { LogContext } from "../../src/util/logger";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("processMutation", async () => {
   type Case = {

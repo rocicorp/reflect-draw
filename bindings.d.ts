@@ -1,3 +1,3 @@
 interface Bindings {
-  COUNTER: DurableObjectNamespace;
+  server: DurableObjectNamespace;
 }

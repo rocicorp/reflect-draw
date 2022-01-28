@@ -9,8 +9,8 @@ import { client, clientRecord, Mocket } from "../util/test-utils";
 import { handleConnection } from "../../src/server/connect";
 import { LogContext } from "../../src/util/logger";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 function freshClient(id: string, socket: Socket = new Mocket()) {
   const [clientID, c] = client(id, socket);

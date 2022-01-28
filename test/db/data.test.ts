@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { delEntry, getEntry, putEntry } from "../../src/db/data";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("getEntry", async () => {
   type Case = {

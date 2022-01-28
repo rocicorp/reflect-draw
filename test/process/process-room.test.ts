@@ -13,8 +13,8 @@ import { client, clientRecord, mutation } from "../util/test-utils";
 import { FRAME_LENGTH_MS, processRoom } from "../../src/process/process-room";
 import { LogContext } from "../../src/util/logger";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("processRoom", async () => {
   type Case = {

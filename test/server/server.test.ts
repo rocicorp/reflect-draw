@@ -1,3 +1,7 @@
+test("foo", () => {
+  console.log("hi");
+});
+
 /*
 import { ClientID, ClientMap, Socket } from "../../src/types/client-state";
 import { Mocket } from "../util/test-utils";

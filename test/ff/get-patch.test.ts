@@ -4,8 +4,8 @@ import { Version } from "../../src/types/version";
 import { ReplicacheTransaction } from "../../src/storage/replicache-transaction";
 import { DurableStorage } from "../../src/storage/durable-storage";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("getPatch", async () => {
   type Case = {

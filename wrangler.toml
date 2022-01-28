@@ -1,4 +1,4 @@
-name = "miniflare-typescript-esbuild-jest"
+name = "reps"
 type = "javascript"
 
 account_id = ""
@@ -11,12 +11,12 @@ compatibility_flags = []
 
 [durable_objects]
 bindings = [
-  { name = "COUNTER", class_name = "Counter" }
+  { name = "server", class_name = "Server" }
 ]
 
 [[migrations]]
 tag = "v1"
-new_classes = ["Counter"]
+new_classes = ["Server"]
 
 [build]
 command = "npm run build"

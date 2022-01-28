@@ -7,8 +7,8 @@ import {
 } from "../../src/types/user-value";
 import { DurableStorage } from "@/storage/durable-storage";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("ReplicacheTransaction", async () => {
   const storage = new DurableStorage(

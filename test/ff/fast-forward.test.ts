@@ -10,8 +10,8 @@ import { putUserValue, UserValue } from "../../src/types/user-value";
 import { must } from "../../src/util/must";
 import { fastForwardRoom } from "../../src/ff/fast-forward";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("fastForward", async () => {
   type Case = {

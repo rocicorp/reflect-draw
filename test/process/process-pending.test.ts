@@ -13,8 +13,8 @@ import { client, clientRecord, Mocket, mutation } from "../util/test-utils";
 import { processPending } from "../../src/process/process-pending";
 import { LogContext } from "../../src/util/logger";
 
-const { COUNTER } = getMiniflareBindings();
-const id = COUNTER.newUniqueId();
+const { server } = getMiniflareBindings();
+const id = server.newUniqueId();
 
 test("processPending", async () => {
   type Case = {
