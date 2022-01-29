@@ -45,8 +45,8 @@ export class Server {
     this._logLevel = "debug";
     this._clients = new Map();
     this._processHandler = processPending;
-    this._now = Date.now;
-    this._setTimeout = setTimeout;
+    this._now = Date.now.bind(Date);
+    this._setTimeout = setTimeout.bind(globalThis);
   }
 
   async fetch(request: Request) {
