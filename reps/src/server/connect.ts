@@ -73,8 +73,10 @@ export async function handleConnection(
     existing.socket.close();
   }
 
-  ws.onmessage = (event) => onMessage(clientID, event.data.toString(), ws);
-  ws.onclose = () => onClose(clientID);
+  ws.addEventListener("message", (event) =>
+    onMessage(clientID, event.data.toString(), ws)
+  );
+  ws.addEventListener("close", () => onClose(clientID));
 
   const client: ClientState = {
     socket: ws,
