@@ -1,7 +1,7 @@
 import styles from "./collaborator.module.css";
 import { useEffect, useState } from "react";
 import { Rect } from "./rect";
-import { Replicache } from "../../reps/src/client";
+import { Replicache } from "replicache";
 import type { M } from "../datamodel/mutators";
 import { useClientInfo } from "../datamodel/subscriptions";
 

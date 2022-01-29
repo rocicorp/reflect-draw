@@ -1,4 +1,4 @@
-import { ReadTransaction, WriteTransaction } from "../../reps/src/client";
+import { ReadTransaction, WriteTransaction } from "replicache";
 import { randInt } from "../util/rand";
 
 const colors = [

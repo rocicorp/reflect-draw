@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Client, Replicache } from "reps/client";
+import { Replicache } from "replicache";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";
@@ -30,7 +30,7 @@ export default function Home() {
         pullInterval: null,
       });
 
-      new Client(r, roomID);
+      //new Client(r, roomID);
 
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({

@@ -24,6 +24,7 @@
     "react-draggable": "^4.4.3",
     "react-hotkeys": "^1.1.4",
     "replicache": "^9.0.0-beta.0",
+    "replicache-react": "^2.5.0",
     "tdigest": "^0.1.1",
     "typescript": "^4.1.5",
     "zod": "^3.11.6"

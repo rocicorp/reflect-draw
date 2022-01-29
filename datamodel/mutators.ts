@@ -1,4 +1,4 @@
-import { WriteTransaction } from "../../reps/src/client";
+import { WriteTransaction } from "replicache";
 import {
   initClientState,
   setCursor,
