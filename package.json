@@ -30,6 +30,6 @@
     "zod": "^3.11.6"
   },
   "dependencies": {
-    "replicache": "file:replicache-9.0.0-beta.0.tgz"
+    "replicache": "^9.0.0-beta.0"
   }
 }
