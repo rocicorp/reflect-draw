@@ -5,6 +5,7 @@ import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { randomShape } from "../../datamodel/shape";
+import { Client } from "../../reps-client/client";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -30,7 +31,7 @@ export default function Home() {
         pullInterval: null,
       });
 
-      //new Client(r, roomID);
+      new Client(r, roomID);
 
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({
