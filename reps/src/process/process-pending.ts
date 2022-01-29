@@ -67,10 +67,14 @@ function clearPendingMutations(
 ) {
   lc.debug?.("clearing pending mutations");
   for (const pokeBody of pokes) {
+    lc.debug?.("clearing for poke", pokeBody.poke);
     const client = must(clients.get(pokeBody.clientID));
+    lc.debug?.("client current pending", client.pending);
     const idx = client.pending.findIndex(
       (mutation) => mutation.id > pokeBody.poke.lastMutationID
     );
+    lc.debug?.("idx", idx);
     client.pending.splice(0, idx > -1 ? idx : client.pending.length);
+    lc.debug?.("client after pending", client.pending);
   }
 }

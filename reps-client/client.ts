@@ -209,12 +209,15 @@ export class Client<M extends MutatorDefs> {
     }
   }
 
+  firstPing = performance.now();
+
   private async _ping(l: LogContext) {
     l.debug?.("pinging");
     const { promise, resolve } = resolver();
     this._onPong = resolve;
     const pingMessage: PingMessage = ["ping", {}];
     const t0 = performance.now();
+    l.info?.("pinging at", t0, "diff from first", (t0 - this.firstPing) / 1000);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this._socket!.send(JSON.stringify(pingMessage));
     const connected = await Promise.race([

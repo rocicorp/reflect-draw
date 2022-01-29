@@ -20,19 +20,9 @@ const SERVER_BUFFER_MS = FRAME_LENGTH_MS;
 export type Now = () => number;
 export type SetTimeout = (callback: () => void, delay: number) => void;
 
-export type ProcessHandler = (
-  lc: LogContext,
-  durable: DurableObjectStorage,
-  clients: ClientMap,
-  mutators: MutatorMap,
-  startTime: number,
-  endTime: number
-) => Promise<void>;
-
 export class Server {
   private readonly _clients: ClientMap = new Map();
   private readonly _lock = new Lock();
-  private readonly _processHandler: ProcessHandler;
   private readonly _now: Now;
   private readonly _setTimeout: SetTimeout;
   private readonly _mutators: MutatorMap;
@@ -42,9 +32,8 @@ export class Server {
   constructor(private readonly _state: DurableObjectState) {
     // TODO: inject somehow
     this._mutators = new Map([...Object.entries(mutators)]) as MutatorMap;
-    this._logLevel = "debug";
+    this._logLevel = "error";
     this._clients = new Map();
-    this._processHandler = processPending;
     this._now = Date.now.bind(Date);
     this._setTimeout = setTimeout.bind(globalThis);
   }
@@ -87,10 +76,21 @@ export class Server {
     });
   }
 
+  lastMesageTime = Date.now();
+
   async handleMessage(clientID: ClientID, data: string, ws: Socket) {
     const lc = new LogContext(this._logLevel)
       .addContext("req", Math.random().toString(36).substr(2))
       .addContext("client", clientID);
+    const now = Date.now();
+    const diff = now - this.lastMesageTime;
+    //this.lastMesageTime = now;
+    lc.info?.(
+      "message received at",
+      this.lastMesageTime,
+      "diff since last",
+      diff / 1000
+    );
     lc.debug?.("handling message", data, "waiting for lock");
 
     await this._lock.withLock(async () => {
@@ -116,6 +116,8 @@ export class Server {
     this.processNext(lc);
   }
 
+  prevTurn = Date.now();
+
   async processNext(lc: LogContext) {
     lc.debug?.("processNext - waiting for lock");
     await this._lock.withLock(async () => {
@@ -127,21 +129,23 @@ export class Server {
         return;
       }
 
-      const taskStartTime = this._now();
-      const simEndTime = taskStartTime - SERVER_BUFFER_MS;
-      const simStartTime = simEndTime - PROCESS_INTERVAL_MS;
-      await this._processHandler(
+      //const taskStartTime = this._now();
+      //const simEndTime = taskStartTime; // - SERVER_BUFFER_MS;
+      //const simStartTime = simEndTime - PROCESS_INTERVAL_MS;
+      const now = Date.now();
+      await processPending(
         lc,
         this._state.storage,
         this._clients,
         this._mutators,
-        simStartTime,
-        simEndTime
+        this.prevTurn,
+        now
       );
-      const elapsed = this._now() - taskStartTime;
-      const delay = Math.max(0, PROCESS_INTERVAL_MS - elapsed);
-      lc.debug?.("scheduling processNext in", delay, "ms");
-      this._setTimeout(() => this.processNext(lc), delay);
+      this.prevTurn = now;
+      //const elapsed = this._now() - taskStartTime;
+      //const delay = Math.max(0, PROCESS_INTERVAL_MS - elapsed);
+      //lc.debug?.("scheduling processNext in", delay, "ms");
+      this._setTimeout(() => this.processNext(lc), PROCESS_INTERVAL_MS);
     });
   }
 
