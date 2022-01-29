@@ -8,9 +8,6 @@
     "start": "next start",
     "format": "prettier --write './**/*.{js,jsx,json,ts,tsx,html,css,md}'"
   },
-  "engines": {
-    "node": "17.x"
-  },
   "devDependencies": {
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.11",
