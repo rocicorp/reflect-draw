@@ -8,6 +8,7 @@ import { handleClose } from "./close";
 import { handleConnection } from "./connect";
 import { handleMessage } from "./message";
 import { LogLevel } from "replicache";
+import { mutators } from "../../../datamodel/mutators";
 
 // We aim to process frames 30 times per second.
 const PROCESS_INTERVAL_MS = 1000 / 30;
@@ -40,7 +41,7 @@ export class Server {
 
   constructor(private readonly _state: DurableObjectState) {
     // TODO: inject somehow
-    this._mutators = new Map([...Object.entries({})]) as MutatorMap;
+    this._mutators = new Map([...Object.entries(mutators)]) as MutatorMap;
     this._logLevel = "debug";
     this._clients = new Map();
     this._processHandler = processPending;
