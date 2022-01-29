@@ -31,7 +31,7 @@ export default function Home() {
         pullInterval: null,
       });
 
-      new Client(r, roomID);
+      new Client(r, roomID, "ws://127.0.0.1:8787/connect");
 
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({
