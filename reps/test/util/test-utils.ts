@@ -43,7 +43,7 @@ export function clientMutation(
   };
 }
 
-export class Mocket implements Socket {
+export class Mocket extends EventTarget implements Socket {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   accept(): void {}
   log: string[][] = [];
