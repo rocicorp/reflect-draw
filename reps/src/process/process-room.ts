@@ -21,8 +21,6 @@ export const FRAME_LENGTH_MS = 1000 / 60;
  * @param roomID room to process mutations for
  * @param clients active clients in the room
  * @param mutators all known mutators
- * @param startTime simulation time to start at
- * @param endTime simulation time to end at
  * @param executor database executor
  * @returns
  */
@@ -30,8 +28,6 @@ export async function processRoom(
   lc: LogContext,
   clients: ClientMap,
   mutators: MutatorMap,
-  startTime: number,
-  endTime: number,
   durable: DurableObjectStorage
 ): Promise<ClientPokeBody[]> {
   const storage = new DurableStorage(durable);
@@ -39,15 +35,7 @@ export async function processRoom(
 
   // TODO: can/should we pass `clients` to fastForward instead?
   const clientIDs = [...clients.keys()];
-  lc.debug?.(
-    "processing room",
-    "clientIDs",
-    clientIDs,
-    "startTime",
-    startTime,
-    "endTime",
-    endTime
-  );
+  lc.debug?.("processing room", "clientIDs", clientIDs);
 
   // Before running any mutations, fast forward connected clients to
   // current state.
@@ -68,7 +56,7 @@ export async function processRoom(
     gcr,
     currentVersion,
     durable,
-    startTime
+    Date.now()
   );
   lc.debug?.("pokes from fastforward", JSON.stringify(pokes));
 
@@ -79,23 +67,9 @@ export async function processRoom(
   }
 
   const mergedMutations = new PeekIterator(generateMergedMutations(clients));
-  for (
-    let frameStart = startTime;
-    frameStart < endTime;
-    frameStart += FRAME_LENGTH_MS
-  ) {
-    pokes.push(
-      ...(await processFrame(
-        lc,
-        mergedMutations,
-        mutators,
-        clientIDs,
-        cache,
-        frameStart,
-        Math.min(frameStart + FRAME_LENGTH_MS, endTime)
-      ))
-    );
-  }
+  pokes.push(
+    ...(await processFrame(lc, mergedMutations, mutators, clientIDs, cache))
+  );
 
   await cache.flush();
   return pokes;

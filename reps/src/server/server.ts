@@ -32,19 +32,17 @@ export type ProcessHandler = (
 export class Server {
   private readonly _clients: ClientMap = new Map();
   private readonly _lock = new Lock();
-  private readonly _processHandler: ProcessHandler;
   private readonly _now: Now;
   private readonly _setTimeout: SetTimeout;
   private readonly _mutators: MutatorMap;
   private readonly _logLevel: LogLevel;
-  private _processing = false;
+  private _turnTimerID: number | null = null;
 
   constructor(private readonly _state: DurableObjectState) {
     // TODO: inject somehow
     this._mutators = new Map([...Object.entries(mutators)]) as MutatorMap;
-    this._logLevel = "debug";
+    this._logLevel = "error";
     this._clients = new Map();
-    this._processHandler = processPending;
     this._now = Date.now.bind(Date);
     this._setTimeout = setTimeout.bind(globalThis);
   }
@@ -107,41 +105,36 @@ export class Server {
       Math.random().toString(36).substr(2)
     );
     lc.debug?.("handling processUntilDone");
-    if (this._processing) {
+    if (this._turnTimerID !== null) {
       lc.debug?.("already processing, nothing to do");
       return;
     }
-    this._processing = true;
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.processNext(lc);
+    this._turnTimerID = setInterval(() => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.processNext(lc);
+    }, 1000 / 60);
   }
 
   async processNext(lc: LogContext) {
-    lc.debug?.("processNext - waiting for lock");
+    lc.debug?.(
+      `processNext - starting turn at ${Date.now()} - waiting for lock`
+    );
     await this._lock.withLock(async () => {
-      lc.debug?.("received lock");
+      lc.debug?.(`received lock at ${Date.now()}`);
 
       if (!hasPendingMutations(this._clients)) {
         lc.debug?.("No pending mutations to process, exiting");
-        this._processing = false;
+        clearInterval(this._turnTimerID!);
+        this._turnTimerID = null;
         return;
       }
 
-      const taskStartTime = this._now();
-      const simEndTime = taskStartTime - SERVER_BUFFER_MS;
-      const simStartTime = simEndTime - PROCESS_INTERVAL_MS;
-      await this._processHandler(
+      await processPending(
         lc,
         this._state.storage,
         this._clients,
-        this._mutators,
-        simStartTime,
-        simEndTime
+        this._mutators
       );
-      const elapsed = this._now() - taskStartTime;
-      const delay = Math.max(0, PROCESS_INTERVAL_MS - elapsed);
-      lc.debug?.("scheduling processNext in", delay, "ms");
-      this._setTimeout(() => this.processNext(lc), delay);
     });
   }
 

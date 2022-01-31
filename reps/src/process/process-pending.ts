@@ -13,8 +13,6 @@ import { processRoom } from "./process-room";
  * Processes all mutations in all rooms for a time range, and send relevant pokes.
  * @param rooms All active rooms
  * @param mutators All known mutators
- * @param startTime Timespan start
- * @param endTime Timespan end
  */
 export async function processPending(
   lc: LogContext,
@@ -22,23 +20,13 @@ export async function processPending(
   // Rooms to process mutations for
   clients: ClientMap,
   // All known mutators
-  mutators: MutatorMap,
-  // Span of server time to execute
-  startTime: number,
-  endTime: number
+  mutators: MutatorMap
 ): Promise<void> {
-  lc.debug?.("process pending - startTime", startTime, "endTime", endTime);
+  lc.debug?.("process pending");
 
   const t0 = Date.now();
   try {
-    const pokes = await processRoom(
-      lc,
-      clients,
-      mutators,
-      startTime,
-      endTime,
-      durable
-    );
+    const pokes = await processRoom(lc, clients, mutators, durable);
 
     sendPokes(lc, pokes, clients);
     clearPendingMutations(lc, pokes, clients);
