@@ -31,7 +31,12 @@ export default function Home() {
         pullInterval: null,
       });
 
-      new Client(r, roomID, "wss://reps.replicache.workers.dev/connect");
+      const workerHost =
+        process.env.NEXT_PUBLIC_WORKER_HOST ??
+        "wss://reps.replicache.workers.dev";
+      const workerURL = `${workerHost}/connect`;
+      console.info(`Connecting to worker at ${workerURL}`);
+      new Client(r, roomID, workerURL);
 
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({
