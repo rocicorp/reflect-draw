@@ -24,17 +24,9 @@ export async function processFrame(
   mutators: MutatorMap,
   clients: ClientID[],
   storage: Storage,
-  startTime: number,
-  endTime: number
+  timestamp: number
 ): Promise<ClientPokeBody[]> {
-  lc.debug?.(
-    "processing frame - startTime",
-    startTime,
-    "endTime",
-    endTime,
-    "clients",
-    clients
-  );
+  lc.debug?.("processing frame - clients", clients);
 
   const cache = new EntryCache(storage);
   const prevVersion = must(await getVersion(cache));
@@ -44,11 +36,6 @@ export async function processFrame(
 
   for (; !mutations.peek().done; mutations.next()) {
     const { value: mutation } = mutations.peek();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    if (mutation!.timestamp >= endTime) {
-      lc.debug?.("reached end of frame", mutation);
-      break;
-    }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await processMutation(lc, mutation!, mutators, cache, nextVersion);
   }
@@ -75,7 +62,7 @@ export async function processFrame(
         cookie: nextVersion,
         lastMutationID: clientRecord.lastMutationID,
         patch,
-        timestamp: startTime,
+        timestamp,
       },
     };
     ret.push(poke);

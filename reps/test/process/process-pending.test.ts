@@ -89,94 +89,6 @@ test("processPending", async () => {
         client("c2", s2, 0, mutation(2, "inc", null, 120)),
       ]),
       expectedClients: new Map([client("c1", s1, 0), client("c2", s2, 0)]),
-      expectedVersion: 3,
-      expectedPokes: new Map([
-        [
-          s1,
-          [
-            {
-              baseCookie: 1,
-              cookie: 2,
-              lastMutationID: 2,
-              patch: [
-                {
-                  op: "put",
-                  key: "count",
-                  value: 1,
-                },
-              ],
-              timestamp: 100,
-            },
-            {
-              baseCookie: 2,
-              cookie: 3,
-              lastMutationID: 2,
-              patch: [
-                {
-                  op: "put",
-                  key: "count",
-                  value: 2,
-                },
-              ],
-              timestamp: 116 + 2 / 3,
-            },
-          ],
-        ],
-        [
-          s2,
-          [
-            {
-              baseCookie: 1,
-              cookie: 2,
-              lastMutationID: 1,
-              patch: [
-                {
-                  op: "put",
-                  key: "count",
-                  value: 1,
-                },
-              ],
-              timestamp: 100,
-            },
-            {
-              baseCookie: 2,
-              cookie: 3,
-              lastMutationID: 2,
-              patch: [
-                {
-                  op: "put",
-                  key: "count",
-                  value: 2,
-                },
-              ],
-              timestamp: 116 + 2 / 3,
-            },
-          ],
-        ],
-      ]),
-      expectedUserValues: new Map([
-        ["count", { value: 2, version: 3, deleted: false }],
-      ]),
-      expectedClientRecords: new Map([
-        ["c1", clientRecord(3, 2)],
-        ["c2", clientRecord(3, 2)],
-      ]),
-    },
-    {
-      name: "two clients, two mutations, one not ready",
-      version: 1,
-      clientRecords: new Map([
-        ["c1", clientRecord(1)],
-        ["c2", clientRecord(1)],
-      ]),
-      clients: new Map([
-        client("c1", s1, 0, mutation(2, "inc", null, 100)),
-        client("c2", s2, 0, mutation(2, "inc", null, 300)),
-      ]),
-      expectedClients: new Map([
-        client("c1", s1, 0),
-        client("c2", s2, 0, mutation(2, "inc", null, 300)),
-      ]),
       expectedVersion: 2,
       expectedPokes: new Map([
         [
@@ -190,7 +102,7 @@ test("processPending", async () => {
                 {
                   op: "put",
                   key: "count",
-                  value: 1,
+                  value: 2,
                 },
               ],
               timestamp: 100,
@@ -203,12 +115,12 @@ test("processPending", async () => {
             {
               baseCookie: 1,
               cookie: 2,
-              lastMutationID: 1,
+              lastMutationID: 2,
               patch: [
                 {
                   op: "put",
                   key: "count",
-                  value: 1,
+                  value: 2,
                 },
               ],
               timestamp: 100,
@@ -217,11 +129,70 @@ test("processPending", async () => {
         ],
       ]),
       expectedUserValues: new Map([
-        ["count", { value: 1, version: 2, deleted: false }],
+        ["count", { value: 2, version: 2, deleted: false }],
       ]),
       expectedClientRecords: new Map([
         ["c1", clientRecord(2, 2)],
-        ["c2", clientRecord(2, 1)],
+        ["c2", clientRecord(2, 2)],
+      ]),
+    },
+    {
+      name: "two clients, two mutations, one not ready",
+      version: 1,
+      clientRecords: new Map([
+        ["c1", clientRecord(1)],
+        ["c2", clientRecord(1)],
+      ]),
+      clients: new Map([
+        client("c1", s1, 0, mutation(2, "inc", null, 100)),
+        client("c2", s2, 0, mutation(2, "inc", null, 300)),
+      ]),
+      expectedClients: new Map([client("c1", s1, 0), client("c2", s2, 0)]),
+      expectedVersion: 2,
+      expectedPokes: new Map([
+        [
+          s1,
+          [
+            {
+              baseCookie: 1,
+              cookie: 2,
+              lastMutationID: 2,
+              patch: [
+                {
+                  op: "put",
+                  key: "count",
+                  value: 2,
+                },
+              ],
+              timestamp: 100,
+            },
+          ],
+        ],
+        [
+          s2,
+          [
+            {
+              baseCookie: 1,
+              cookie: 2,
+              lastMutationID: 2,
+              patch: [
+                {
+                  op: "put",
+                  key: "count",
+                  value: 2,
+                },
+              ],
+              timestamp: 100,
+            },
+          ],
+        ],
+      ]),
+      expectedUserValues: new Map([
+        ["count", { value: 2, version: 2, deleted: false }],
+      ]),
+      expectedClientRecords: new Map([
+        ["c1", clientRecord(2, 2)],
+        ["c2", clientRecord(2, 2)],
       ]),
     },
   ];
@@ -237,8 +208,6 @@ test("processPending", async () => {
   );
 
   const startTime = 100;
-  const endTime = 200;
-
   const durable = await getMiniflareDurableObjectStorage(id);
 
   for (const c of cases) {
@@ -257,8 +226,7 @@ test("processPending", async () => {
       durable,
       c.clients,
       mutators,
-      startTime,
-      endTime
+      startTime
     );
     if (c.expectedError) {
       try {
@@ -276,7 +244,6 @@ test("processPending", async () => {
     expect(c.expectedError).toBeUndefined;
     expect(await getVersion(storage)).toEqual(c.expectedVersion);
     for (const [mocket, clientPokes] of c.expectedPokes ?? []) {
-      console.log(mocket.log);
       expect(mocket.log).toEqual(
         clientPokes.map((poke) => ["send", JSON.stringify(["poke", poke])])
       );
