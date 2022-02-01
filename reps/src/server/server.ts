@@ -39,6 +39,7 @@ export class Server {
   constructor(private readonly _state: DurableObjectState) {
     // TODO: inject somehow
     this._mutators = new Map([...Object.entries(mutators)]) as MutatorMap;
+    // TODO: make configurable
     this._logLevel = "debug";
     this._clients = new Map();
   }
@@ -129,7 +130,8 @@ export class Server {
         lc,
         this._state.storage,
         this._clients,
-        this._mutators
+        this._mutators,
+        Date.now()
       );
     });
   }
