@@ -122,21 +122,11 @@ export class Client<M extends MutatorDefs> {
   }
 
   private _handlePoke(l: LogContext, pokeBody: PokeBody) {
+    l.debug?.("Applying poke", pokeBody);
+
     this._updateTracker.push(performance.now());
     this._timestampTracker.push(pokeBody.timestamp);
 
-    if (this._serverBehindBy === undefined) {
-      this._serverBehindBy = performance.now() - pokeBody.timestamp;
-      l.debug?.(
-        "local clock is",
-        performance.now(),
-        "serverBehindBy",
-        this._serverBehindBy
-      );
-    }
-
-    const localTimestamp = pokeBody.timestamp + this._serverBehindBy;
-    const delay = Math.max(0, localTimestamp - performance.now());
     const p: Poke = {
       baseCookie: pokeBody.baseCookie,
       pullResponse: {
@@ -145,21 +135,17 @@ export class Client<M extends MutatorDefs> {
         cookie: pokeBody.cookie,
       },
     };
-    l.debug?.("localTimestamp of poke", localTimestamp);
-    l.debug?.("playing poke", p, "with delay", delay);
 
-    window.setTimeout(async () => {
-      try {
-        await this._rep.poke(p);
-      } catch (e) {
-        if (String(e).indexOf("unexpected base cookie for poke") > -1) {
-          this._l.info?.("out of order poke, disconnecting");
-          this._socket?.close();
-          return;
-        }
-        throw e;
+    try {
+      this._rep.poke(p);
+    } catch (e) {
+      if (String(e).indexOf("unexpected base cookie for poke") > -1) {
+        this._l.info?.("out of order poke, disconnecting");
+        this._socket?.close();
+        return;
       }
-    }, delay);
+      throw e;
+    }
   }
 
   private async _pusher(req: Request) {
