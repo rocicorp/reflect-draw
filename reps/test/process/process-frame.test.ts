@@ -23,7 +23,6 @@ test("processFrame", async () => {
     [clientRecordKey("c2"), clientRecord(1, 7)],
   ]);
   const startTime = 100;
-  const endTime = 200;
   const startVersion = 1;
   const endVersion = 2;
 
@@ -182,41 +181,6 @@ test("processFrame", async () => {
       ]),
       expectedVersion: endVersion,
     },
-    {
-      name: "frame cutoff",
-      mutations: [
-        clientMutation("c1", 2, "put", { key: "foo", value: "bar" }, 50),
-        clientMutation("c1", 3, "put", { key: "foo", value: "baz" }, 150),
-        clientMutation("c1", 4, "put", { key: "foo", value: "bonk" }, 250),
-      ],
-      clients: ["c1"],
-      expectedPokes: [
-        {
-          clientID: "c1",
-          poke: {
-            baseCookie: startVersion,
-            cookie: endVersion,
-            lastMutationID: 3,
-            patch: [
-              {
-                op: "put",
-                key: "foo",
-                value: "baz",
-              },
-            ],
-            timestamp: startTime,
-          },
-        },
-      ],
-      expectedUserValues: new Map([
-        [userValueKey("foo"), userValue("baz", endVersion)],
-      ]),
-      expectedClientRecords: new Map([
-        ...records,
-        [clientRecordKey("c1"), clientRecord(endVersion, 3)],
-      ]),
-      expectedVersion: endVersion,
-    },
   ];
 
   const durable = await getMiniflareDurableObjectStorage(id);
@@ -235,8 +199,7 @@ test("processFrame", async () => {
       mutators,
       c.clients,
       storage,
-      startTime,
-      endTime
+      startTime
     );
 
     expect(result).toEqual(c.expectedPokes);

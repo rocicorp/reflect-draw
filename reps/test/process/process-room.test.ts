@@ -30,7 +30,6 @@ test("processRoom", async () => {
   };
 
   const startTime = 100;
-  const endTime = 200;
 
   const cases: Case[] = [
     {
@@ -107,112 +106,33 @@ test("processRoom", async () => {
       expectedVersion: 1,
     },
     {
-      name: "mutations after range",
+      name: "one mutation",
       clientRecords: new Map([["c1", clientRecord(1)]]),
       headVersion: 1,
-      // mutation is at time=300, but we only play from 100-200
       clients: new Map([
-        client("c1", undefined, 0, mutation(1, "inc", null, 300)),
-      ]),
-      expectedPokes: [],
-      expectedClientRecords: new Map([["c1", clientRecord(1)]]),
-      expectedUserValues: new Map(),
-      expectedVersion: 1,
-    },
-    {
-      name: "mutations in range",
-      clientRecords: new Map([
-        ["c1", clientRecord(1)],
-        ["c2", clientRecord(1)],
-      ]),
-      headVersion: 1,
-      clients: new Map([
-        client(
-          "c1",
-          undefined,
-          0,
-          mutation(2, "inc", null, 105),
-          mutation(3, "inc", null, 125)
-        ),
-        client("c2", undefined, 0, mutation(2, "inc", null, 100)),
+        client("c1", undefined, 0, mutation(2, "inc", null, 300)),
       ]),
       expectedPokes: [
         {
           clientID: "c1",
           poke: {
             baseCookie: 1,
-            // even though two mutations play we only bump version at most once per frame
-            cookie: 2,
-            // c1 played one mutation this frame
-            lastMutationID: 2,
-            patch: [
-              // two count mutations played, leaving value at 2
-              {
-                op: "put",
-                key: "count",
-                value: 2,
-              },
-            ],
-            timestamp: 100,
-          },
-        },
-        // same thing for second client
-        {
-          clientID: "c2",
-          poke: {
-            baseCookie: 1,
             cookie: 2,
             lastMutationID: 2,
             patch: [
               {
-                op: "put",
                 key: "count",
-                value: 2,
+                op: "put",
+                value: 1,
               },
             ],
             timestamp: 100,
-          },
-        },
-        {
-          clientID: "c1",
-          poke: {
-            baseCookie: 2,
-            cookie: 3,
-            lastMutationID: 3,
-            patch: [
-              {
-                op: "put",
-                key: "count",
-                value: 3,
-              },
-            ],
-            timestamp: 100 + FRAME_LENGTH_MS,
-          },
-        },
-        {
-          clientID: "c2",
-          poke: {
-            baseCookie: 2,
-            cookie: 3,
-            // only c1 played a mutation this time
-            lastMutationID: 2,
-            patch: [
-              {
-                op: "put",
-                key: "count",
-                value: 3,
-              },
-            ],
-            timestamp: 100 + FRAME_LENGTH_MS,
           },
         },
       ],
-      expectedClientRecords: new Map([
-        ["c1", clientRecord(3, 3)],
-        ["c2", clientRecord(3, 2)],
-      ]),
+      expectedClientRecords: new Map([["c1", clientRecord(2, 2)]]),
       expectedUserValues: new Map(),
-      expectedVersion: 3,
+      expectedVersion: 2,
     },
     {
       name: "mutations before range are included",
@@ -252,37 +172,6 @@ test("processRoom", async () => {
       expectedUserValues: new Map(),
       expectedVersion: 2,
     },
-    {
-      name: "mutations late in range",
-      clientRecords: new Map([["c1", clientRecord(1)]]),
-      headVersion: 1,
-      clients: new Map([
-        client("c1", undefined, 0, mutation(2, "inc", null, 150)),
-      ]),
-      expectedPokes: [
-        {
-          clientID: "c1",
-          poke: {
-            baseCookie: 1,
-            cookie: 2,
-            lastMutationID: 2,
-            patch: [
-              {
-                op: "put",
-                key: "count",
-                value: 1,
-              },
-            ],
-            // We don't get a poke until several frames go by
-            timestamp:
-              100 + FRAME_LENGTH_MS + FRAME_LENGTH_MS + FRAME_LENGTH_MS,
-          },
-        },
-      ],
-      expectedClientRecords: new Map([["c1", clientRecord(2, 2)]]),
-      expectedUserValues: new Map(),
-      expectedVersion: 2,
-    },
   ];
 
   const durable = await getMiniflareDurableObjectStorage(id);
@@ -309,9 +198,8 @@ test("processRoom", async () => {
       new LogContext("info"),
       c.clients,
       mutators,
-      startTime,
-      endTime,
-      durable
+      durable,
+      startTime
     );
     if (c.expectedError) {
       try {
