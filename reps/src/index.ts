@@ -1,7 +1,7 @@
 import { Server as BaseServer } from "./server/server";
 import { mutators, type M } from "../../datamodel/mutators";
 
-export async function handleRequest(request: Request, env: Bindings) {
+async function fetch(request: Request, env: Bindings) {
   // Match route against pattern /:name/*action
   const url = new URL(request.url);
 
@@ -25,7 +25,7 @@ export async function handleRequest(request: Request, env: Bindings) {
   return stub.fetch(request);
 }
 
-const worker: ExportedHandler<Bindings> = { fetch: handleRequest };
+const worker: ExportedHandler<Bindings> = { fetch };
 
 export class Server extends BaseServer<M> {
   constructor(state: DurableObjectState) {
@@ -33,4 +33,4 @@ export class Server extends BaseServer<M> {
   }
 }
 
-export default worker;
+export {worker as default};
