@@ -1,3 +1,6 @@
+import { Server as BaseServer } from "./server/server";
+import { mutators, type M } from "../../datamodel/mutators";
+
 export async function handleRequest(request: Request, env: Bindings) {
   // Match route against pattern /:name/*action
   const url = new URL(request.url);
@@ -24,5 +27,10 @@ export async function handleRequest(request: Request, env: Bindings) {
 
 const worker: ExportedHandler<Bindings> = { fetch: handleRequest };
 
-export { Server } from "./server/server";
+export class Server extends BaseServer<M> {
+  constructor(state: DurableObjectState) {
+    super(mutators, state);
+  }
+}
+
 export default worker;
