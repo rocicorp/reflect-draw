@@ -38,8 +38,9 @@ npm run dev
 
 ## Using reps-do in your own project
 
-1. Copy `reps-do-*.tgz` and `rep-client-*.tgz`
-2. Copy the `worker` directory to your project
+1. Copy `reps-do-*.tgz`, `rep-client-*.tgz`, `worker`, and `wrangler.toml` into your project
 3. `npm add reps-do-*.tgz reps-client-*.tgz @cloudflare/workers-types esbuild miniflare`
 4. Copy the `dev-worker` and `build-worker` scripts from `package.json` into your project
 5. Have fun 😀.
+
+Note: `reps-do-*.tgz` will soon become a standalone npm module, and `reps-client-*.tgz` will get folded into the existing `replicache` module.
