@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "es2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "skipLibCheck": true,
-    "jsx": "preserve",
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext"],
+    "types": ["@cloudflare/workers-types"],
 
     "moduleResolution": "node",
-    "isolatedModules": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
 
@@ -19,11 +17,13 @@
     "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
 
+    "declaration": true,
     "allowJs": true,
+
     "incremental": true,
-    "noEmit": true,
+    "outDir": "../dist",
     "baseUrl": "."
   },
-  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],
-  "exclude": [".next", "dist", "node_modules", "out", "next.config.js", "reps"]
+  "include": ["**/*.ts"],
+  "exclude": ["dist", "node_modules", "out"]
 }
