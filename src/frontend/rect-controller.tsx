@@ -1,8 +1,8 @@
 import type { Replicache } from "replicache";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
-import { Rect } from "./rect.js";
-import { useShapeByID } from "../datamodel/subscriptions.js";
-import type { M } from "../datamodel/mutators.js";
+import { Rect } from "./rect";
+import { useShapeByID } from "../datamodel/subscriptions";
+import type { M } from "../datamodel/mutators";
 
 // TODO: In the future I imagine this becoming ShapeController and
 // there also be a Shape that wraps Rect and also knows how to draw Circle, etc.

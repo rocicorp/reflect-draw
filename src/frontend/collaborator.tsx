@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import styles from "./collaborator.module.css";
 import type { Replicache } from "replicache";
-import { Rect } from "./rect.js";
-import type { M } from "../datamodel/mutators.js";
-import { useClientInfo } from "../datamodel/subscriptions.js";
+import { Rect } from "./rect";
+import type { M } from "../datamodel/mutators";
+import { useClientInfo } from "../datamodel/subscriptions";
 
 const hideCollaboratorDelay = 5000;
 

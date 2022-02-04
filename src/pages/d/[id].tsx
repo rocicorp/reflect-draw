@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Replicache } from "replicache";
 import { Client } from "reps-client";
-import { Designer } from "../../frontend/designer.js";
-import { Nav } from "../../frontend/nav.js";
-import { M, mutators } from "../../datamodel/mutators.js";
-import { randUserInfo } from "../../datamodel/client-state.js";
-import { randomShape } from "../../datamodel/shape.js";
+import { Designer } from "../../frontend/designer";
+import { Nav } from "../../frontend/nav";
+import { M, mutators } from "../../datamodel/mutators";
+import { randUserInfo } from "../../datamodel/client-state";
+import { randomShape } from "../../datamodel/shape";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);

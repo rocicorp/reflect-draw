@@ -4,9 +4,9 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import styles from "./nav.module.css";
-import { randomShape } from "../datamodel/shape.js";
-import { useUserInfo } from "../datamodel/subscriptions.js";
-import type { M } from "../datamodel/mutators.js";
+import { randomShape } from "../datamodel/shape";
+import { useUserInfo } from "../datamodel/subscriptions";
+import type { M } from "../datamodel/mutators";
 
 export function Nav({ rep }: { rep: Replicache<M> }) {
   const [aboutVisible, showAbout] = useState(false);

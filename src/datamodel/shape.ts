@@ -1,7 +1,7 @@
 import type { ReadTransaction, WriteTransaction } from "replicache";
 import { nanoid } from "nanoid";
 import { z } from "zod";
-import { randInt } from "../util/rand.js";
+import { randInt } from "../util/rand";
 
 export const shapeSchema = z.object({
   type: z.literal("rect"),

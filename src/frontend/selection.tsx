@@ -1,8 +1,8 @@
 import type { Replicache } from "replicache";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
-import { Rect } from "./rect.js";
-import type { M } from "../datamodel/mutators.js";
-import { useShapeByID } from "../datamodel/subscriptions.js";
+import { Rect } from "./rect";
+import type { M } from "../datamodel/mutators";
+import { useShapeByID } from "../datamodel/subscriptions";
 
 export function Selection({
   rep,

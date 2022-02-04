@@ -2,18 +2,18 @@ import type { Replicache } from "replicache";
 import React, { useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";
 import { DraggableCore } from "react-draggable";
-import { Rect } from "./rect.js";
-import { Collaborator } from "./collaborator.js";
-import { RectController } from "./rect-controller.js";
-import { touchToMouse } from "./events.js";
-import { Selection } from "./selection.js";
+import { Rect } from "./rect";
+import { Collaborator } from "./collaborator";
+import { RectController } from "./rect-controller";
+import { touchToMouse } from "./events";
+import { Selection } from "./selection";
 import {
   useShapeIDs,
   useOverShapeID,
   useSelectedShapeID,
   useCollaboratorIDs,
-} from "../datamodel/subscriptions.js";
-import type { M } from "../datamodel/mutators.js";
+} from "../datamodel/subscriptions";
+import type { M } from "../datamodel/mutators";
 
 export function Designer({ rep }: { rep: Replicache<M> }) {
   const ids = useShapeIDs(rep);

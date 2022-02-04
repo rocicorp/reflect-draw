@@ -4,7 +4,7 @@ import {
   setCursor,
   overShape,
   selectShape,
-} from "./client-state.js";
+} from "./client-state";
 import {
   putShape,
   deleteShape,
@@ -12,7 +12,7 @@ import {
   resizeShape,
   rotateShape,
   initShapes,
-} from "./shape.js";
+} from "./shape";
 
 export type M = typeof mutators;
 
