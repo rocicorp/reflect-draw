@@ -15,9 +15,9 @@ The `dev-worker` command runs the worker using [Miniflare](https://miniflare.dev
 npm install
 
 # start the backend
-npm run dev-worker &
+npm run dev-worker
 
-# start the frontend
+# (in another shell) start the frontend
 NEXT_PUBLIC_WORKER_HOST=ws://localhost:8787 npm run dev
 ```
 
@@ -44,7 +44,7 @@ It is possible to develop using the Cloudflare network without destabilizing the
 # Must have published at least once prior
 wrangler dev
 
-# run frontend
+# (In another shell) Run frontend
 npm run dev
 ```
 
