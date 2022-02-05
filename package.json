@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev-worker": "miniflare --live-reload --debug",
-    "build-worker": "esbuild --bundle --format=esm --outfile=dist/index.mjs worker/index.ts ",
+    "build-worker": "esbuild --bundle --format=esm --outfile=dist/index.mjs --tsconfig=worker/tsconfig.json worker/index.ts ",
     "build": "rm -rf dist && next build && npm run build-worker",
     "start": "next start",
     "format": "prettier --write './**/*.{js,jsx,json,ts,tsx,html,css,md}'",
