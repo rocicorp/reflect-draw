@@ -112,7 +112,7 @@ export function Nav({ rep }: { rep: Replicache<M> }) {
         <Modal.Footer>
           <Button
             variant="secondary"
-            href="https://github.com/rocicorp/replidraw"
+            href="https://github.com/rocicorp/replidraw-do"
             target="_blank"
           >
             Demo Source
