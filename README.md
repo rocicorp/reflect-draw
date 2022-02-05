@@ -5,7 +5,7 @@ A tiny Figma-like multiplayer graphics editor.
 Built with [Replicache](https://replicache.dev), [Next.js](https://nextjs.org/),
 and [Cloudflare Workers](https://workers.cloudflare.com/).
 
-Running live at [replidraw-do.vercel.com](https://replidraw-do.vercel.com/).
+Running live at [replidraw-do.vercel.app](https://replidraw-do.vercel.app/).
 
 ## Hacking Locally
 
