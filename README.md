@@ -36,6 +36,18 @@ wrangler publish
 npm run dev
 ```
 
+## Developing against Cloudflare
+
+It is possible to develop using the Cloudflare network without destabilizing the production copy of a worker. This provides a more realistic idea of latency than Miniflare.
+
+```
+# Must have published at least once prior
+wrangler dev
+
+# run frontend
+npm run dev
+```
+
 ## Using reps-do in your own project
 
 1. Copy `reps-do-*.tgz`, `rep-client-*.tgz`, `worker`, and `wrangler.toml` into your project
