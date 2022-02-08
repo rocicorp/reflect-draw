@@ -76,10 +76,10 @@ curl -X GET "https://api.cloudflare.com/client/v4/accounts" \
 # Get namespace for account
 curl -X GET "https://api.cloudflare.com/client/v4/accounts/:accountid/workers/durable_objects/namespaces" \
      -H "Authorization: Bearer :token" \
-     -H "Content-Type:application/json
+     -H "Content-Type:application/json"
 
 # Get object instances
 curl -X GET "https://api.cloudflare.com/client/v4/accounts/:accountid/workers/durable_objects/namespaces/:namespaceid/objects" \
      -H "Authorization: Bearer :token" \
-     -H "Content-Type:application/json
+     -H "Content-Type:application/json"
 ```
