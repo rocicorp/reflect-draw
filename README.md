@@ -58,3 +58,28 @@ npm run dev
 6. Have fun 😀.
 
 Note: This will get easier. `reps-do-*.tgz` will soon become a standalone npm module, and `reps-client-*.tgz` will get folded into the existing `replicache` module.
+
+## Recipes
+
+### How to list the rooms for your Reps server
+
+Cloudflare doesn't have a UI for this, but there's an API:
+
+1. Go to https://dash.cloudflare.com/profile/api-tokens and click "Create Token" then choose the "Read All Resources" template. Click through and then copy the resulting token.
+
+```bash
+# Get the account id
+curl -X GET "https://api.cloudflare.com/client/v4/accounts" \
+     -H "Authorization: Bearer :token" \
+     -H "Content-Type:application/json"
+
+# Get namespace for account
+curl -X GET "https://api.cloudflare.com/client/v4/accounts/:accountid/workers/durable_objects/namespaces" \
+     -H "Authorization: Bearer :token" \
+     -H "Content-Type:application/json
+
+# Get object instances
+curl -X GET "https://api.cloudflare.com/client/v4/accounts/:accountid/workers/durable_objects/namespaces/:namespaceid/objects" \
+     -H "Authorization: Bearer :token" \
+     -H "Content-Type:application/json
+```
