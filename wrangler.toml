@@ -1,4 +1,4 @@
-name = "reps"
+name = "replidraw-do"
 type = "javascript"
 
 account_id = ""
@@ -6,7 +6,7 @@ workers_dev = true
 # route = ""
 # zone_id = ""
 
-compatibility_date = "2021-11-15"
+compatibility_date = "2022-02-10"
 compatibility_flags = []
 
 [durable_objects]
