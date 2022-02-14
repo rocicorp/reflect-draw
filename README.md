@@ -9,7 +9,7 @@ Running live at [replidraw-do.vercel.app](https://replidraw-do.vercel.app/).
 
 ## Hacking Locally
 
-The `dev-worker` command runs the worker using [Miniflare](https://miniflare.dev/), a really nice Cloudflare emulation environment. This is super convenient and doesn't require a CF account but doesn't give you a realistic view of performance.
+The `dev-worker` command runs the worker using [Miniflare](https://miniflare.dev/), a really nice Cloudflare emulation environment. This is super convenient and doesn't require a CF account. Unfortunately, it also doesn't give you a realistic view of performance since everything is local.
 
 ```bash
 npm install
