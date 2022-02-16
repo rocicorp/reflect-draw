@@ -1,7 +1,7 @@
 name = "replidraw-do"
 type = "javascript"
 
-account_id = ""
+account_id = "84dd7a44a4da314095315fb89b24251c"
 workers_dev = true
 # route = ""
 # zone_id = ""
