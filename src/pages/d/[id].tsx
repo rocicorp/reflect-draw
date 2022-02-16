@@ -26,6 +26,7 @@ export default function Home() {
           maxDelayMs: 0,
           minDelayMs: 0,
         },
+        auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
 
         // We only use pull to get the base cookie.
         pullInterval: null,
