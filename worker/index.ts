@@ -4,7 +4,6 @@ import {
   Server as BaseServer,
   TeeLogger,
 } from "reps-do";
-import { Server as BaseServer } from "reps-do";
 import { createWorker } from "reps-do";
 import { mutators, type M } from "../src/datamodel/mutators.js";
 
