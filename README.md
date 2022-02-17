@@ -61,6 +61,10 @@ Note: This will get easier. `reps-do-*.tgz` will soon become a standalone npm mo
 
 ## Recipes
 
+### How to persist logs from the worker
+
+The `BaseServer` class accepts a `logger` argument. You can implement this yourself to send the logs wherever you want. We also provide a `DatadogLogger` in the package if you have an account there. [See worker/index.ts for an example](https://github.com/rocicorp/replidraw-do/blob/main/worker/index.ts#L17).
+
 ### How to list the rooms for your Reps server
 
 Cloudflare doesn't have a UI for this, but there's an API.
