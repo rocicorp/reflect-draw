@@ -63,7 +63,7 @@ Note: This will get easier. `reps-do-*.tgz` will soon become a standalone npm mo
 
 ### How to persist logs from the worker
 
-The `BaseServer` class accepts a `logger` argument. You can implement this yourself to send the logs wherever you want. We also provide a `DatadogLogger` in the package if you have an account there. [See worker/index.ts for an example](https://github.com/rocicorp/replidraw-do/blob/main/worker/index.ts#L17).
+The `BaseServer` class accepts a `logger` argument. You can implement this yourself to send the logs wherever you want. We also provide a `DatadogLogger` implementation of this interface in the package as a convenience, if you have an account there. [See worker/index.ts for an example](https://github.com/rocicorp/replidraw-do/blob/main/worker/index.ts#L17).
 
 ### How to list the rooms for your Reps server
 
