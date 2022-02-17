@@ -36,3 +36,5 @@ yarn-error.log*
 $ CloudFlare worker
 .mf/
 tsconfig.tsbuildinfo
+.env
+

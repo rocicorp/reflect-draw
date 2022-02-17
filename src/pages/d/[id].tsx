@@ -33,7 +33,7 @@ export default function Home() {
 
       const workerHost =
         process.env.NEXT_PUBLIC_WORKER_HOST ??
-        "wss://replidraw-do.replicache.workers.dev";
+        "wss://replidraw.replicache.workers.dev";
       const workerURL = `${workerHost}/connect`;
       console.info(`Connecting to worker at ${workerURL}`);
       new Client(r, roomID, workerURL);

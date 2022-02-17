@@ -1,7 +1,7 @@
-name = "replidraw-do"
+name = "replidraw"
 type = "javascript"
 
-account_id = "84dd7a44a4da314095315fb89b24251c"
+account_id = ""
 workers_dev = true
 # route = ""
 # zone_id = ""
@@ -28,3 +28,6 @@ main = "./index.mjs"
 
 [miniflare]
 durable_objects_persist = true
+
+#[secrets]
+#DATADOG_API_KEY
