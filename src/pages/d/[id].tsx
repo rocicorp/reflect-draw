@@ -6,6 +6,7 @@ import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { randomShape } from "../../datamodel/shape";
+import { uuid } from "src/util/uuid";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -26,7 +27,10 @@ export default function Home() {
           maxDelayMs: 0,
           minDelayMs: 0,
         },
-        auth: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+        auth: JSON.stringify({
+          userID: uuid(),
+          roomID: roomID,
+        }),
 
         // We only use pull to get the base cookie.
         pullInterval: null,
@@ -75,5 +79,18 @@ export default function Home() {
       <Nav rep={rep} />
       <Designer {...{ rep }} />
     </div>
+  );
+}
+
+export function encodeHeaderValue(value: string): string {
+  // encodeURIComponent escapes the following chars which are allowed
+  // in header values.
+  // : ; , / " ? { } [ ] @ < > = + # $ & ` | ^ space and %
+  // Unescape all of them expect %, to make the encoded value smaller and more
+  // readable.  Do not unescape % as that would break decoding of the
+  // percent decoding done by encodeURIComponent.
+  return encodeURIComponent(value).replace(
+    /%(3A|3B|2C|2F|22|3F|7B|7D|5B|5D|40|3C|3E|3D|2B|23|24|26|60|7C|5E|20)/g,
+    (_, hex) => String.fromCharCode(parseInt(hex, 16))
   );
 }

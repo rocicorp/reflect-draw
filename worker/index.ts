@@ -29,15 +29,20 @@ export class Server extends BaseServer<M> {
   }
 }
 
-export default createWorker(
-  async (authToken: string, url: URL, clientID: string, roomID: string) => {
-    console.log("authenticateAndAuthorize", authToken, url, clientID, roomID);
-    if (authToken) {
-      return {
-        userID: authToken,
-        userName: "Bob",
-      };
-    }
-    throw Error("Unauthorized");
+export default createWorker(async (auth: string, roomID: string) => {
+  // Note a real implementation should use signed and encrypted auth tokens,
+  // or store the auth tokens in a session database for validation.
+  const authJson = JSON.parse(auth);
+  if (!authJson) {
+    throw Error("Empty auth");
   }
-);
+  if (authJson.roomID !== roomID) {
+    throw new Error("incorrect roomID");
+  }
+  if (!authJson.userID || typeof authJson.userID !== "string") {
+    throw new Error("Missing userID");
+  }
+  return {
+    userID: authJson.userID,
+  };
+});
