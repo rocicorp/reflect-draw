@@ -6,7 +6,7 @@ import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { randomShape } from "../../datamodel/shape";
-import { uuid } from "src/util/uuid";
+import { nanoid } from "nanoid";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -28,7 +28,7 @@ export default function Home() {
           minDelayMs: 0,
         },
         auth: JSON.stringify({
-          userID: uuid(),
+          userID: nanoid(),
           roomID: roomID,
         }),
 
