@@ -6,6 +6,7 @@ import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { randomShape } from "../../datamodel/shape";
+import { nanoid } from "nanoid";
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
@@ -26,6 +27,10 @@ export default function Home() {
           maxDelayMs: 0,
           minDelayMs: 0,
         },
+        auth: JSON.stringify({
+          userID: nanoid(),
+          roomID: roomID,
+        }),
 
         // We only use pull to get the base cookie.
         pullInterval: null,
