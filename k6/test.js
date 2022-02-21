@@ -2,7 +2,12 @@ import ws from "k6/ws";
 import { check } from "k6";
 import { SharedArray } from "k6/data";
 
-const numShapesPerClient = 50;
+const numShapesPerClient = __ENV.SHAPES_PER_CLIENT ?? 1;
+const roomID = __ENV.ROOM_ID;
+
+if (!roomID) {
+  throw new Error("Must specify a ROOM_ID env variable");
+}
 
 function randomID() {
   return Math.random().toString(36).substring(2);
