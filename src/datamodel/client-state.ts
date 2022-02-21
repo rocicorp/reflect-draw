@@ -84,7 +84,8 @@ export async function getClientState(
   if (!jv) {
     throw new Error("Expected clientState to be initialized already: " + id);
   }
-  return clientStateSchema.parse(jv);
+  return jv as ClientState;
+  //return clientStateSchema.parse(jv);
 }
 
 export function putClientState(

@@ -24,7 +24,8 @@ export async function getShape(
     console.log(`Specified shape ${id} not found.`);
     return null;
   }
-  return shapeSchema.parse(jv);
+  return jv as Shape;
+  //return shapeSchema.parse(jv);
 }
 
 export function putShape(
