@@ -24,6 +24,7 @@ export class Server extends BaseServer<M> {
       mutators,
       state,
       logger,
+      logLevel: "info",
     });
   }
 }
