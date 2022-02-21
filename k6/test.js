@@ -1,8 +1,7 @@
 import ws from "k6/ws";
 import { check } from "k6";
-import { SharedArray } from "k6/data";
 
-const numShapesPerClient = __ENV.SHAPES_PER_CLIENT ?? 1;
+const numShapesPerClient = __ENV.SHAPES_PER_CLIENT || 1;
 const roomID = __ENV.ROOM_ID;
 
 if (!roomID) {
@@ -12,14 +11,6 @@ if (!roomID) {
 function randomID() {
   return Math.random().toString(36).substring(2);
 }
-
-// This weird thing is the only way to share data between vus.
-// We have to split clients by vu because the only support for sockets that k6
-// currently has blocks the entire vu.
-const shared = new SharedArray("roomID", () => {
-  return [randomID()];
-});
-const [roomID] = shared;
 
 let lastMutationID = 0;
 
