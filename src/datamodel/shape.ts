@@ -54,6 +54,21 @@ export async function moveShape(
   }
 }
 
+export async function scanShape(
+  tx: WriteTransaction,
+  { id, dx, maxX }: { id: string; dx: number; maxX: number }
+): Promise<void> {
+  const shape = await getShape(tx, id);
+  if (!shape) {
+    return;
+  }
+  shape.x += dx;
+  if (shape.x > maxX) {
+    shape.x = 0;
+  }
+  putShape(tx, { id, shape });
+}
+
 export async function resizeShape(
   tx: WriteTransaction,
   { id, ds }: { id: string; ds: number }
