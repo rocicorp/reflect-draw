@@ -19,7 +19,7 @@ export async function getShape(
   tx: ReadTransaction,
   id: string
 ): Promise<Shape | null> {
-  const jv = await tx.get(key(id));
+  const jv = await tx.get(shapeKey(id));
   if (!jv) {
     console.log(`Specified shape ${id} not found.`);
     return null;
@@ -32,14 +32,14 @@ export function putShape(
   tx: WriteTransaction,
   { id, shape }: { id: string; shape: Shape }
 ): Promise<void> {
-  return tx.put(key(id), shape);
+  return tx.put(shapeKey(id), shape);
 }
 
 export async function deleteShape(
   tx: WriteTransaction,
   id: string
 ): Promise<void> {
-  await tx.del(key(id));
+  await tx.del(shapeKey(id));
 }
 
 export async function moveShape(
@@ -110,7 +110,7 @@ export async function initShapes(
   ]);
 }
 
-function key(id: string): string {
+export function shapeKey(id: string): string {
   return `${shapePrefix}${id}`;
 }
 

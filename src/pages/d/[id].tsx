@@ -77,7 +77,6 @@ export default function Home() {
       }}
     >
       <Nav rep={rep} />
-      <Designer {...{ rep }} />
     </div>
   );
 }

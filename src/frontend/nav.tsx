@@ -4,9 +4,10 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import styles from "./nav.module.css";
-import { randomShape } from "../datamodel/shape";
+import { randomShape, Shape, shapeKey, shapePrefix } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
+import { nanoid } from "nanoid";
 
 export function Nav({ rep }: { rep: Replicache<M> }) {
   const [aboutVisible, showAbout] = useState(false);
@@ -22,6 +23,24 @@ export function Nav({ rep }: { rep: Replicache<M> }) {
 
   const onRectangle = () => {
     rep.mutate.createShape(randomShape());
+  };
+
+  const duplicateAll = async () => {
+    const existingShapes = await rep.query(
+      async (tx) =>
+        (await tx
+          .scan({ prefix: shapePrefix })
+          .values()
+          .toArray()) as unknown[] as Shape[]
+    );
+    const newShapes = existingShapes.map((v) => ({
+      ...v,
+      x: v.x + 5,
+      y: v.y + 5,
+    }));
+    for (const shape of newShapes) {
+      await rep.mutate.createShape({ id: nanoid(), shape });
+    }
   };
 
   return (
@@ -75,6 +94,9 @@ export function Nav({ rep }: { rep: Replicache<M> }) {
           onClick={() => showAbout(true)}
         >
           About this Demo
+        </div>
+        <div className={`${styles.button}`} onClick={() => duplicateAll()}>
+          Duplicate All Shapes
         </div>
         <div className={styles.spacer}></div>
         {userInfo && (

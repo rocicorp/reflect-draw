@@ -59,6 +59,6 @@ export default createWorker<WorkerEnv>({
     return createLogger("replidraw-worker", env.DATADOG_API_KEY);
   },
   getLogLevel(_env: WorkerEnv) {
-    return "debug";
+    return "info";
   },
 });
