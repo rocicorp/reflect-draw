@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Replicache } from "replicache";
-import { Client } from "reps-client";
+import { Client } from "reflect-client";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";

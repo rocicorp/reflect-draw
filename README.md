@@ -48,16 +48,16 @@ wrangler dev
 npm run dev
 ```
 
-## Using reps-do in your own project
+## Using Reflect in your own project
 
-1. Copy `reps-do-*.tgz`, `rep-client-*.tgz`, `worker`, and `wrangler.toml` into your project
-2. `npm add reps-do-*.tgz reps-client-*.tgz @cloudflare/workers-types esbuild miniflare`
+1. Copy `reflect-*.tgz`, `reflect-client-*.tgz`, `worker`, and `wrangler.toml` into your project
+2. `npm add reflect-*.tgz reflect-client-*.tgz @cloudflare/workers-types esbuild miniflare`
 3. Adjust the `mutators` param in `worker/index.ts` to point to your mutators file.
 4. Copy the `dev-worker` and `build-worker` scripts from `package.json` into your project
 5. Ensure `Replicache` and the client are instantiated correctly, see `[id].tsx` in this project.
 6. Have fun 😀.
 
-Note: This will get easier. `reps-do-*.tgz` will soon become a standalone npm module, and `reps-client-*.tgz` will get folded into the existing `replicache` module.
+Note: This will get easier. `reflect-*.tgz` will soon become a standalone npm module, and `reflect-client-*.tgz` will get folded into the existing `replicache` module.
 
 ## Recipes
 

@@ -27,10 +27,10 @@
     "react-dom": "^17.0.2",
     "react-draggable": "^4.4.4",
     "react-hotkeys": "^1.1.4",
+    "reflect": "file:reflect-0.2.0.tgz",
+    "reflect-client": "file:reflect-client-0.1.1.tgz",
     "replicache": "^9.0.0-beta.0",
     "replicache-react": "^2.5.0",
-    "reps-client": "file:reps-client-0.1.0.tgz",
-    "reps-do": "file:reps-do-0.1.0.tgz",
     "typescript": "^4.5.5",
     "zod": "^3.11.6"
   }

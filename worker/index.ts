@@ -4,8 +4,8 @@ import {
   Logger,
   Server as BaseServer,
   TeeLogger,
-} from "reps-do";
-import { createWorker, BaseWorkerEnv } from "reps-do";
+} from "reflect";
+import { createWorker, BaseWorkerEnv } from "reflect";
 import { mutators, type M } from "../src/datamodel/mutators.js";
 
 function createLogger(service: string, datadogApiKey?: string): Logger {
