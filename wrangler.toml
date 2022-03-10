@@ -11,7 +11,8 @@ compatibility_flags = []
 
 [durable_objects]
 bindings = [
-  { name = "server", class_name = "Server" }
+  { name = "server", class_name = "Server" },
+  { name = "authServer", class_name = "AuthServer" }
 ]
 
 [[migrations]]

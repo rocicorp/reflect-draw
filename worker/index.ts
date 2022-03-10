@@ -2,6 +2,7 @@ import {
   consoleLogger,
   DatadogLogger,
   Logger,
+  AuthServer as BaseAuthServer,
   Server as BaseServer,
   TeeLogger,
 } from "reflect";
@@ -29,6 +30,20 @@ export class Server extends BaseServer<M> {
       state,
       logger: createLogger("replidraw-do", env.DATADOG_API_KEY),
       logLevel: "info",
+    });
+  }
+}
+
+export class AuthServer extends BaseAuthServer {
+  constructor(
+    state: DurableObjectState,
+    env: { server: DurableObjectNamespace; DATADOG_API_KEY: string }
+  ) {
+    super({
+      server: env.server,
+      state,
+      // logger: createLogger("replidraw-auth", env.DATADOG_API_KEY),
+      // logLevel: "info",
     });
   }
 }
