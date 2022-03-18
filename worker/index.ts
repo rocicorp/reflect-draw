@@ -48,6 +48,6 @@ const { worker, RoomDO, AuthDO } = createReflect({
   mutators,
   authHandler,
   createLogger,
-  getLogLevel: () => "debug",
+  getLogLevel: () => "info",
 });
 export { worker as default, RoomDO, AuthDO };
