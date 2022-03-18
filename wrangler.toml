@@ -11,12 +11,13 @@ compatibility_flags = []
 
 [durable_objects]
 bindings = [
-  { name = "server", class_name = "Server" }
+  { name = "roomDO", class_name = "RoomDO" },
+  { name = "authDO", class_name = "AuthDO" }
 ]
 
 [[migrations]]
 tag = "v1"
-new_classes = ["Server"]
+new_classes = ["RoomDO", "AuthDO"]
 
 [build]
 command = "npm run build-worker"
@@ -31,3 +32,4 @@ durable_objects_persist = true
 
 #[secrets]
 #DATADOG_API_KEY
+#REFLECT_AUTH_API_KEY
