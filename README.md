@@ -59,6 +59,132 @@ npm run dev
 
 Note: This will get easier. `reflect-*.tgz` will soon become a standalone npm module, and `reflect-client-*.tgz` will get folded into the existing `replicache` module.
 
+## Authentication and Authorization
+
+Reflect can optionally authenticate users who connect to rooms with your server and authorize their access to the room.
+
+1. Pass some `authToken` to the `Replicache` constructor's `auth` parameter. See: https://github.com/rocicorp/replidraw-do/blob/main/src/pages/d/%5Bid%5D.tsx#L30.
+2. Provide Reflect with an `authHandler` function that authenticates the user and returns whether the user should be allowed in the room. See: https://github.com/rocicorp/replidraw-do/blob/main/worker/index.ts#L29.
+
+The signature for the auth handler is as follows:
+
+```ts
+/**
+ * An `AuthHandler` should validate that the user authenticated by `auth` is
+ * authorized to access the room with `roomID`.
+ * @return A promise which resolves to `UserData` for the user if authentication
+ * and authorization is successful, or rejects if authentication or
+ * authorization fail.
+ */
+export type AuthHandler = (auth: string, roomID: string) => Promise<UserData>;
+
+/**
+ * `UserData` must include a `userID` which is unique stable identifier
+ * for the user.
+ * `UserData` has a size limit of 6 KB.
+ * Currently only `userID` is used, but in the future `UserData` may
+ * be passed through to mutators which could use it to supplement
+ * mutator args and to validate the mutation.
+ */
+export type UserData = ReadonlyJSONObject & { userID: string };
+```
+
+### Auth Revalidation
+
+Reflect will periodically (approximately every 10 minutes) re-authenticate conneted users by re-calling `authHandler`. You can also force invalidate specific users or rooms using the Server API, below.
+
+## Server API
+
+The server has an HTTP API for administrative tasks.
+
+### API Key
+
+All calls to the HTTP API must provide an API Key. Configure the API Key using Wrangler:
+
+```bash
+wrangler secret put REFLECT_AUTH_API_KEY
+```
+
+Then pass the API Key in each request to the HTTP API using the `x-reflect-auth-api-key` HTTP header:
+
+```ts
+fetch("https://myapp.workers.dev/invalidateAuthForUser", {
+  headers: {
+    "x-reflect-auth-api-key": "redacted",
+  },
+  body: JSON.stringify({userID: "redacted"}),
+});
+```
+
+### `invalidateAuthForUser`
+
+Invalidates all of a user's sessions. Affected active clients will immediately try to re-connect and auth.
+
+<table>
+     <tr>
+          <th align="left">Method</th>
+          <td><code>POST</code></td>
+     </tr>
+     <tr>
+          <th align="left">URL</th>
+          <td><code>https://myapp.workers.dev/invalidateAuthForUser</code></td>
+     </tr>
+     <tr>
+          <th align="left">Headers</th>
+          <td><code>x-reflect-auth-api-key: string</code></td>
+     </tr>
+     <tr>
+          <th align="left">Body</th>
+          <td><code>{ userID: string }</code></td>
+     </tr>
+</table>
+
+### `invalidateAuthForRoom`
+
+Invalidates all user sessions in a room. Affected active clients will immediately try to re-connect and auth.
+
+<table>
+     <tr>
+          <th align="left">Method</th>
+          <td><code>POST<code></td>
+     </tr>
+     <tr>
+          <th align="left">URL</th>
+          <td><code>https://myapp.workers.dev/invalidateAuthForRoom</code></td>
+     </tr>
+     <tr>
+          <th align="left">Headers</th>
+          <td><code>x-reflect-auth-api-key: string</code></td>
+     </tr>
+     <tr>
+          <th align="left">Body</th>
+          <td><code>{ roomID: string }</code></td>
+     </tr>
+</table>
+
+### `invalidateAuthAll`
+
+Invalidates all user sessions in all rooms. Affected active clients will immediately try to re-connect and auth.
+
+<table>
+     <tr>
+          <th align="left">Method</th>
+          <td><code>POST<code></td>
+     </tr>
+     <tr>
+          <th align="left">URL</th>
+          <td><code>https://myapp.workers.dev/invalidateAuthAll</code></td>
+     </tr>
+     <tr>
+          <th align="left">Headers</th>
+          <td><code>x-reflect-auth-api-key: string</code></td>
+     </tr>
+     <tr>
+          <th align="left">Body</th>
+          <td><code>{}</code></td>
+     </tr>
+</table>
+
 ## Recipes
 
 ### How to persist logs from the worker
