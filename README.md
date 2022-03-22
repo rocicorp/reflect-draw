@@ -91,32 +91,32 @@ export type UserData = ReadonlyJSONObject & { userID: string };
 
 ### Auth Revalidation
 
-Reflect will periodically (approximately every 10 minutes) re-authenticate conneted users by re-calling `authHandler`. You can also force invalidate specific users or rooms using the Server API, below.
+You can invalidate specific users or rooms using the Server Auth API, below.
 
-## Server API
+## Server Auth API
 
-The server has an HTTP API for administrative tasks.
+The server has an HTTP API for authentication tasks.
 
-### API Key
+### Auth API Key
 
-All calls to the HTTP API must provide an API Key. Configure the API Key using Wrangler:
+All calls to the Auth API must provide an API Key. Configure the API Key using Wrangler:
 
 ```bash
 wrangler secret put REFLECT_AUTH_API_KEY
 ```
 
-Then pass the API Key in each request to the HTTP API using the `x-reflect-auth-api-key` HTTP header:
+Then pass the API Key in each request to the Auth API using the `x-reflect-auth-api-key` HTTP header:
 
 ```ts
-fetch("https://myapp.workers.dev/invalidateAuthForUser", {
+fetch("https://myapp.workers.dev/api/auth/v0/invalidateForUser", {
   headers: {
     "x-reflect-auth-api-key": "redacted",
   },
-  body: JSON.stringify({userID: "redacted"}),
+  body: JSON.stringify({ userID: "redacted" }),
 });
 ```
 
-### `invalidateAuthForUser`
+### `invalidateForUser`
 
 Invalidates all of a user's sessions. Affected active clients will immediately try to re-connect and auth.
 
@@ -127,7 +127,7 @@ Invalidates all of a user's sessions. Affected active clients will immediately t
      </tr>
      <tr>
           <th align="left">URL</th>
-          <td><code>https://myapp.workers.dev/invalidateAuthForUser</code></td>
+          <td><code>https://myapp.workers.dev/api/auth/v0/invalidateForUser</code></td>
      </tr>
      <tr>
           <th align="left">Headers</th>
@@ -139,7 +139,7 @@ Invalidates all of a user's sessions. Affected active clients will immediately t
      </tr>
 </table>
 
-### `invalidateAuthForRoom`
+### `invalidateForRoom`
 
 Invalidates all user sessions in a room. Affected active clients will immediately try to re-connect and auth.
 
@@ -150,7 +150,7 @@ Invalidates all user sessions in a room. Affected active clients will immediatel
      </tr>
      <tr>
           <th align="left">URL</th>
-          <td><code>https://myapp.workers.dev/invalidateAuthForRoom</code></td>
+          <td><code>https://myapp.workers.dev/api/auth/v0/invalidateForRoom</code></td>
      </tr>
      <tr>
           <th align="left">Headers</th>
@@ -162,7 +162,7 @@ Invalidates all user sessions in a room. Affected active clients will immediatel
      </tr>
 </table>
 
-### `invalidateAuthAll`
+### `invalidateAll`
 
 Invalidates all user sessions in all rooms. Affected active clients will immediately try to re-connect and auth.
 
@@ -173,7 +173,7 @@ Invalidates all user sessions in all rooms. Affected active clients will immedia
      </tr>
      <tr>
           <th align="left">URL</th>
-          <td><code>https://myapp.workers.dev/invalidateAuthAll</code></td>
+          <td><code>https://myapp.workers.dev/api/auth/v0/invalidateAll</code></td>
      </tr>
      <tr>
           <th align="left">Headers</th>
@@ -181,7 +181,7 @@ Invalidates all user sessions in all rooms. Affected active clients will immedia
      </tr>
      <tr>
           <th align="left">Body</th>
-          <td><code>{}</code></td>
+          <td>N/A</td>
      </tr>
 </table>
 
