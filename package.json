@@ -28,7 +28,7 @@
     "react-draggable": "^4.4.4",
     "react-hotkeys": "^1.1.4",
     "reflect": "file:reflect-0.6.0.tgz",
-    "reflect-client": "file:reflect-client-0.2.1.tgz",
+    "reflect-client": "file:reflect-client-0.3.1.tgz",
     "replicache": "^9.0.0-beta.2",
     "replicache-react": "^2.5.0",
     "typescript": "^4.5.5",
