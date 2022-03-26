@@ -1,4 +1,4 @@
-name = "replidraw"
+name = "replidraw-do-grgbkr"
 type = "javascript"
 
 account_id = "085f6d8eb08e5b23debfb08b21bda1eb"
@@ -18,6 +18,9 @@ bindings = [
 [[migrations]]
 tag = "v1"
 new_classes = ["RoomDO", "AuthDO"]
+
+[triggers]
+crons = [ "*/5 * * * *" ] # ever 5 mins for AuthDO connection revalidation
 
 [build]
 command = "npm run build-worker"
