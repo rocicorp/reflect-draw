@@ -19,6 +19,7 @@ bindings = [
 tag = "v1"
 new_classes = ["Server"]
 
+[[migrations]]
 tag = "v2"
 renamed_classes = [{from = "Server", to = "RoomDO" }]
 new_classes = ["AuthDO"]
