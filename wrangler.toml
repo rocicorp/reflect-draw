@@ -19,6 +19,9 @@ bindings = [
 tag = "v1"
 new_classes = ["RoomDO", "AuthDO"]
 
+[triggers]
+crons = [ "*/5 * * * *" ] # ever 5 mins for AuthDO connection revalidation
+
 [build]
 command = "npm run build-worker"
 
