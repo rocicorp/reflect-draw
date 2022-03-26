@@ -10,7 +10,6 @@ import { mutators, type M } from "../src/datamodel/mutators.js";
 
 function createLogger(env: ReplidrawEnv): Logger {
   let logger = consoleLogger;
-  console.log(env.REFLECT_AUTH_API_KEY);
   if (env.DATADOG_API_KEY) {
     logger = new TeeLogger([
       logger,
