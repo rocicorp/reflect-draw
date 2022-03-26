@@ -17,7 +17,11 @@ bindings = [
 
 [[migrations]]
 tag = "v1"
-new_classes = ["RoomDO", "AuthDO"]
+new_classes = ["Server"]
+
+tag = "v2"
+renamed_classes = [{from = "Server", to = "RoomDO" }]
+new_classes = ["AuthDO"]
 
 [triggers]
 crons = [ "*/5 * * * *" ] # ever 5 mins for AuthDO connection revalidation
