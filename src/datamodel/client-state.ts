@@ -1,4 +1,4 @@
-import type { ReadTransaction, WriteTransaction } from "replicache";
+import type { ReadTransaction, WriteTransaction } from "reflect-client";
 import { randInt } from "../util/rand";
 
 const colors = [

@@ -1,4 +1,4 @@
-import type { WriteTransaction } from "replicache";
+import type { WriteTransaction } from "reflect-client";
 import {
   initClientState,
   setCursor,

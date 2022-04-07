@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Replicache } from "replicache";
-import { Client } from "reflect-client";
+import { ReflectClient } from "reflect-client";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";
@@ -9,39 +8,28 @@ import { randomShape } from "../../datamodel/shape";
 import { nanoid } from "nanoid";
 
 export default function Home() {
-  const [rep, setRep] = useState<Replicache<M> | null>(null);
-
-  // TODO: Replicache + SSR could be cool!
+  const [reflectClient, setReflectClient] = useState<ReflectClient<M> | null>(
+    null
+  );
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
     (async () => {
-      const r = new Replicache({
-        name: roomID,
-        mutators,
-
-        // TODO: Do we need these?
-        // TODO: figure out backoff?
-        pushDelay: 0,
-        requestOptions: {
-          maxDelayMs: 0,
-          minDelayMs: 0,
-        },
+      const workerOrigin =
+        process.env.NEXT_PUBLIC_WORKER_HOST ??
+        "wss://replidraw.replicache.workers.dev";
+      console.info(`Connecting to worker at ${workerOrigin}`);
+      const userID = nanoid();
+      const r = new ReflectClient<M>({
+        socketOrigin: workerOrigin,
+        userID,
+        roomID,
         auth: JSON.stringify({
           userID: nanoid(),
           roomID: roomID,
         }),
-
-        // We only use pull to get the base cookie.
-        pullInterval: null,
+        mutators,
       });
-
-      const workerHost =
-        process.env.NEXT_PUBLIC_WORKER_HOST ??
-        "wss://replidraw.replicache.workers.dev";
-      const workerURL = `${workerHost}/connect`;
-      console.info(`Connecting to worker at ${workerURL}`);
-      new Client(r, roomID, workerURL);
 
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({
@@ -55,11 +43,11 @@ export default function Home() {
         }
       };
 
-      setRep(r);
+      setReflectClient(r);
     })();
   }, []);
 
-  if (!rep) {
+  if (!reflectClient) {
     return null;
   }
 
@@ -76,8 +64,8 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav rep={rep} />
-      <Designer {...{ rep }} />
+      <Nav reflectClient={reflectClient} />
+      <Designer {...{ reflectClient }} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import type { ReadTransaction, WriteTransaction } from "replicache";
+import type { ReadTransaction, WriteTransaction } from "reflect-client";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { randInt } from "../util/rand";

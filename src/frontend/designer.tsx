@@ -1,4 +1,4 @@
-import type { Replicache } from "replicache";
+import type { ReflectClient } from "reflect-client";
 import React, { useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";
 import { DraggableCore } from "react-draggable";
@@ -15,24 +15,32 @@ import {
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Designer({ rep }: { rep: Replicache<M> }) {
-  const ids = useShapeIDs(rep);
-  const overID = useOverShapeID(rep);
-  const selectedID = useSelectedShapeID(rep);
-  const collaboratorIDs = useCollaboratorIDs(rep);
+export function Designer({
+  reflectClient,
+}: {
+  reflectClient: ReflectClient<M>;
+}) {
+  const ids = useShapeIDs(reflectClient);
+  const overID = useOverShapeID(reflectClient);
+  const selectedID = useSelectedShapeID(reflectClient);
+  const collaboratorIDs = useCollaboratorIDs(reflectClient);
 
   const ref = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const handlers = {
-    moveLeft: () => rep.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
-    moveRight: () => rep.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
-    moveUp: () => rep.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
-    moveDown: () => rep.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
+    moveLeft: () =>
+      reflectClient.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
+    moveRight: () =>
+      reflectClient.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
+    moveUp: () =>
+      reflectClient.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
+    moveDown: () =>
+      reflectClient.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
     deleteShape: () => {
       // Prevent navigating backward on some browsers.
       event?.preventDefault();
-      rep.mutate.deleteShape(selectedID);
+      reflectClient.mutate.deleteShape(selectedID);
     },
   };
 
@@ -44,8 +52,8 @@ export function Designer({ rep }: { rep: Replicache<M> }) {
     pageY: number;
   }) => {
     if (ref && ref.current) {
-      rep.mutate.setCursor({
-        id: await rep.clientID,
+      reflectClient.mutate.setCursor({
+        id: await reflectClient.clientID,
         x: pageX,
         y: pageY - ref.current.offsetTop,
       });
@@ -82,7 +90,7 @@ export function Designer({ rep }: { rep: Replicache<M> }) {
             <RectController
               {...{
                 key: `shape-${id}`,
-                rep,
+                reflectClient,
                 id,
               }}
             />
@@ -94,7 +102,7 @@ export function Designer({ rep }: { rep: Replicache<M> }) {
               <Rect
                 {...{
                   key: `highlight-${overID}`,
-                  rep,
+                  reflectClient,
                   id: overID,
                   highlight: true,
                 }}
@@ -108,7 +116,7 @@ export function Designer({ rep }: { rep: Replicache<M> }) {
               <Selection
                 {...{
                   key: `selection-${selectedID}`,
-                  rep,
+                  reflectClient,
                   id: selectedID,
                   highlight: true,
                   containerOffsetTop: ref.current && ref.current.offsetTop,
@@ -126,7 +134,7 @@ export function Designer({ rep }: { rep: Replicache<M> }) {
               <Collaborator
                 {...{
                   key: `key-${id}`,
-                  rep,
+                  reflectClient,
                   clientID: id,
                 }}
               />

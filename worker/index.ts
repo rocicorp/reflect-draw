@@ -1,24 +1,24 @@
 import {
-  consoleLogger,
-  DatadogLogger,
-  Logger,
-  TeeLogger,
+  consoleLogSink,
+  DatadogLogSink,
+  LogSink,
+  TeeLogSink,
   createReflect,
   ReflectBaseEnv,
 } from "reflect";
 import { mutators, type M } from "../src/datamodel/mutators.js";
 
-function createLogger(env: ReplidrawEnv): Logger {
-  let logger = consoleLogger;
+function getLogSinks(env: ReplidrawEnv): LogSink[] {
+  let logSinks = [consoleLogSink];
   if (env.DATADOG_API_KEY) {
-    logger = new TeeLogger([
-      logger,
-      new DatadogLogger({
+    logSinks.push(
+      new DatadogLogSink({
         apiKey: env.DATADOG_API_KEY,
-      }),
-    ]);
+        service: "replidraw-do-grgbkr",
+      })
+    );
   }
-  return logger;
+  return logSinks;
 }
 
 interface ReplidrawEnv extends ReflectBaseEnv {
@@ -46,7 +46,7 @@ const authHandler = async (auth: string, roomID: string) => {
 const { worker, RoomDO, AuthDO } = createReflect({
   mutators,
   authHandler,
-  createLogger,
+  getLogSinks,
   getLogLevel: () => "info",
 });
 export { worker as default, RoomDO, AuthDO };

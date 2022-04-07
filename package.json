@@ -29,8 +29,7 @@
     "react-hotkeys": "^1.1.4",
     "reflect": "file:reflect-0.8.0.tgz",
     "reflect-client": "file:reflect-client-0.3.1.tgz",
-    "replicache": "9.0.0-beta.0",
-    "replicache-react": "^2.5.0",
+    "replicache-react": "file:replicache-react-2.5.0.tgz",
     "typescript": "^4.5.5",
     "zod": "^3.11.6"
   }
