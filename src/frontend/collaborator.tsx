@@ -16,13 +16,13 @@ interface Position {
 }
 
 export function Collaborator({
-  reflectClient,
+  reflect,
   clientID,
 }: {
-  reflectClient: Reflect<M>;
+  reflect: Reflect<M>;
   clientID: string;
 }) {
-  const clientInfo = useClientInfo(reflectClient, clientID);
+  const clientInfo = useClientInfo(reflect, clientID);
   const [lastPos, setLastPos] = useState<Position | null>(null);
   const [gotFirstChange, setGotFirstChange] = useState(false);
   const [, setPoke] = useState({});
@@ -77,7 +77,7 @@ export function Collaborator({
       {clientInfo.selectedID && (
         <Rect
           {...{
-            reflectClient,
+            reflect,
             key: `selection-${clientInfo.selectedID}`,
             id: clientInfo.selectedID,
             highlight: true,

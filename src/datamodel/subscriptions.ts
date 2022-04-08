@@ -4,9 +4,9 @@ import { getClientState, clientStatePrefix } from "./client-state";
 import { getShape, shapePrefix } from "./shape";
 import type { mutators } from "./mutators";
 
-export function useShapeIDs(reflectClient: Reflect<typeof mutators>) {
+export function useShapeIDs(reflect: Reflect<typeof mutators>) {
   return useSubscribe(
-    reflectClient,
+    reflect,
     async (tx) => {
       const shapes = (await tx
         .scan({ prefix: shapePrefix })
@@ -18,12 +18,9 @@ export function useShapeIDs(reflectClient: Reflect<typeof mutators>) {
   );
 }
 
-export function useShapeByID(
-  reflectClient: Reflect<typeof mutators>,
-  id: string
-) {
+export function useShapeByID(reflect: Reflect<typeof mutators>, id: string) {
   return useSubscribe(
-    reflectClient,
+    reflect,
     async (tx) => {
       return await getShape(tx, id);
     },
@@ -31,46 +28,45 @@ export function useShapeByID(
   );
 }
 
-export function useUserInfo(reflectClient: Reflect<typeof mutators>) {
+export function useUserInfo(reflect: Reflect<typeof mutators>) {
   return useSubscribe(
-    reflectClient,
+    reflect,
     async (tx) => {
-      return (await getClientState(tx, await reflectClient.clientID)).userInfo;
+      return (await getClientState(tx, await reflect.clientID)).userInfo;
     },
     null
   );
 }
 
-export function useOverShapeID(reflectClient: Reflect<typeof mutators>) {
+export function useOverShapeID(reflect: Reflect<typeof mutators>) {
   return useSubscribe(
-    reflectClient,
+    reflect,
     async (tx) => {
-      return (await getClientState(tx, await reflectClient.clientID)).overID;
+      return (await getClientState(tx, await reflect.clientID)).overID;
     },
     ""
   );
 }
 
-export function useSelectedShapeID(reflectClient: Reflect<typeof mutators>) {
+export function useSelectedShapeID(reflect: Reflect<typeof mutators>) {
   return useSubscribe(
-    reflectClient,
+    reflect,
     async (tx) => {
-      return (await getClientState(tx, await reflectClient.clientID))
-        .selectedID;
+      return (await getClientState(tx, await reflect.clientID)).selectedID;
     },
     ""
   );
 }
 
-export function useCollaboratorIDs(reflectClient: Reflect<typeof mutators>) {
+export function useCollaboratorIDs(reflect: Reflect<typeof mutators>) {
   return useSubscribe(
-    reflectClient,
+    reflect,
     async (tx) => {
       const clientIDs = (await tx
         .scan({ prefix: clientStatePrefix })
         .keys()
         .toArray()) as string[];
-      const myClientID = await reflectClient.clientID;
+      const myClientID = await reflect.clientID;
       return clientIDs
         .filter((k) => !k.endsWith(myClientID))
         .map((k) => k.substr(clientStatePrefix.length));
@@ -80,11 +76,11 @@ export function useCollaboratorIDs(reflectClient: Reflect<typeof mutators>) {
 }
 
 export function useClientInfo(
-  reflectClient: Reflect<typeof mutators>,
+  reflect: Reflect<typeof mutators>,
   clientID: string
 ) {
   return useSubscribe(
-    reflectClient,
+    reflect,
     async (tx) => {
       return await getClientState(tx, clientID);
     },

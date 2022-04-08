@@ -8,11 +8,11 @@ import { randomShape } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Nav({ reflectClient }: { reflectClient: Reflect<M> }) {
+export function Nav({ reflect }: { reflect: Reflect<M> }) {
   const [aboutVisible, showAbout] = useState(false);
   const [shareVisible, showShare] = useState(false);
   const urlBox = useRef<HTMLInputElement>(null);
-  const userInfo = useUserInfo(reflectClient);
+  const userInfo = useUserInfo(reflect);
 
   useEffect(() => {
     if (shareVisible) {
@@ -21,7 +21,7 @@ export function Nav({ reflectClient }: { reflectClient: Reflect<M> }) {
   });
 
   const onRectangle = () => {
-    reflectClient.mutate.createShape(randomShape());
+    reflect.mutate.createShape(randomShape());
   };
 
   return (

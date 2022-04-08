@@ -7,22 +7,22 @@ import type { M } from "../datamodel/mutators";
 // TODO: In the future I imagine this becoming ShapeController and
 // there also be a Shape that wraps Rect and also knows how to draw Circle, etc.
 export function RectController({
-  reflectClient,
+  reflect,
   id,
 }: {
-  reflectClient: Reflect<M>;
+  reflect: Reflect<M>;
   id: string;
 }) {
-  const shape = useShapeByID(reflectClient, id);
+  const shape = useShapeByID(reflect, id);
 
   const onMouseEnter = async () =>
-    reflectClient.mutate.overShape({
-      clientID: await reflectClient.clientID,
+    reflect.mutate.overShape({
+      clientID: await reflect.clientID,
       shapeID: id,
     });
   const onMouseLeave = async () =>
-    reflectClient.mutate.overShape({
-      clientID: await reflectClient.clientID,
+    reflect.mutate.overShape({
+      clientID: await reflect.clientID,
       shapeID: "",
     });
 
@@ -30,8 +30,8 @@ export function RectController({
     // Can't mark onDragStart async because it changes return type and onDragStart
     // must return void.
     const blech = async () => {
-      reflectClient.mutate.selectShape({
-        clientID: await reflectClient.clientID,
+      reflect.mutate.selectShape({
+        clientID: await reflect.clientID,
         shapeID: id,
       });
     };
@@ -45,7 +45,7 @@ export function RectController({
     // We will apply this movement to whatever the state happens to be when we
     // replay. If somebody else was moving the object at the same moment, we'll
     // then end up with a union of the two vectors, which is what we want!
-    reflectClient.mutate.moveShape({
+    reflect.mutate.moveShape({
       id,
       dx: d.deltaX,
       dy: d.deltaY,
@@ -61,7 +61,7 @@ export function RectController({
       <div>
         <Rect
           {...{
-            reflectClient,
+            reflect,
             id,
             highlight: false,
             onMouseEnter,

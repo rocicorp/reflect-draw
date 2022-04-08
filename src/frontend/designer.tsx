@@ -15,28 +15,26 @@ import {
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Designer({ reflectClient }: { reflectClient: Reflect<M> }) {
-  const ids = useShapeIDs(reflectClient);
-  const overID = useOverShapeID(reflectClient);
-  const selectedID = useSelectedShapeID(reflectClient);
-  const collaboratorIDs = useCollaboratorIDs(reflectClient);
+export function Designer({ reflect }: { reflect: Reflect<M> }) {
+  const ids = useShapeIDs(reflect);
+  const overID = useOverShapeID(reflect);
+  const selectedID = useSelectedShapeID(reflect);
+  const collaboratorIDs = useCollaboratorIDs(reflect);
 
   const ref = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const handlers = {
     moveLeft: () =>
-      reflectClient.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
+      reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
     moveRight: () =>
-      reflectClient.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
-    moveUp: () =>
-      reflectClient.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
-    moveDown: () =>
-      reflectClient.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
+      reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
+    moveUp: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
+    moveDown: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
     deleteShape: () => {
       // Prevent navigating backward on some browsers.
       event?.preventDefault();
-      reflectClient.mutate.deleteShape(selectedID);
+      reflect.mutate.deleteShape(selectedID);
     },
   };
 
@@ -48,8 +46,8 @@ export function Designer({ reflectClient }: { reflectClient: Reflect<M> }) {
     pageY: number;
   }) => {
     if (ref && ref.current) {
-      reflectClient.mutate.setCursor({
-        id: await reflectClient.clientID,
+      reflect.mutate.setCursor({
+        id: await reflect.clientID,
         x: pageX,
         y: pageY - ref.current.offsetTop,
       });
@@ -86,7 +84,7 @@ export function Designer({ reflectClient }: { reflectClient: Reflect<M> }) {
             <RectController
               {...{
                 key: `shape-${id}`,
-                reflectClient,
+                reflect,
                 id,
               }}
             />
@@ -98,7 +96,7 @@ export function Designer({ reflectClient }: { reflectClient: Reflect<M> }) {
               <Rect
                 {...{
                   key: `highlight-${overID}`,
-                  reflectClient,
+                  reflect,
                   id: overID,
                   highlight: true,
                 }}
@@ -112,7 +110,7 @@ export function Designer({ reflectClient }: { reflectClient: Reflect<M> }) {
               <Selection
                 {...{
                   key: `selection-${selectedID}`,
-                  reflectClient,
+                  reflect,
                   id: selectedID,
                   highlight: true,
                   containerOffsetTop: ref.current && ref.current.offsetTop,
@@ -130,7 +128,7 @@ export function Designer({ reflectClient }: { reflectClient: Reflect<M> }) {
               <Collaborator
                 {...{
                   key: `key-${id}`,
-                  reflectClient,
+                  reflect,
                   clientID: id,
                 }}
               />

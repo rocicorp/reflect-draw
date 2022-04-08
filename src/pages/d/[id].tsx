@@ -7,7 +7,7 @@ import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
 
 export default function Home() {
-  const [reflectClient, setReflectClient] = useState<Reflect<M> | null>(null);
+  const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
@@ -44,7 +44,7 @@ export default function Home() {
     })();
   }, []);
 
-  if (!reflectClient) {
+  if (!reflect) {
     return null;
   }
 
@@ -61,8 +61,8 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav reflectClient={reflectClient} />
-      <Designer {...{ reflectClient }} />
+      <Nav reflect={reflect} />
+      <Designer {...{ reflect }} />
     </div>
   );
 }

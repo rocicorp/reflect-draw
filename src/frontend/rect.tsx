@@ -4,7 +4,7 @@ import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
 
 export function Rect({
-  reflectClient,
+  reflect,
   id,
   highlight = false,
   highlightColor = "rgb(74,158,255)",
@@ -13,7 +13,7 @@ export function Rect({
   onMouseEnter,
   onMouseLeave,
 }: {
-  reflectClient: Reflect<M>;
+  reflect: Reflect<M>;
   id: string;
   highlight?: boolean;
   highlightColor?: string;
@@ -22,7 +22,7 @@ export function Rect({
   onMouseEnter?: MouseEventHandler;
   onMouseLeave?: MouseEventHandler;
 }) {
-  const shape = useShapeByID(reflectClient, id);
+  const shape = useShapeByID(reflect, id);
   if (!shape) {
     return null;
   }
