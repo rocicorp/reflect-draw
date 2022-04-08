@@ -27,9 +27,9 @@
     "react-dom": "^17.0.2",
     "react-draggable": "^4.4.4",
     "react-hotkeys": "^1.1.4",
-    "reflect": "file:reflect-0.8.0.tgz",
-    "reflect-client": "file:reflect-client-0.3.1.tgz",
-    "replicache-react": "file:replicache-react-2.5.0.tgz",
+    "reflect": "file:reflect-0.3.1.tgz",
+    "reflect-server": "file:reflect-server-0.8.0.tgz",
+    "replicache-react": "file:replicache-react-2.6.0.tgz",
     "typescript": "^4.5.5",
     "zod": "^3.11.6"
   }

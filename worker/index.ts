@@ -2,11 +2,10 @@ import {
   consoleLogSink,
   DatadogLogSink,
   LogSink,
-  TeeLogSink,
-  createReflect,
-  ReflectBaseEnv,
-} from "reflect";
-import { mutators, type M } from "../src/datamodel/mutators.js";
+  createReflectServer,
+  ReflectServerBaseEnv,
+} from "reflect-server";
+import { mutators } from "../src/datamodel/mutators.js";
 
 function getLogSinks(env: ReplidrawEnv): LogSink[] {
   let logSinks = [consoleLogSink];
@@ -21,7 +20,7 @@ function getLogSinks(env: ReplidrawEnv): LogSink[] {
   return logSinks;
 }
 
-interface ReplidrawEnv extends ReflectBaseEnv {
+interface ReplidrawEnv extends ReflectServerBaseEnv {
   DATADOG_API_KEY?: string;
 }
 
@@ -43,7 +42,7 @@ const authHandler = async (auth: string, roomID: string) => {
   };
 };
 
-const { worker, RoomDO, AuthDO } = createReflect({
+const { worker, RoomDO, AuthDO } = createReflectServer({
   mutators,
   authHandler,
   getLogSinks,

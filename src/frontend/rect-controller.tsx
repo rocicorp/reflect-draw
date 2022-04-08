@@ -1,4 +1,4 @@
-import type { ReflectClient } from "reflect-client";
+import type { Reflect } from "reflect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import { useShapeByID } from "../datamodel/subscriptions";
@@ -10,7 +10,7 @@ export function RectController({
   reflectClient,
   id,
 }: {
-  reflectClient: ReflectClient<M>;
+  reflectClient: Reflect<M>;
   id: string;
 }) {
   const shape = useShapeByID(reflectClient, id);

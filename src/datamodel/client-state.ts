@@ -1,4 +1,4 @@
-import type { ReadTransaction, WriteTransaction } from "reflect-client";
+import type { ReadTransaction, WriteTransaction } from "reflect";
 import { randInt } from "../util/rand";
 
 const colors = [

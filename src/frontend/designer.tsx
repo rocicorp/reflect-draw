@@ -1,4 +1,4 @@
-import type { ReflectClient } from "reflect-client";
+import type { Reflect } from "reflect";
 import React, { useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";
 import { DraggableCore } from "react-draggable";
@@ -15,11 +15,7 @@ import {
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Designer({
-  reflectClient,
-}: {
-  reflectClient: ReflectClient<M>;
-}) {
+export function Designer({ reflectClient }: { reflectClient: Reflect<M> }) {
   const ids = useShapeIDs(reflectClient);
   const overID = useOverShapeID(reflectClient);
   const selectedID = useSelectedShapeID(reflectClient);

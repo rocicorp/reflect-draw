@@ -1,4 +1,4 @@
-import type { ReflectClient } from "reflect-client";
+import type { Reflect } from "reflect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
@@ -9,7 +9,7 @@ export function Selection({
   id,
   containerOffsetTop,
 }: {
-  reflectClient: ReflectClient<M>;
+  reflectClient: Reflect<M>;
   id: string;
   containerOffsetTop: number | null;
 }) {

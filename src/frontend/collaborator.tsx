@@ -3,7 +3,7 @@ import styles from "./collaborator.module.css";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useClientInfo } from "../datamodel/subscriptions";
-import type { ReflectClient } from "reflect-client";
+import type { Reflect } from "reflect";
 
 const hideCollaboratorDelay = 5000;
 
@@ -19,7 +19,7 @@ export function Collaborator({
   reflectClient,
   clientID,
 }: {
-  reflectClient: ReflectClient<M>;
+  reflectClient: Reflect<M>;
   clientID: string;
 }) {
   const clientInfo = useClientInfo(reflectClient, clientID);

@@ -1,10 +1,10 @@
-import type { ReflectClient } from "reflect-client";
+import type { Reflect } from "reflect";
 import { useSubscribe } from "replicache-react";
 import { getClientState, clientStatePrefix } from "./client-state";
 import { getShape, shapePrefix } from "./shape";
 import type { mutators } from "./mutators";
 
-export function useShapeIDs(reflectClient: ReflectClient<typeof mutators>) {
+export function useShapeIDs(reflectClient: Reflect<typeof mutators>) {
   return useSubscribe(
     reflectClient,
     async (tx) => {
@@ -19,7 +19,7 @@ export function useShapeIDs(reflectClient: ReflectClient<typeof mutators>) {
 }
 
 export function useShapeByID(
-  reflectClient: ReflectClient<typeof mutators>,
+  reflectClient: Reflect<typeof mutators>,
   id: string
 ) {
   return useSubscribe(
@@ -31,7 +31,7 @@ export function useShapeByID(
   );
 }
 
-export function useUserInfo(reflectClient: ReflectClient<typeof mutators>) {
+export function useUserInfo(reflectClient: Reflect<typeof mutators>) {
   return useSubscribe(
     reflectClient,
     async (tx) => {
@@ -41,7 +41,7 @@ export function useUserInfo(reflectClient: ReflectClient<typeof mutators>) {
   );
 }
 
-export function useOverShapeID(reflectClient: ReflectClient<typeof mutators>) {
+export function useOverShapeID(reflectClient: Reflect<typeof mutators>) {
   return useSubscribe(
     reflectClient,
     async (tx) => {
@@ -51,9 +51,7 @@ export function useOverShapeID(reflectClient: ReflectClient<typeof mutators>) {
   );
 }
 
-export function useSelectedShapeID(
-  reflectClient: ReflectClient<typeof mutators>
-) {
+export function useSelectedShapeID(reflectClient: Reflect<typeof mutators>) {
   return useSubscribe(
     reflectClient,
     async (tx) => {
@@ -64,9 +62,7 @@ export function useSelectedShapeID(
   );
 }
 
-export function useCollaboratorIDs(
-  reflectClient: ReflectClient<typeof mutators>
-) {
+export function useCollaboratorIDs(reflectClient: Reflect<typeof mutators>) {
   return useSubscribe(
     reflectClient,
     async (tx) => {
@@ -84,7 +80,7 @@ export function useCollaboratorIDs(
 }
 
 export function useClientInfo(
-  reflectClient: ReflectClient<typeof mutators>,
+  reflectClient: Reflect<typeof mutators>,
   clientID: string
 ) {
   return useSubscribe(

@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { ReflectClient } from "reflect-client";
+import { Reflect } from "reflect";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, mutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
-import { randomShape } from "../../datamodel/shape";
 import { nanoid } from "nanoid";
 
 export default function Home() {
-  const [reflectClient, setReflectClient] = useState<ReflectClient<M> | null>(
-    null
-  );
+  const [reflectClient, setReflectClient] = useState<Reflect<M> | null>(null);
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
@@ -20,7 +17,7 @@ export default function Home() {
         "wss://replidraw.replicache.workers.dev";
       console.info(`Connecting to worker at ${workerOrigin}`);
       const userID = nanoid();
-      const r = new ReflectClient<M>({
+      const r = new Reflect<M>({
         socketOrigin: workerOrigin,
         userID,
         roomID,
@@ -36,12 +33,12 @@ export default function Home() {
         id: await r.clientID,
         defaultUserInfo,
       });
-      r.onSync = (syncing: boolean) => {
-        if (!syncing) {
-          r.onSync = null;
-          r.mutate.initShapes(Array.from({ length: 5 }, () => randomShape()));
-        }
-      };
+      // r.onSync = (syncing: boolean) => {
+      //   if (!syncing) {
+      //     r.onSync = null;
+      //     r.mutate.initShapes(Array.from({ length: 5 }, () => randomShape()));
+      //   }
+      // };
 
       setReflectClient(r);
     })();

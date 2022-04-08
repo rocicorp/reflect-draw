@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ReflectClient } from "reflect-client";
+import type { Reflect } from "reflect";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -8,7 +8,7 @@ import { randomShape } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Nav({ reflectClient }: { reflectClient: ReflectClient<M> }) {
+export function Nav({ reflectClient }: { reflectClient: Reflect<M> }) {
   const [aboutVisible, showAbout] = useState(false);
   const [shareVisible, showShare] = useState(false);
   const urlBox = useRef<HTMLInputElement>(null);

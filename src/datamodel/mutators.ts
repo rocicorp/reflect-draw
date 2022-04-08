@@ -1,4 +1,4 @@
-import type { WriteTransaction } from "reflect-client";
+import type { WriteTransaction } from "reflect";
 import {
   initClientState,
   setCursor,
