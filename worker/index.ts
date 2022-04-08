@@ -5,7 +5,7 @@ import {
   createReflectServer,
   ReflectServerBaseEnv,
 } from "reflect-server";
-import { mutators } from "../src/datamodel/mutators.js";
+import { serverMutators } from "../src/datamodel/mutators.js";
 
 function getLogSinks(env: ReplidrawEnv): LogSink[] {
   let logSinks = [consoleLogSink];
@@ -43,7 +43,7 @@ const authHandler = async (auth: string, roomID: string) => {
 };
 
 const { worker, RoomDO, AuthDO } = createReflectServer({
-  mutators,
+  mutators: serverMutators,
   authHandler,
   getLogSinks,
   getLogLevel: () => "info",

@@ -2,9 +2,9 @@ import type { Reflect } from "reflect";
 import { useSubscribe } from "replicache-react";
 import { getClientState, clientStatePrefix } from "./client-state";
 import { getShape, shapePrefix } from "./shape";
-import type { mutators } from "./mutators";
+import type { M } from "./mutators";
 
-export function useShapeIDs(reflect: Reflect<typeof mutators>) {
+export function useShapeIDs(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
@@ -18,7 +18,7 @@ export function useShapeIDs(reflect: Reflect<typeof mutators>) {
   );
 }
 
-export function useShapeByID(reflect: Reflect<typeof mutators>, id: string) {
+export function useShapeByID(reflect: Reflect<M>, id: string) {
   return useSubscribe(
     reflect,
     async (tx) => {
@@ -28,7 +28,7 @@ export function useShapeByID(reflect: Reflect<typeof mutators>, id: string) {
   );
 }
 
-export function useUserInfo(reflect: Reflect<typeof mutators>) {
+export function useUserInfo(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
@@ -38,7 +38,7 @@ export function useUserInfo(reflect: Reflect<typeof mutators>) {
   );
 }
 
-export function useOverShapeID(reflect: Reflect<typeof mutators>) {
+export function useOverShapeID(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
@@ -48,7 +48,7 @@ export function useOverShapeID(reflect: Reflect<typeof mutators>) {
   );
 }
 
-export function useSelectedShapeID(reflect: Reflect<typeof mutators>) {
+export function useSelectedShapeID(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
@@ -58,7 +58,7 @@ export function useSelectedShapeID(reflect: Reflect<typeof mutators>) {
   );
 }
 
-export function useCollaboratorIDs(reflect: Reflect<typeof mutators>) {
+export function useCollaboratorIDs(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
@@ -75,10 +75,7 @@ export function useCollaboratorIDs(reflect: Reflect<typeof mutators>) {
   );
 }
 
-export function useClientInfo(
-  reflect: Reflect<typeof mutators>,
-  clientID: string
-) {
+export function useClientInfo(reflect: Reflect<M>, clientID: string) {
   return useSubscribe(
     reflect,
     async (tx) => {

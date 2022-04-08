@@ -15,9 +15,9 @@ import {
   initShapes,
 } from "./shape";
 
-export type M = typeof mutators;
+export type M = typeof serverMutators;
 
-export const mutators = {
+export const serverMutators = {
   createShape: putShape,
   deleteShape,
   moveShape,
@@ -30,4 +30,9 @@ export const mutators = {
   selectShape,
   initShapes,
   nop: async (_: WriteTransaction) => {},
+};
+
+export const clientMutators: M = {
+  ...serverMutators,
+  initShapes: async () => {},
 };

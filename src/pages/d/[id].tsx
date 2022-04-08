@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Reflect } from "reflect";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
-import { M, mutators } from "../../datamodel/mutators";
+import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
 
@@ -25,7 +25,7 @@ export default function Home() {
           userID: nanoid(),
           roomID: roomID,
         }),
-        mutators,
+        mutators: clientMutators,
       });
 
       const defaultUserInfo = randUserInfo();
@@ -33,12 +33,7 @@ export default function Home() {
         id: await r.clientID,
         defaultUserInfo,
       });
-      // r.onSync = (syncing: boolean) => {
-      //   if (!syncing) {
-      //     r.onSync = null;
-      //     r.mutate.initShapes(Array.from({ length: 5 }, () => randomShape()));
-      //   }
-      // };
+      await r.mutate.initShapes();
 
       setReflectClient(r);
     })();
