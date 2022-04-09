@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Reflect } from "reflect";
+import { Reflect } from "@rocicorp/reflect";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";

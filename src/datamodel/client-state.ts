@@ -1,4 +1,4 @@
-import type { ReadTransaction, WriteTransaction } from "reflect";
+import type { ReadTransaction, WriteTransaction } from "@rocicorp/reflect";
 import { randInt } from "../util/rand";
 
 const colors = [

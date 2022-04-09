@@ -3,7 +3,7 @@ import styles from "./collaborator.module.css";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useClientInfo } from "../datamodel/subscriptions";
-import type { Reflect } from "reflect";
+import type { Reflect } from "@rocicorp/reflect";
 
 const hideCollaboratorDelay = 5000;
 

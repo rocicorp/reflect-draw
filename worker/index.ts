@@ -4,7 +4,7 @@ import {
   LogSink,
   createReflectServer,
   ReflectServerBaseEnv,
-} from "reflect-server";
+} from "@rocicorp/reflect-server";
 import { serverMutators } from "../src/datamodel/mutators.js";
 
 function getLogSinks(env: ReplidrawEnv): LogSink[] {

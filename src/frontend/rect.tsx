@@ -1,4 +1,4 @@
-import type { Reflect } from "reflect";
+import type { Reflect } from "@rocicorp/reflect";
 import React, { MouseEventHandler, TouchEventHandler } from "react";
 import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";

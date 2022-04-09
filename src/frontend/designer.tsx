@@ -1,4 +1,4 @@
-import type { Reflect } from "reflect";
+import type { Reflect } from "@rocicorp/reflect";
 import React, { useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";
 import { DraggableCore } from "react-draggable";

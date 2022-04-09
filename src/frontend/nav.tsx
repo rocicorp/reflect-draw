@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Reflect } from "reflect";
+import type { Reflect } from "@rocicorp/reflect";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
