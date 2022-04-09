@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Replicache } from "replicache";
+import type { Reflect } from "@rocicorp/reflect";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -8,11 +8,11 @@ import { randomShape } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Nav({ rep }: { rep: Replicache<M> }) {
+export function Nav({ reflect }: { reflect: Reflect<M> }) {
   const [aboutVisible, showAbout] = useState(false);
   const [shareVisible, showShare] = useState(false);
   const urlBox = useRef<HTMLInputElement>(null);
-  const userInfo = useUserInfo(rep);
+  const userInfo = useUserInfo(reflect);
 
   useEffect(() => {
     if (shareVisible) {
@@ -21,7 +21,7 @@ export function Nav({ rep }: { rep: Replicache<M> }) {
   });
 
   const onRectangle = () => {
-    rep.mutate.createShape(randomShape());
+    reflect.mutate.createShape(randomShape());
   };
 
   return (

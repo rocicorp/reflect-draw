@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import styles from "./collaborator.module.css";
-import type { Replicache } from "replicache";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useClientInfo } from "../datamodel/subscriptions";
+import type { Reflect } from "@rocicorp/reflect";
 
 const hideCollaboratorDelay = 5000;
 
@@ -16,13 +16,13 @@ interface Position {
 }
 
 export function Collaborator({
-  rep,
+  reflect,
   clientID,
 }: {
-  rep: Replicache<M>;
+  reflect: Reflect<M>;
   clientID: string;
 }) {
-  const clientInfo = useClientInfo(rep, clientID);
+  const clientInfo = useClientInfo(reflect, clientID);
   const [lastPos, setLastPos] = useState<Position | null>(null);
   const [gotFirstChange, setGotFirstChange] = useState(false);
   const [, setPoke] = useState({});
@@ -77,7 +77,7 @@ export function Collaborator({
       {clientInfo.selectedID && (
         <Rect
           {...{
-            rep,
+            reflect,
             key: `selection-${clientInfo.selectedID}`,
             id: clientInfo.selectedID,
             highlight: true,

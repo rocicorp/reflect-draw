@@ -1,10 +1,10 @@
-import type { Replicache } from "replicache";
+import type { Reflect } from "@rocicorp/reflect";
 import React, { MouseEventHandler, TouchEventHandler } from "react";
 import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
 
 export function Rect({
-  rep,
+  reflect,
   id,
   highlight = false,
   highlightColor = "rgb(74,158,255)",
@@ -13,7 +13,7 @@ export function Rect({
   onMouseEnter,
   onMouseLeave,
 }: {
-  rep: Replicache<M>;
+  reflect: Reflect<M>;
   id: string;
   highlight?: boolean;
   highlightColor?: string;
@@ -22,7 +22,7 @@ export function Rect({
   onMouseEnter?: MouseEventHandler;
   onMouseLeave?: MouseEventHandler;
 }) {
-  const shape = useShapeByID(rep, id);
+  const shape = useShapeByID(reflect, id);
   if (!shape) {
     return null;
   }

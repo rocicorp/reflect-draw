@@ -1,4 +1,4 @@
-import type { ReadTransaction, WriteTransaction } from "replicache";
+import type { ReadTransaction, WriteTransaction } from "@rocicorp/reflect";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { randInt } from "../util/rand";
@@ -97,13 +97,11 @@ export async function rotateShape(
   }
 }
 
-export async function initShapes(
-  tx: WriteTransaction,
-  shapes: { id: string; shape: Shape }[]
-) {
+export async function initShapes(tx: WriteTransaction) {
   if (await tx.has("initialized")) {
     return;
   }
+  const shapes = Array.from({ length: 5 }, () => randomShape());
   await Promise.all([
     tx.put("initialized", true),
     ...shapes.map((s) => putShape(tx, s)),

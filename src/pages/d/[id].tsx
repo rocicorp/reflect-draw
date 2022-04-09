@@ -1,65 +1,45 @@
 import { useEffect, useState } from "react";
-import { Replicache } from "replicache";
-import { Client } from "reflect-client";
+import { Reflect } from "@rocicorp/reflect";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
-import { M, mutators } from "../../datamodel/mutators";
+import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
-import { randomShape } from "../../datamodel/shape";
 import { nanoid } from "nanoid";
 
 export default function Home() {
-  const [rep, setRep] = useState<Replicache<M> | null>(null);
-
-  // TODO: Replicache + SSR could be cool!
+  const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
     (async () => {
-      const r = new Replicache({
-        name: roomID,
-        mutators,
-
-        // TODO: Do we need these?
-        // TODO: figure out backoff?
-        pushDelay: 0,
-        requestOptions: {
-          maxDelayMs: 0,
-          minDelayMs: 0,
-        },
+      const workerOrigin =
+        process.env.NEXT_PUBLIC_WORKER_HOST ??
+        "wss://replidraw.replicache.workers.dev";
+      console.info(`Connecting to worker at ${workerOrigin}`);
+      const userID = nanoid();
+      const r = new Reflect<M>({
+        socketOrigin: workerOrigin,
+        userID,
+        roomID,
         auth: JSON.stringify({
           userID: nanoid(),
           roomID: roomID,
         }),
-
-        // We only use pull to get the base cookie.
-        pullInterval: null,
+        mutators: clientMutators,
       });
-
-      const workerHost =
-        process.env.NEXT_PUBLIC_WORKER_HOST ??
-        "wss://replidraw.replicache.workers.dev";
-      const workerURL = `${workerHost}/connect`;
-      console.info(`Connecting to worker at ${workerURL}`);
-      new Client(r, roomID, workerURL);
 
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({
         id: await r.clientID,
         defaultUserInfo,
       });
-      r.onSync = (syncing: boolean) => {
-        if (!syncing) {
-          r.onSync = null;
-          r.mutate.initShapes(Array.from({ length: 5 }, () => randomShape()));
-        }
-      };
+      await r.mutate.initShapes();
 
-      setRep(r);
+      setReflectClient(r);
     })();
   }, []);
 
-  if (!rep) {
+  if (!reflect) {
     return null;
   }
 
@@ -76,8 +56,8 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav rep={rep} />
-      <Designer {...{ rep }} />
+      <Nav reflect={reflect} />
+      <Designer {...{ reflect }} />
     </div>
   );
 }

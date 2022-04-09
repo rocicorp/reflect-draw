@@ -1,19 +1,19 @@
-import type { Replicache } from "replicache";
+import type { Reflect } from "@rocicorp/reflect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
 
 export function Selection({
-  rep,
+  reflect,
   id,
   containerOffsetTop,
 }: {
-  rep: Replicache<M>;
+  reflect: Reflect<M>;
   id: string;
   containerOffsetTop: number | null;
 }) {
-  const shape = useShapeByID(rep, id);
+  const shape = useShapeByID(reflect, id);
   const gripSize = 19;
 
   if (!shape) {
@@ -46,7 +46,7 @@ export function Selection({
     );
     const s1 = size(shapeCenter.x, d.x, shapeCenter.y, d.y);
 
-    rep.mutate.resizeShape({ id, ds: s1 - s0 });
+    reflect.mutate.resizeShape({ id, ds: s1 - s0 });
   };
 
   const onRotate = (_e: DraggableEvent, d: DraggableData) => {
@@ -63,14 +63,17 @@ export function Selection({
     );
     const after = Math.atan2(offsetY - shapeCenter.y, d.x - shapeCenter.x);
 
-    rep.mutate.rotateShape({ id, ddeg: ((after - before) * 180) / Math.PI });
+    reflect.mutate.rotateShape({
+      id,
+      ddeg: ((after - before) * 180) / Math.PI,
+    });
   };
 
   return (
     <div>
       <Rect
         {...{
-          rep,
+          reflect,
           id,
           highlight: true,
         }}

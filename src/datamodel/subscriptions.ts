@@ -1,23 +1,26 @@
-import type { Replicache } from "replicache";
+import type { Reflect } from "@rocicorp/reflect";
 import { useSubscribe } from "replicache-react";
 import { getClientState, clientStatePrefix } from "./client-state";
 import { getShape, shapePrefix } from "./shape";
-import type { mutators } from "./mutators";
+import type { M } from "./mutators";
 
-export function useShapeIDs(rep: Replicache<typeof mutators>) {
+export function useShapeIDs(reflect: Reflect<M>) {
   return useSubscribe(
-    rep,
+    reflect,
     async (tx) => {
-      const shapes = await tx.scan({ prefix: shapePrefix }).keys().toArray();
-      return shapes.map((k) => k.substr(shapePrefix.length));
+      const shapes = (await tx
+        .scan({ prefix: shapePrefix })
+        .keys()
+        .toArray()) as string[];
+      return shapes.map((k) => k.substring(shapePrefix.length));
     },
     []
   );
 }
 
-export function useShapeByID(rep: Replicache<typeof mutators>, id: string) {
+export function useShapeByID(reflect: Reflect<M>, id: string) {
   return useSubscribe(
-    rep,
+    reflect,
     async (tx) => {
       return await getShape(tx, id);
     },
@@ -25,45 +28,45 @@ export function useShapeByID(rep: Replicache<typeof mutators>, id: string) {
   );
 }
 
-export function useUserInfo(rep: Replicache<typeof mutators>) {
+export function useUserInfo(reflect: Reflect<M>) {
   return useSubscribe(
-    rep,
+    reflect,
     async (tx) => {
-      return (await getClientState(tx, await rep.clientID)).userInfo;
+      return (await getClientState(tx, await reflect.clientID)).userInfo;
     },
     null
   );
 }
 
-export function useOverShapeID(rep: Replicache<typeof mutators>) {
+export function useOverShapeID(reflect: Reflect<M>) {
   return useSubscribe(
-    rep,
+    reflect,
     async (tx) => {
-      return (await getClientState(tx, await rep.clientID)).overID;
+      return (await getClientState(tx, await reflect.clientID)).overID;
     },
     ""
   );
 }
 
-export function useSelectedShapeID(rep: Replicache<typeof mutators>) {
+export function useSelectedShapeID(reflect: Reflect<M>) {
   return useSubscribe(
-    rep,
+    reflect,
     async (tx) => {
-      return (await getClientState(tx, await rep.clientID)).selectedID;
+      return (await getClientState(tx, await reflect.clientID)).selectedID;
     },
     ""
   );
 }
 
-export function useCollaboratorIDs(rep: Replicache<typeof mutators>) {
+export function useCollaboratorIDs(reflect: Reflect<M>) {
   return useSubscribe(
-    rep,
+    reflect,
     async (tx) => {
-      const clientIDs = await tx
+      const clientIDs = (await tx
         .scan({ prefix: clientStatePrefix })
         .keys()
-        .toArray();
-      const myClientID = await rep.clientID;
+        .toArray()) as string[];
+      const myClientID = await reflect.clientID;
       return clientIDs
         .filter((k) => !k.endsWith(myClientID))
         .map((k) => k.substr(clientStatePrefix.length));
@@ -72,12 +75,9 @@ export function useCollaboratorIDs(rep: Replicache<typeof mutators>) {
   );
 }
 
-export function useClientInfo(
-  rep: Replicache<typeof mutators>,
-  clientID: string
-) {
+export function useClientInfo(reflect: Reflect<M>, clientID: string) {
   return useSubscribe(
-    rep,
+    reflect,
     async (tx) => {
       return await getClientState(tx, clientID);
     },
