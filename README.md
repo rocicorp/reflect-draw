@@ -24,7 +24,9 @@ NEXT_PUBLIC_WORKER_HOST=ws://localhost:8787 npm run dev
 ## Publishing Worker to Cloudflare
 
 1. Get an account at Cloudflare: https://workers.cloudflare.com/.
-2. Install the [Wrangler CLI tool](https://developers.cloudflare.com/workers/cli-wrangler/install-update)
+2. Install the [Wrangler v1 CLI tool](https://developers.cloudflare.com/workers/wrangler/cli-wrangler/install-update/) 
+
+**Important:** these instructions only work with v1 of the wrangler CLI. TODO: Figure out v2.
 
 Then:
 
@@ -48,16 +50,13 @@ wrangler dev
 npm run dev
 ```
 
-## Using Reflect in your own project
+## Building your Own Thing
 
-1. Copy `reflect-*.tgz`, `reflect-client-*.tgz`, `worker`, and `wrangler.toml` into your project
-2. `npm add reflect-*.tgz reflect-client-*.tgz @cloudflare/workers-types esbuild miniflare`
-3. Adjust the `mutators` param in `worker/index.ts` to point to your mutators file.
-4. Copy the `dev-worker` and `build-worker` scripts from `package.json` into your project
-5. Ensure `Replicache` and the client are instantiated correctly, see `[id].tsx` in this project.
-6. Have fun 😀.
-
-Note: This will get easier. `reflect-*.tgz` will soon become a standalone npm module, and `reflect-client-*.tgz` will get folded into the existing `replicache` module.
+1. Clone this project
+2. `npm install`
+3. Adjust the mutators, subscribers, and entities in `datamodel/` to implement your domain objects.
+4. Implement your UI by calling the subscribers and mutators. See existing UI in `frontend` for an example.
+5. Have fun 😀.
 
 ## Authentication and Authorization
 
