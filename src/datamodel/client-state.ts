@@ -100,27 +100,44 @@ export async function setCursor(
   { id, x, y }: { id: string; x: number; y: number }
 ): Promise<void> {
   const clientState = await getClientState(tx, id);
-  clientState.cursor.x = x;
-  clientState.cursor.y = y;
-  await putClientState(tx, { id, clientState });
+  await putClientState(tx, {
+    id,
+    clientState: {
+      ...clientState,
+      cursor: {
+        x,
+        y,
+      },
+    },
+  });
 }
 
 export async function overShape(
   tx: WriteTransaction,
   { clientID, shapeID }: { clientID: string; shapeID: string }
 ): Promise<void> {
-  const client = await getClientState(tx, clientID);
-  client.overID = shapeID;
-  await putClientState(tx, { id: clientID, clientState: client });
+  const clientState = await getClientState(tx, clientID);
+  await putClientState(tx, {
+    id: clientID,
+    clientState: {
+      ...clientState,
+      overID: shapeID,
+    },
+  });
 }
 
 export async function selectShape(
   tx: WriteTransaction,
   { clientID, shapeID }: { clientID: string; shapeID: string }
 ): Promise<void> {
-  const client = await getClientState(tx, clientID);
-  client.selectedID = shapeID;
-  await putClientState(tx, { id: clientID, clientState: client });
+  const clientState = await getClientState(tx, clientID);
+  await putClientState(tx, {
+    id: clientID,
+    clientState: {
+      ...clientState,
+      selectedID: shapeID,
+    },
+  });
 }
 
 export function randUserInfo(): UserInfo {
