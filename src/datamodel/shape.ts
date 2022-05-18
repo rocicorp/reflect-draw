@@ -48,9 +48,14 @@ export async function moveShape(
 ): Promise<void> {
   const shape = await getShape(tx, id);
   if (shape) {
-    shape.x += dx;
-    shape.y += dy;
-    await putShape(tx, { id, shape });
+    await putShape(tx, {
+      id,
+      shape: {
+        ...shape,
+        x: shape.x + dx,
+        y: shape.y + dy,
+      },
+    });
   }
 }
 
@@ -62,11 +67,17 @@ export async function scanShape(
   if (!shape) {
     return;
   }
-  shape.x += dx;
-  if (shape.x > maxX) {
-    shape.x = 0;
+  let newX = (shape.x += dx);
+  if (newX > maxX) {
+    newX = 0;
   }
-  putShape(tx, { id, shape });
+  putShape(tx, {
+    id,
+    shape: {
+      ...shape,
+      x: newX,
+    },
+  });
 }
 
 export async function resizeShape(
@@ -78,11 +89,16 @@ export async function resizeShape(
     const minSize = 10;
     const dw = Math.max(minSize - shape.width, ds);
     const dh = Math.max(minSize - shape.height, ds);
-    shape.width += dw;
-    shape.height += dh;
-    shape.x -= dw / 2;
-    shape.y -= dh / 2;
-    await putShape(tx, { id, shape });
+    await putShape(tx, {
+      id,
+      shape: {
+        ...shape,
+        width: shape.width + dw,
+        height: shape.height + dh,
+        x: shape.x - dw / 2,
+        y: shape.y - dh / 2,
+      },
+    });
   }
 }
 
@@ -92,8 +108,13 @@ export async function rotateShape(
 ): Promise<void> {
   const shape = await getShape(tx, id);
   if (shape) {
-    shape.rotate += ddeg;
-    await putShape(tx, { id, shape });
+    await putShape(tx, {
+      id,
+      shape: {
+        ...shape,
+        rotate: shape.rotate + ddeg,
+      },
+    });
   }
 }
 
