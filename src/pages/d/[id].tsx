@@ -22,8 +22,8 @@ export default function Home() {
         userID,
         roomID,
         auth: JSON.stringify({
-          userID: nanoid(),
-          roomID: roomID,
+          userID,
+          roomID,
         }),
         mutators: clientMutators,
       });
