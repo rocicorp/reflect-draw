@@ -22,7 +22,7 @@
     "esbuild": "^0.14.20",
     "miniflare": "^2.3.0",
     "nanoid": "^3.2.0",
-    "next": "^12.0.10",
+    "next": "^12.1.6",
     "prettier": "^2.5.1",
     "react": "17.0.2",
     "react-bootstrap": "^1.5.2",
