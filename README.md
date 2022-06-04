@@ -9,7 +9,7 @@ Running live at [replidraw-do.vercel.app](https://replidraw-do.vercel.app/).
 
 ## Hacking Locally
 
-The `dev-worker` command runs the worker using [Miniflare](https://miniflare.dev/), a really nice Cloudflare emulation environment. This is super convenient and doesn't require a CF account. Unfortunately, it also doesn't give you a realistic view of performance since everything is local.
+The `dev-worker` command runs the worker using [wrangler](https://developers.cloudflare.com/workers/wrangler/) in local mode, a really nice Cloudflare emulation environment. This is super convenient and doesn't require a CF account. Unfortunately, it also doesn't give you a realistic view of performance since everything is local.
 
 ```bash
 npm install
@@ -24,9 +24,7 @@ NEXT_PUBLIC_WORKER_HOST=ws://localhost:8787 npm run dev
 ## Publishing Worker to Cloudflare
 
 1. Get an account at Cloudflare: https://workers.cloudflare.com/.
-2. Install the [Wrangler v1 CLI tool](https://developers.cloudflare.com/workers/wrangler/cli-wrangler/install-update/) 
-
-**Important:** these instructions only work with v1 of the wrangler CLI. TODO: Figure out v2.
+2. Install the [Wrangler CLI tool](https://developers.cloudflare.com/workers/wrangler/get-started/)
 
 Then:
 
@@ -40,7 +38,7 @@ npm run dev
 
 ## Developing against Cloudflare
 
-It is possible to develop using the Cloudflare network without destabilizing the production copy of a worker. This provides a more realistic idea of latency than Miniflare.
+It is possible to develop using the Cloudflare network without destabilizing the production copy of a worker. This provides a more realistic idea of latency than Wrangler.
 
 ```
 # Must have published at least once prior
