@@ -7,8 +7,14 @@ import styles from "./nav.module.css";
 import { randomShape } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
+import { OnlineStatus } from "./online-status";
 
-export function Nav({ reflect }: { reflect: Reflect<M> }) {
+type NavProps = {
+  reflect: Reflect<M>;
+  online: boolean;
+};
+
+export function Nav({ reflect, online }: NavProps) {
   const [aboutVisible, showAbout] = useState(false);
   const [shareVisible, showShare] = useState(false);
   const urlBox = useRef<HTMLInputElement>(null);
@@ -77,6 +83,7 @@ export function Nav({ reflect }: { reflect: Reflect<M> }) {
           About this Demo
         </div>
         <div className={styles.spacer}></div>
+        <OnlineStatus online={online} />
         {userInfo && (
           <div
             className={styles.user}

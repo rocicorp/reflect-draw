@@ -8,6 +8,7 @@ import { nanoid } from "nanoid";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
+  const [online, setOnline] = useState(false);
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
@@ -19,6 +20,7 @@ export default function Home() {
       const userID = nanoid();
       const r = new Reflect<M>({
         socketOrigin: workerOrigin,
+        onOnlineChange: setOnline,
         userID,
         roomID,
         auth: JSON.stringify({
@@ -56,7 +58,7 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav reflect={reflect} />
+      <Nav reflect={reflect} online={online} />
       <Designer {...{ reflect }} />
     </div>
   );
