@@ -4,6 +4,7 @@ import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useClientInfo } from "../datamodel/subscriptions";
 import type { Reflect } from "@rocicorp/reflect";
+import type { OptionalLogger } from "@rocicorp/logger";
 
 const hideCollaboratorDelay = 5000;
 
@@ -18,9 +19,11 @@ interface Position {
 export function Collaborator({
   reflect,
   clientID,
+  logger,
 }: {
   reflect: Reflect<M>;
   clientID: string;
+  logger: OptionalLogger;
 }) {
   const clientInfo = useClientInfo(reflect, clientID);
   const [lastPos, setLastPos] = useState<Position | null>(null);
@@ -40,11 +43,11 @@ export function Collaborator({
 
   if (curPos) {
     if (!lastPos) {
-      console.debug(`Cursor ${clientID} - got initial position`, curPos);
+      logger.debug?.(`Cursor ${clientID} - got initial position`, curPos);
       setLastPos({ pos: curPos, ts: Date.now() });
     } else {
       if (lastPos.pos.x != curPos.x || lastPos.pos.y != curPos.y) {
-        console.debug(`Cursor ${clientID} - got change to`, curPos);
+        logger.debug?.(`Cursor ${clientID} - got change to`, curPos);
         setLastPos({ pos: curPos, ts: Date.now() });
         setGotFirstChange(true);
       }
@@ -58,14 +61,14 @@ export function Collaborator({
 
   useEffect(() => {
     if (remaining > 0) {
-      console.debug(`Cursor ${clientID} - setting timer for ${remaining}ms`);
+      logger.debug?.(`Cursor ${clientID} - setting timer for ${remaining}ms`);
       const timerID = setTimeout(() => setPoke({}), remaining);
       return () => clearTimeout(timerID);
     }
     return;
   });
 
-  console.debug(
+  logger.debug?.(
     `Cursor ${clientID} - elapsed ${elapsed}, remaining: ${remaining}, visible: ${visible}`
   );
   if (!clientInfo || !curPos || !userInfo) {

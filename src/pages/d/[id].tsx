@@ -5,10 +5,18 @@ import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
+import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
+import { DataDogBrowserLogSink } from "./data-dog-browser-log-sink";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
+
+  const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
+    ? new DataDogBrowserLogSink()
+    : consoleLogSink;
+  const logger = new OptionalLoggerImpl(logSink);
+
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
@@ -16,7 +24,7 @@ export default function Home() {
       const workerOrigin =
         process.env.NEXT_PUBLIC_WORKER_HOST ??
         "wss://replidraw.replicache.workers.dev";
-      console.info(`Connecting to worker at ${workerOrigin}`);
+      logger.info?.(`Connecting to worker at ${workerOrigin}`);
       const userID = nanoid();
       const r = new Reflect<M>({
         socketOrigin: workerOrigin,
@@ -27,6 +35,7 @@ export default function Home() {
           userID,
           roomID,
         }),
+        logSinks: [logSink],
         mutators: clientMutators,
       });
 
@@ -59,7 +68,7 @@ export default function Home() {
       }}
     >
       <Nav reflect={reflect} online={online} />
-      <Designer {...{ reflect }} />
+      <Designer reflect={reflect} logger={logger} />
     </div>
   );
 }
