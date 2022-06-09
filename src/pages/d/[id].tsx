@@ -6,7 +6,7 @@ import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { DataDogBrowserLogSink } from "./data-dog-browser-log-sink";
+import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
