@@ -1,4 +1,5 @@
 import type { Reflect } from "@rocicorp/reflect";
+import type { OptionalLogger } from "@rocicorp/logger";
 import React, { useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";
 import { DraggableCore } from "react-draggable";
@@ -15,7 +16,13 @@ import {
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Designer({ reflect }: { reflect: Reflect<M> }) {
+export function Designer({
+  reflect,
+  logger,
+}: {
+  reflect: Reflect<M>;
+  logger: OptionalLogger;
+}) {
   const ids = useShapeIDs(reflect);
   const overID = useOverShapeID(reflect);
   const selectedID = useSelectedShapeID(reflect);
@@ -126,11 +133,10 @@ export function Designer({ reflect }: { reflect: Reflect<M> }) {
             // rectangles as their own independent svg content. Le. Sigh.
             collaboratorIDs.map((id) => (
               <Collaborator
-                {...{
-                  key: `key-${id}`,
-                  reflect,
-                  clientID: id,
-                }}
+                key={`key-${id}`}
+                reflect={reflect}
+                clientID={id}
+                logger={logger}
               />
             ))
           }
