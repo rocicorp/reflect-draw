@@ -8,13 +8,16 @@ import { randomShape } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 import { OnlineStatus } from "./online-status";
+import type { UndoManager } from "./undo-manager";
+import { nanoid } from "nanoid";
 
 type NavProps = {
   reflect: Reflect<M>;
   online: boolean;
+  undoManager: UndoManager;
 };
 
-export function Nav({ reflect, online }: NavProps) {
+export function Nav({ reflect, online, undoManager }: NavProps) {
   const [aboutVisible, showAbout] = useState(false);
   const [shareVisible, showShare] = useState(false);
   const urlBox = useRef<HTMLInputElement>(null);
@@ -27,7 +30,14 @@ export function Nav({ reflect, online }: NavProps) {
   });
 
   const onRectangle = () => {
-    reflect.mutate.createShape(randomShape());
+    const id = nanoid();
+    const createShape = async () =>
+      await reflect.mutate.createShape(randomShape(id));
+    const deleteShape = async () => await reflect.mutate.deleteShape(id);
+    undoManager.add({
+      undo: deleteShape,
+      execute: createShape,
+    });
   };
 
   return (

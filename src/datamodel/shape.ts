@@ -138,14 +138,14 @@ export const shapePrefix = "shape-";
 const colors = ["red", "blue", "white", "green", "yellow"];
 let nextColor = 0;
 
-export function randomShape() {
+export function randomShape(nnid?: string): Shape {
   const s = randInt(100, 400);
   const fill = colors[nextColor++];
   if (nextColor == colors.length) {
     nextColor = 0;
   }
   return {
-    id: nanoid(),
+    id: nnid ? nnid : nanoid(),
     shape: {
       type: "rect",
       x: randInt(0, 400),

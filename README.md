@@ -24,7 +24,7 @@ NEXT_PUBLIC_WORKER_HOST=ws://localhost:8787 npm run dev
 ## Publishing Worker to Cloudflare
 
 1. Get an account at Cloudflare: https://workers.cloudflare.com/.
-2. Install the [Wrangler v1 CLI tool](https://developers.cloudflare.com/workers/wrangler/cli-wrangler/install-update/) 
+2. Install the [Wrangler v1 CLI tool](https://developers.cloudflare.com/workers/wrangler/cli-wrangler/install-update/)
 
 **Important:** these instructions only work with v1 of the wrangler CLI. TODO: Figure out v2.
 

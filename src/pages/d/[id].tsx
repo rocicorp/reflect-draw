@@ -7,10 +7,12 @@ import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
+import { UndoManager } from "../../frontend/undo-manager";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
+  const [undoManager, setUndoManager] = useState<UndoManager | null>(null);
 
   const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
     ? new DataDogBrowserLogSink()
@@ -48,9 +50,19 @@ export default function Home() {
 
       setReflectClient(r);
     })();
+
+    setUndoManager(
+      new UndoManager({
+        name: "drawUndo",
+      })
+    );
   }, []);
 
   if (!reflect) {
+    return null;
+  }
+
+  if (!undoManager) {
     return null;
   }
 
@@ -67,8 +79,8 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav reflect={reflect} online={online} />
-      <Designer reflect={reflect} logger={logger} />
+      <Nav reflect={reflect} online={online} undoManager={undoManager} />
+      <Designer reflect={reflect} logger={logger} undoManager={undoManager} />
     </div>
   );
 }

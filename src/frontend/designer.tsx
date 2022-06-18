@@ -15,13 +15,17 @@ import {
   useCollaboratorIDs,
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
+import type { UndoManager } from "./undo-manager";
+import { nanoid } from "nanoid";
 
 export function Designer({
   reflect,
   logger,
+  undoManager,
 }: {
   reflect: Reflect<M>;
   logger: OptionalLogger;
+  undoManager: UndoManager;
 }) {
   const ids = useShapeIDs(reflect);
   const overID = useOverShapeID(reflect);
@@ -32,16 +36,72 @@ export function Designer({
   const [dragging, setDragging] = useState(false);
 
   const handlers = {
-    moveLeft: () =>
-      reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
-    moveRight: () =>
-      reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
-    moveUp: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
-    moveDown: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
-    deleteShape: () => {
+    moveLeft: () => {
+      const moveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 });
+      const undoMoveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 });
+      undoManager.add({
+        execute: moveShape,
+        undo: undoMoveShape,
+      });
+    },
+    moveRight: () => {
+      const moveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 });
+      const undoMoveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 });
+      undoManager.add({
+        execute: moveShape,
+        undo: undoMoveShape,
+      });
+    },
+    moveUp: () => {
+      const moveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 });
+      const undoMoveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 });
+      undoManager.add({
+        execute: moveShape,
+        undo: undoMoveShape,
+      });
+    },
+    moveDown: () => {
+      const moveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 });
+      const undoMoveShape = async () =>
+        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 });
+      undoManager.add({
+        execute: moveShape,
+        undo: undoMoveShape,
+      });
+    },
+    deleteShape: async () => {
       // Prevent navigating backward on some browsers.
       event?.preventDefault();
-      reflect.mutate.deleteShape(selectedID);
+      const currentShape = await reflect.mutate.getShape(selectedID);
+      const deleteShape = async () =>
+        await reflect.mutate.deleteShape(selectedID);
+      const createShape = async () => {
+        if (currentShape) {
+          await reflect.mutate.createShape({
+            id: nanoid(),
+            shape: {
+              ...currentShape,
+            },
+          });
+        }
+      };
+      undoManager.add({
+        execute: deleteShape,
+        undo: createShape,
+      });
+    },
+    undo: () => {
+      undoManager.undo();
+    },
+    redo: () => {
+      undoManager.redo();
     },
   };
 
@@ -152,4 +212,6 @@ const keyMap = {
   moveUp: ["up", "shift+up"],
   moveDown: ["down", "shift+down"],
   deleteShape: ["del", "backspace"],
+  undo: ["ctrl+z", "command+z"],
+  redo: ["ctrl+y", "command+y"],
 };
