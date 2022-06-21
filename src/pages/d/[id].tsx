@@ -50,12 +50,7 @@ export default function Home() {
 
       setReflectClient(r);
     })();
-
-    setUndoManager(
-      new UndoManager({
-        name: "drawUndo",
-      })
-    );
+    setUndoManager(new UndoManager());
   }, []);
 
   if (!reflect) {

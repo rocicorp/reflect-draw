@@ -14,7 +14,7 @@ export const shapeSchema = z.object({
 });
 
 export type Shape = z.infer<typeof shapeSchema>;
-
+export type ShapeWithId = { id: string; shape: Shape };
 export async function getShape(
   tx: ReadTransaction,
   id: string
@@ -138,14 +138,14 @@ export const shapePrefix = "shape-";
 const colors = ["red", "blue", "white", "green", "yellow"];
 let nextColor = 0;
 
-export function randomShape(nnid?: string): Shape {
+export function randomShape(): ShapeWithId {
   const s = randInt(100, 400);
   const fill = colors[nextColor++];
   if (nextColor == colors.length) {
     nextColor = 0;
   }
   return {
-    id: nnid ? nnid : nanoid(),
+    id: nanoid(),
     shape: {
       type: "rect",
       x: randInt(0, 400),

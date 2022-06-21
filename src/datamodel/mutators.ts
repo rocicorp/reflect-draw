@@ -13,7 +13,6 @@ import {
   resizeShape,
   rotateShape,
   initShapes,
-  getShape,
 } from "./shape";
 
 export type M = typeof serverMutators;
@@ -30,7 +29,6 @@ export const serverMutators = {
   overShape,
   selectShape,
   initShapes,
-  getShape,
   nop: async (_: WriteTransaction) => {},
 };
 

@@ -9,7 +9,6 @@ import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 import { OnlineStatus } from "./online-status";
 import type { UndoManager } from "./undo-manager";
-import { nanoid } from "nanoid";
 
 type NavProps = {
   reflect: Reflect<M>;
@@ -30,14 +29,10 @@ export function Nav({ reflect, online, undoManager }: NavProps) {
   });
 
   const onRectangle = () => {
-    const id = nanoid();
-    const createShape = async () =>
-      await reflect.mutate.createShape(randomShape(id));
-    const deleteShape = async () => await reflect.mutate.deleteShape(id);
-    undoManager.add({
-      undo: deleteShape,
-      execute: createShape,
-    });
+    const shape = randomShape();
+    const redo = async () => await reflect.mutate.createShape(shape);
+    const undo = async () => await reflect.mutate.deleteShape(shape.id);
+    undoManager.addAndExecute({ redo, undo });
   };
 
   return (

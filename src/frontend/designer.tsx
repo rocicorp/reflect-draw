@@ -17,6 +17,7 @@ import {
 import type { M } from "../datamodel/mutators";
 import type { UndoManager } from "./undo-manager";
 import { nanoid } from "nanoid";
+import { getShape, Shape } from "src/datamodel/shape";
 
 export function Designer({
   reflect,
@@ -35,69 +36,63 @@ export function Designer({
   const ref = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
 
+  const move = async (
+    change: Partial<{ dx: number; dy: number }>
+  ): Promise<void> =>
+    await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 0, ...change });
+
   const handlers = {
     moveLeft: () => {
-      const moveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 });
-      const undoMoveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 });
-      undoManager.add({
-        execute: moveShape,
-        undo: undoMoveShape,
+      undoManager.addAndExecute({
+        redo: async () => await move({ dx: -20, dy: 0 }),
+        undo: async () => await move({ dx: 20, dy: 0 }),
       });
     },
     moveRight: () => {
-      const moveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 });
-      const undoMoveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 });
-      undoManager.add({
-        execute: moveShape,
-        undo: undoMoveShape,
+      undoManager.addAndExecute({
+        redo: async () => await move({ dx: 20, dy: 0 }),
+        undo: async () => await move({ dx: -20, dy: 0 }),
       });
     },
     moveUp: () => {
-      const moveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 });
-      const undoMoveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 });
-      undoManager.add({
-        execute: moveShape,
-        undo: undoMoveShape,
+      undoManager.addAndExecute({
+        redo: async () => await move({ dx: 0, dy: -20 }),
+        undo: async () => await move({ dx: 0, dy: 20 }),
       });
     },
     moveDown: () => {
-      const moveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 });
-      const undoMoveShape = async () =>
-        await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 });
-      undoManager.add({
-        execute: moveShape,
-        undo: undoMoveShape,
+      undoManager.addAndExecute({
+        redo: async () => await move({ dx: 0, dy: 20 }),
+        undo: async () => await move({ dx: 0, dy: -20 }),
       });
     },
     deleteShape: async () => {
       // Prevent navigating backward on some browsers.
       event?.preventDefault();
-      const currentShape = await reflect.mutate.getShape(selectedID);
+      const shapeBeforeDelete = await reflect.query<Shape | null>((tx) =>
+        getShape(tx, selectedID)
+      );
+      //no-op non-exisitent shape on delete
+      if (!shapeBeforeDelete) {
+        return;
+      }
       const deleteShape = async () =>
         await reflect.mutate.deleteShape(selectedID);
       const createShape = async () => {
-        if (currentShape) {
-          await reflect.mutate.createShape({
-            id: nanoid(),
-            shape: {
-              ...currentShape,
-            },
-          });
-        }
+        await reflect.mutate.createShape({
+          id: selectedID,
+          shape: {
+            ...shapeBeforeDelete,
+          },
+        });
       };
-      undoManager.add({
-        execute: deleteShape,
+      undoManager.addAndExecute({
+        redo: deleteShape,
         undo: createShape,
       });
     },
     undo: () => {
+      console.log("undoManager", undoManager);
       undoManager.undo();
     },
     redo: () => {
