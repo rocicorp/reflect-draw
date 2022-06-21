@@ -12,13 +12,12 @@ import { UndoManager } from "../../frontend/undo-manager";
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
-  const [undoManager, setUndoManager] = useState<UndoManager | null>(null);
 
   const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
     ? new DataDogBrowserLogSink()
     : consoleLogSink;
   const logger = new OptionalLoggerImpl(logSink);
-
+  const undoManager = new UndoManager();
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
@@ -50,7 +49,6 @@ export default function Home() {
 
       setReflectClient(r);
     })();
-    setUndoManager(new UndoManager());
   }, []);
 
   if (!reflect) {
