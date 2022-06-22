@@ -3,21 +3,51 @@ export type UndoRedoAction = {
   undo: Function;
 };
 
+type AddExecuteUndoOption = {
+  execute: Function;
+  undo: Function;
+};
+
+type AddOptionType = AddExecuteUndoOption | UndoRedoAction;
+
+interface UndoManagerOption {
+  maxSize?: number;
+  onCanUndoChange?: ((canUndo: boolean) => void) | undefined;
+  onCanRedoChange?: ((canRedo: boolean) => void) | undefined;
+}
+
 export class UndoManager {
   private _undoRedoActionStack: Array<UndoRedoAction> = [];
   private readonly _maxSize: number;
   private _index: number = -1;
   private _canUndo: boolean = false;
   private _canRedo: boolean = false;
+  private _onCanUndoChange: ((canUndo: boolean) => void) | undefined =
+    undefined;
+  private _onCanRedoChange: ((canRedo: boolean) => void) | undefined =
+    undefined;
 
-  constructor(maxSize?: number) {
-    this._maxSize = maxSize || 10000;
+  constructor(options?: UndoManagerOption) {
+    this._maxSize = 10000;
+    if (options) {
+      this._maxSize = options.maxSize || 10000;
+      this._onCanUndoChange = options.onCanUndoChange;
+      this._onCanRedoChange = options.onCanRedoChange;
+    }
   }
 
   private _updateIndex(idx: number) {
     this._index = idx;
-    this._canUndo = this._index >= 0;
-    this._canRedo = this._index < this._undoRedoActionStack.length - 1;
+    const cu = this._index >= 0;
+    if (cu != this._canUndo) {
+      this._canUndo = cu;
+      this._onCanUndoChange?.(this._canUndo);
+    }
+    const cr = this._index < this._undoRedoActionStack.length - 1;
+    if (cr != this._canRedo) {
+      this._canRedo = cr;
+      this._onCanRedoChange?.(this._canRedo);
+    }
   }
 
   get canUndo() {
@@ -28,23 +58,30 @@ export class UndoManager {
     return this._canRedo;
   }
 
-  private _add(action: UndoRedoAction) {
+  add(option: AddOptionType) {
     this._undoRedoActionStack.splice(this._index + 1);
-    this._undoRedoActionStack.push(action);
+    let redo = undefined;
+    if ("execute" in option) {
+      redo = option.execute;
+    }
+    if ("redo" in option) {
+      redo = option.redo;
+    }
+    if (!redo) {
+      throw new Error("redo function is required");
+    }
+    this._undoRedoActionStack.push({
+      undo: option.undo,
+      redo: redo,
+    });
     this._updateIndex(this._index + 1);
     if (this._index >= this._maxSize) {
       this._undoRedoActionStack.shift();
       this._updateIndex(this._index - 1);
     }
-  }
-
-  addAndExecute(action: UndoRedoAction) {
-    this._add(action);
-    action.redo();
-  }
-
-  add(action: UndoRedoAction) {
-    this._add(action);
+    if ("execute" in option) {
+      option.execute();
+    }
   }
 
   undo() {

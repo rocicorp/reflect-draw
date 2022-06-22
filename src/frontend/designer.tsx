@@ -16,7 +16,6 @@ import {
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 import type { UndoManager } from "./undo-manager";
-import { nanoid } from "nanoid";
 import { getShape, Shape } from "src/datamodel/shape";
 
 export function Designer({
@@ -43,26 +42,26 @@ export function Designer({
 
   const handlers = {
     moveLeft: () => {
-      undoManager.addAndExecute({
-        redo: async () => await move({ dx: -20, dy: 0 }),
+      undoManager.add({
+        execute: async () => await move({ dx: -20, dy: 0 }),
         undo: async () => await move({ dx: 20, dy: 0 }),
       });
     },
     moveRight: () => {
-      undoManager.addAndExecute({
-        redo: async () => await move({ dx: 20, dy: 0 }),
+      undoManager.add({
+        execute: async () => await move({ dx: 20, dy: 0 }),
         undo: async () => await move({ dx: -20, dy: 0 }),
       });
     },
     moveUp: () => {
-      undoManager.addAndExecute({
-        redo: async () => await move({ dx: 0, dy: -20 }),
+      undoManager.add({
+        execute: async () => await move({ dx: 0, dy: -20 }),
         undo: async () => await move({ dx: 0, dy: 20 }),
       });
     },
     moveDown: () => {
-      undoManager.addAndExecute({
-        redo: async () => await move({ dx: 0, dy: 20 }),
+      undoManager.add({
+        execute: async () => await move({ dx: 0, dy: 20 }),
         undo: async () => await move({ dx: 0, dy: -20 }),
       });
     },
@@ -86,13 +85,12 @@ export function Designer({
           },
         });
       };
-      undoManager.addAndExecute({
-        redo: deleteShape,
+      undoManager.add({
+        execute: deleteShape,
         undo: createShape,
       });
     },
     undo: () => {
-      console.log("undoManager", undoManager);
       undoManager.undo();
     },
     redo: () => {

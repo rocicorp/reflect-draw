@@ -17,7 +17,14 @@ export default function Home() {
     ? new DataDogBrowserLogSink()
     : consoleLogSink;
   const logger = new OptionalLoggerImpl(logSink);
-  const undoManager = new UndoManager();
+  const undoManager = new UndoManager({
+    onCanRedoChange: (canRedo) => {
+      logger.info?.(`canRedo: ${canRedo}`);
+    },
+    onCanUndoChange: (canUndo) => {
+      logger.info?.(`canUndo: ${canUndo}`);
+    },
+  });
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 

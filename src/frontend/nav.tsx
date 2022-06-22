@@ -30,9 +30,9 @@ export function Nav({ reflect, online, undoManager }: NavProps) {
 
   const onRectangle = () => {
     const shape = randomShape();
-    const redo = async () => await reflect.mutate.createShape(shape);
+    const execute = async () => await reflect.mutate.createShape(shape);
     const undo = async () => await reflect.mutate.deleteShape(shape.id);
-    undoManager.addAndExecute({ redo, undo });
+    undoManager.add({ execute, undo });
   };
 
   return (
