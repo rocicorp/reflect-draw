@@ -21,18 +21,16 @@ export function RectController({
   const [startShape, setStartShape] = useState<Shape | null>();
   const shape = useShapeByID(reflect, id);
 
-  const onMouseEnter = async () => {
-    return reflect.mutate.overShape({
+  const onMouseEnter = async () =>
+    reflect.mutate.overShape({
       clientID: await reflect.clientID,
       shapeID: id,
     });
-  };
-  const onMouseLeave = async () => {
-    return reflect.mutate.overShape({
+  const onMouseLeave = async () =>
+    reflect.mutate.overShape({
       clientID: await reflect.clientID,
       shapeID: "",
     });
-  };
 
   const onDragStart = (_e: DraggableEvent, _d: DraggableData) => {
     // Can't mark onDragStart async because it changes return type and onDragStart
@@ -65,22 +63,24 @@ export function RectController({
 
   const onDragStop = (_e: DraggableEvent, _d: DraggableData) => {
     if (startShape && shape) {
-      undoManager.add({
-        redo: async () => {
-          return await reflect.mutate.moveShape({
-            id,
-            dx: shape.x - startShape.x,
-            dy: shape.y - startShape.y,
-          });
-        },
-        undo: async () => {
-          return await reflect.mutate.moveShape({
-            id,
-            dx: startShape.x - shape.x,
-            dy: startShape.y - shape.y,
-          });
-        },
-      });
+      if (shape.x - startShape.x !== 0 || shape.y - startShape.y !== 0) {
+        undoManager.add({
+          redo: async () => {
+            return await reflect.mutate.moveShape({
+              id,
+              dx: shape.x - startShape.x,
+              dy: shape.y - startShape.y,
+            });
+          },
+          undo: async () => {
+            return await reflect.mutate.moveShape({
+              id,
+              dx: startShape.x - shape.x,
+              dy: startShape.y - shape.y,
+            });
+          },
+        });
+      }
     }
   };
   if (!shape) {

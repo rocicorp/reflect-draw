@@ -116,7 +116,7 @@ export function Selection({
 
   const onResizeEnd = (_e: DraggableEvent, _d: DraggableData) => {
     const ds = calcSize(_d);
-    if (ds !== undefined && startShapeSize !== undefined) {
+    if (ds && startShapeSize) {
       undoManager.add({
         redo: async () => {
           return await reflect.mutate.resizeShape({

@@ -42,26 +42,26 @@ export function Designer({
   const handlers = {
     moveLeft: () => {
       undoManager.add({
-        execute: async () => await move(-20, 0),
-        undo: async () => await move(20, 0),
+        execute: () => move(-20, 0),
+        undo: () => move(20, 0),
       });
     },
     moveRight: () => {
       undoManager.add({
-        execute: async () => await move(20, 0),
-        undo: async () => await move(-20, 0),
+        execute: () => move(20, 0),
+        undo: () => move(-20, 0),
       });
     },
     moveUp: () => {
       undoManager.add({
-        execute: async () => await move(0, -20),
-        undo: async () => await move(0, 20),
+        execute: () => move(0, -20),
+        undo: () => move(0, 20),
       });
     },
     moveDown: () => {
       undoManager.add({
-        execute: async () => await move(0, 20),
-        undo: async () => await move(0, -20),
+        execute: () => move(0, 20),
+        undo: () => move(0, -20),
       });
     },
     deleteShape: async () => {
