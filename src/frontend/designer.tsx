@@ -146,6 +146,7 @@ export function Designer({
                 key: `shape-${id}`,
                 reflect,
                 id,
+                undoManager,
               }}
             />
           ))}
@@ -174,6 +175,7 @@ export function Designer({
                   id: selectedID,
                   highlight: true,
                   containerOffsetTop: ref.current && ref.current.offsetTop,
+                  undoManager,
                 }}
               />
             )
