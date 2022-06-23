@@ -18,11 +18,10 @@ export default function Home() {
     : consoleLogSink;
   const logger = new OptionalLoggerImpl(logSink);
   const undoManager = new UndoManager({
-    onCanRedoChange: (canRedo) => {
-      logger.info?.(`canRedo: ${canRedo}`);
-    },
-    onCanUndoChange: (canUndo) => {
-      logger.info?.(`canUndo: ${canUndo}`);
+    onChange: () => {
+      logger.info?.(
+        `canRedo: ${undoManager.canRedo} canUndo: ${undoManager.canUndo}`
+      );
     },
   });
   useEffect(() => {
@@ -59,10 +58,6 @@ export default function Home() {
   }, []);
 
   if (!reflect) {
-    return null;
-  }
-
-  if (!undoManager) {
     return null;
   }
 

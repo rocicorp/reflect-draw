@@ -5,7 +5,6 @@ import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
 import type { UndoManager } from "./undo-manager";
 import { useState } from "react";
-import { transcode } from "buffer";
 
 export function Selection({
   reflect,

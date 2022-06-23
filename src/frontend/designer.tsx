@@ -16,7 +16,7 @@ import {
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 import type { UndoManager } from "./undo-manager";
-import { getShape, Shape } from "src/datamodel/shape";
+import { getShape } from "../datamodel/shape";
 
 export function Designer({
   reflect,
@@ -35,40 +35,39 @@ export function Designer({
   const ref = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
 
-  const move = async (
-    change: Partial<{ dx: number; dy: number }>
-  ): Promise<void> =>
-    await reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 0, ...change });
+  const move = async (dx: number = 0, dy: number = 0) => {
+    await reflect.mutate.moveShape({ id: selectedID, dx, dy });
+  };
 
   const handlers = {
     moveLeft: () => {
       undoManager.add({
-        execute: async () => await move({ dx: -20, dy: 0 }),
-        undo: async () => await move({ dx: 20, dy: 0 }),
+        execute: async () => await move(-20, 0),
+        undo: async () => await move(20, 0),
       });
     },
     moveRight: () => {
       undoManager.add({
-        execute: async () => await move({ dx: 20, dy: 0 }),
-        undo: async () => await move({ dx: -20, dy: 0 }),
+        execute: async () => await move(20, 0),
+        undo: async () => await move(-20, 0),
       });
     },
     moveUp: () => {
       undoManager.add({
-        execute: async () => await move({ dx: 0, dy: -20 }),
-        undo: async () => await move({ dx: 0, dy: 20 }),
+        execute: async () => await move(0, -20),
+        undo: async () => await move(0, 20),
       });
     },
     moveDown: () => {
       undoManager.add({
-        execute: async () => await move({ dx: 0, dy: 20 }),
-        undo: async () => await move({ dx: 0, dy: -20 }),
+        execute: async () => await move(0, 20),
+        undo: async () => await move(0, -20),
       });
     },
     deleteShape: async () => {
       // Prevent navigating backward on some browsers.
       event?.preventDefault();
-      const shapeBeforeDelete = await reflect.query<Shape | null>((tx) =>
+      const shapeBeforeDelete = await reflect.query((tx) =>
         getShape(tx, selectedID)
       );
       //no-op non-exisitent shape on delete
@@ -80,9 +79,7 @@ export function Designer({
       const createShape = async () => {
         await reflect.mutate.createShape({
           id: selectedID,
-          shape: {
-            ...shapeBeforeDelete,
-          },
+          shape: shapeBeforeDelete,
         });
       };
       undoManager.add({
