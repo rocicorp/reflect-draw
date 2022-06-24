@@ -65,20 +65,18 @@ export function RectController({
     if (startShape && shape) {
       if (shape.x - startShape.x !== 0 || shape.y - startShape.y !== 0) {
         undoManager.add({
-          redo: async () => {
-            return await reflect.mutate.moveShape({
+         redo: () =>
+            reflect.mutate.moveShape({
               id,
               dx: shape.x - startShape.x,
               dy: shape.y - startShape.y,
-            });
-          },
-          undo: async () => {
-            return await reflect.mutate.moveShape({
+            }),
+          undo: () =>
+            reflect.mutate.moveShape({
               id,
               dx: startShape.x - shape.x,
               dy: startShape.y - shape.y,
-            });
-          },
+            }),
         });
       }
     }
