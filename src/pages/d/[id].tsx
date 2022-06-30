@@ -7,23 +7,23 @@ import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
-import { UndoManager } from "../../frontend/undo-manager";
+import { UndoManager } from "@rocicorp/undo";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
+  const [undoManager, setUndoManager] = useState<UndoManager | null>(null);
+
+  const [canUndoRedo, setCanUndoRedo] = useState({
+    canUndo: false,
+    canRedo: false,
+  });
 
   const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
     ? new DataDogBrowserLogSink()
     : consoleLogSink;
   const logger = new OptionalLoggerImpl(logSink);
-  const undoManager = new UndoManager({
-    onChange: () => {
-      logger.info?.(
-        `canRedo: ${undoManager.canRedo} canUndo: ${undoManager.canUndo}`
-      );
-    },
-  });
+
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
@@ -53,6 +53,12 @@ export default function Home() {
       });
       await r.mutate.initShapes();
 
+      setUndoManager(
+        new UndoManager({
+          onChange: setCanUndoRedo,
+        })
+      );
+
       setReflectClient(r);
     })();
   }, []);
@@ -61,6 +67,9 @@ export default function Home() {
     return null;
   }
 
+  if (!undoManager) {
+    return null;
+  }
   return (
     <div
       style={{
@@ -74,7 +83,12 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav reflect={reflect} online={online} undoManager={undoManager} />
+      <Nav
+        reflect={reflect}
+        online={online}
+        canUndoRedo={canUndoRedo}
+        undoManager={undoManager}
+      />
       <Designer reflect={reflect} logger={logger} undoManager={undoManager} />
     </div>
   );

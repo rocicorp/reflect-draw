@@ -3,9 +3,10 @@ import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import { useShapeByID } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
-import type { UndoManager } from "./undo-manager";
-import { useState } from "react";
+import { useRef } from "react";
 import type { Shape } from "../datamodel/shape";
+import type { UndoManager } from "@rocicorp/undo";
+import React from "react";
 
 // TODO: In the future I imagine this becoming ShapeController and
 // there also be a Shape that wraps Rect and also knows how to draw Circle, etc.
@@ -18,8 +19,8 @@ export function RectController({
   id: string;
   undoManager: UndoManager;
 }) {
-  const [startShape, setStartShape] = useState<Shape | null>();
   const shape = useShapeByID(reflect, id);
+  const startShape = useRef<Shape | null>();
 
   const onMouseEnter = async () =>
     reflect.mutate.overShape({
@@ -35,7 +36,7 @@ export function RectController({
   const onDragStart = (_e: DraggableEvent, _d: DraggableData) => {
     // Can't mark onDragStart async because it changes return type and onDragStart
     // must return void.
-    setStartShape(shape);
+    startShape.current = shape;
     const blech = async () => {
       reflect.mutate.selectShape({
         clientID: await reflect.clientID,
@@ -62,28 +63,36 @@ export function RectController({
   };
 
   const onDragStop = (_e: DraggableEvent, _d: DraggableData) => {
-    if (startShape && shape) {
-      if (shape.x - startShape.x !== 0 || shape.y - startShape.y !== 0) {
+    if (shape && startShape.current) {
+      if (
+        shape.x - startShape.current.x !== 0 &&
+        shape.y - startShape.current.y !== 0
+      ) {
         undoManager.add({
-         redo: () =>
-            reflect.mutate.moveShape({
+          undo: () => {
+            if (!startShape.current) {
+              return;
+            }
+            return reflect.mutate.moveShape({
               id,
-              dx: shape.x - startShape.x,
-              dy: shape.y - startShape.y,
-            }),
-          undo: () =>
-            reflect.mutate.moveShape({
+              dx: startShape.current.x - shape.x,
+              dy: startShape.current.y - shape.y,
+            });
+          },
+          redo: () => {
+            if (!startShape.current) {
+              return;
+            }
+            return reflect.mutate.moveShape({
               id,
-              dx: startShape.x - shape.x,
-              dy: startShape.y - shape.y,
-            }),
+              dx: shape.x - startShape.current.x,
+              dy: shape.y - startShape.current.y,
+            });
+          },
         });
       }
     }
   };
-  if (!shape) {
-    return null;
-  }
 
   return (
     <DraggableCore onStart={onDragStart} onDrag={onDrag} onStop={onDragStop}>

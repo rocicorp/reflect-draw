@@ -15,7 +15,7 @@ import {
   useCollaboratorIDs,
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
-import type { UndoManager } from "./undo-manager";
+import type { UndoManager } from "@rocicorp/undo";
 import { getShape } from "../datamodel/shape";
 
 export function Designer({
@@ -70,7 +70,7 @@ export function Designer({
       const shapeBeforeDelete = await reflect.query((tx) =>
         getShape(tx, selectedID)
       );
-      //no-op non-exisitent shape on delete
+      // //no-op non-exisitent shape on delete
       if (!shapeBeforeDelete) {
         return;
       }
@@ -87,11 +87,11 @@ export function Designer({
         undo: createShape,
       });
     },
-    undo: () => {
-      undoManager.undo();
+    undo: async () => {
+      await undoManager.undo();
     },
-    redo: () => {
-      undoManager.redo();
+    redo: async () => {
+      await undoManager.redo();
     },
   };
 

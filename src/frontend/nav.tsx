@@ -8,19 +8,28 @@ import { randomShape } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 import { OnlineStatus } from "./online-status";
-import type { UndoManager } from "./undo-manager";
+import type { UndoManager } from "@rocicorp/undo";
+import { UndoRedo } from "./undo-redo";
 
 type NavProps = {
   reflect: Reflect<M>;
   online: boolean;
   undoManager: UndoManager;
+  canUndoRedo: { canUndo: boolean; canRedo: boolean };
 };
 
-export function Nav({ reflect, online, undoManager }: NavProps) {
+export function Nav({ reflect, online, undoManager, canUndoRedo }: NavProps) {
   const [aboutVisible, showAbout] = useState(false);
   const [shareVisible, showShare] = useState(false);
+
   const urlBox = useRef<HTMLInputElement>(null);
   const userInfo = useUserInfo(reflect);
+
+  useEffect(() => {
+    if (shareVisible) {
+      urlBox.current && urlBox.current.select();
+    }
+  });
 
   useEffect(() => {
     if (shareVisible) {
@@ -56,28 +65,19 @@ export function Nav({ reflect, online, undoManager }: NavProps) {
             ></path>
           </svg>
         </div>
-        {/*
-        <div
-          className={styles.button}
-          title="Clear All"
-          onClick={() => rep.mutate.deleteAllShapes()}
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="1 1 14 14"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ transform: "rotate(45deg)" }}
-          >
-            <path
-              d="M15 8V7H9V1H8v6H2v1h6v6h1V8h6z"
-              fillRule="nonzero"
-              fillOpacity="1"
-              fill="white"
-              stroke="none"
-            ></path>
-          </svg>
-        </div>*/}
+
+        <UndoRedo
+          onClick={() => undoManager.undo()}
+          title="Undo"
+          canUndoRedo={canUndoRedo}
+        />
+        <UndoRedo
+          isRedo={true}
+          onClick={() => undoManager.redo()}
+          title="Redo"
+          canUndoRedo={canUndoRedo}
+        />
+
         <div className={`${styles.button}`} onClick={() => showShare(true)}>
           Share
         </div>

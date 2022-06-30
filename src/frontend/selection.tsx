@@ -3,8 +3,9 @@ import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
-import type { UndoManager } from "./undo-manager";
+
 import { useState } from "react";
+import type { UndoManager } from "@rocicorp/undo";
 
 export function Selection({
   reflect,
@@ -18,7 +19,7 @@ export function Selection({
   undoManager: UndoManager;
 }) {
   const shape = useShapeByID(reflect, id);
-  const [startShapeSize, setStartShapeSize] = useState<[number, number]>();
+  const [startSize, setShapeSize] = useState<[number, number]>();
   const [startTan, setStartTan] = useState<[number, number]>();
 
   const gripSize = 19;
@@ -37,23 +38,21 @@ export function Selection({
   };
 
   const size = (x1: number, x2: number, y1: number, y2: number) => {
-    const distanceSqFromCenterToCursor =
-      Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2);
-    return Math.sqrt(distanceSqFromCenterToCursor / 2) * 2;
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
   };
 
   const calcSize = (d: DraggableData): [number, number] => {
     const shapeCenter = center();
 
-    const s0 = size(
+    const d0 = size(
       shapeCenter.x,
       d.x - d.deltaX,
       shapeCenter.y,
       d.y - d.deltaY
     );
-    const s1 = size(shapeCenter.x, d.x, shapeCenter.y, d.y);
+    const d1 = size(shapeCenter.x, d.x, shapeCenter.y, d.y);
 
-    return [s0, s1];
+    return [d0, d1];
   };
 
   const onResize = (_e: DraggableEvent, d: DraggableData) => {
@@ -94,16 +93,16 @@ export function Selection({
     const tan = calcTan(_d);
     if (tan && startTan) {
       undoManager.add({
-        redo: async () => {
-          return await reflect.mutate.rotateShape({
-            id,
-            ddeg: ((tan[1] - startTan[0]) * 180) / Math.PI,
-          });
-        },
         undo: async () => {
           return await reflect.mutate.rotateShape({
             id,
             ddeg: -(((tan[1] - startTan[0]) * 180) / Math.PI),
+          });
+        },
+        redo: async () => {
+          return await reflect.mutate.rotateShape({
+            id,
+            ddeg: ((tan[1] - startTan[0]) * 180) / Math.PI,
           });
         },
       });
@@ -111,23 +110,23 @@ export function Selection({
   };
 
   const onResizeStart = (_e: DraggableEvent, _d: DraggableData) => {
-    setStartShapeSize(calcSize(_d));
+    setShapeSize(calcSize(_d));
   };
 
   const onResizeEnd = (_e: DraggableEvent, _d: DraggableData) => {
     const ds = calcSize(_d);
-    if (ds && startShapeSize) {
+    if (ds && startSize) {
       undoManager.add({
-        redo: async () => {
-          return await reflect.mutate.resizeShape({
-            id,
-            ds: startShapeSize[0] - ds[1],
-          });
-        },
         undo: async () => {
           return await reflect.mutate.resizeShape({
             id,
-            ds: -(startShapeSize[0] - ds[1]),
+            ds: -(startSize[0] - ds[1]),
+          });
+        },
+        redo: async () => {
+          return await reflect.mutate.resizeShape({
+            id,
+            ds: startSize[0] - ds[1],
           });
         },
       });
