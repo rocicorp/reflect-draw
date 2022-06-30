@@ -20,7 +20,7 @@ export function RectController({
   undoManager: UndoManager;
 }) {
   const shape = useShapeByID(reflect, id);
-  const startShape = useRef<Shape | null>();
+  //const startShape = useRef<Shape | null>();
 
   const onMouseEnter = async () =>
     reflect.mutate.overShape({
@@ -36,7 +36,8 @@ export function RectController({
   const onDragStart = (_e: DraggableEvent, _d: DraggableData) => {
     // Can't mark onDragStart async because it changes return type and onDragStart
     // must return void.
-    startShape.current = shape;
+    //startShape.current = shape;
+    undoManager.startGroup();
     const blech = async () => {
       reflect.mutate.selectShape({
         clientID: await reflect.clientID,
@@ -55,43 +56,26 @@ export function RectController({
     // replay. If somebody else was moving the object at the same moment, we'll
     // then end up with a union of the two vectors, which is what we want!
 
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
+    undoManager.add({
+      undo: () => {
+        return reflect.mutate.moveShape({
+          id,
+          dx: -d.deltaX,
+          dy: -d.deltaY,
+        });
+      },
+      execute: () => {
+        return reflect.mutate.moveShape({
+          id,
+          dx: d.deltaX,
+          dy: d.deltaY,
+        });
+      },
     });
   };
 
   const onDragStop = (_e: DraggableEvent, _d: DraggableData) => {
-    if (shape && startShape.current) {
-      if (
-        shape.x - startShape.current.x !== 0 &&
-        shape.y - startShape.current.y !== 0
-      ) {
-        undoManager.add({
-          undo: () => {
-            if (!startShape.current) {
-              return;
-            }
-            return reflect.mutate.moveShape({
-              id,
-              dx: startShape.current.x - shape.x,
-              dy: startShape.current.y - shape.y,
-            });
-          },
-          redo: () => {
-            if (!startShape.current) {
-              return;
-            }
-            return reflect.mutate.moveShape({
-              id,
-              dx: shape.x - startShape.current.x,
-              dy: shape.y - startShape.current.y,
-            });
-          },
-        });
-      }
-    }
+    undoManager.endGroup();
   };
 
   return (

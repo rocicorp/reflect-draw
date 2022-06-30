@@ -67,7 +67,10 @@ export function Nav({ reflect, online, undoManager, canUndoRedo }: NavProps) {
         </div>
 
         <UndoRedo
-          onClick={() => undoManager.undo()}
+          onClick={() => {
+            console.log(undoManager);
+            undoManager.undo();
+          }}
           title="Undo"
           canUndoRedo={canUndoRedo}
         />
