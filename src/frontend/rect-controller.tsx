@@ -1,10 +1,7 @@
 import type { Reflect } from "@rocicorp/reflect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
-import { useShapeByID } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
-import { useRef } from "react";
-import type { Shape } from "../datamodel/shape";
 import type { UndoManager } from "@rocicorp/undo";
 import React from "react";
 
@@ -19,9 +16,7 @@ export function RectController({
   id: string;
   undoManager: UndoManager;
 }) {
-  const shape = useShapeByID(reflect, id);
-  //const startShape = useRef<Shape | null>();
-
+  
   const onMouseEnter = async () =>
     reflect.mutate.overShape({
       clientID: await reflect.clientID,
@@ -36,7 +31,6 @@ export function RectController({
   const onDragStart = (_e: DraggableEvent, _d: DraggableData) => {
     // Can't mark onDragStart async because it changes return type and onDragStart
     // must return void.
-    //startShape.current = shape;
     undoManager.startGroup();
     const blech = async () => {
       reflect.mutate.selectShape({
