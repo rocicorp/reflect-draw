@@ -16,7 +16,6 @@ export function RectController({
   id: string;
   undoManager: UndoManager;
 }) {
-  
   const onMouseEnter = async () =>
     reflect.mutate.overShape({
       clientID: await reflect.clientID,

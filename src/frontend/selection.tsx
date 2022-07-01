@@ -19,7 +19,7 @@ export function Selection({
   undoManager: UndoManager;
 }) {
   const shape = useShapeByID(reflect, id);
-  const [startSize, setShapeSize] = useState<[number, number]>();
+  const [startSize, setStartSize] = useState<[number, number]>();
   const [startTan, setStartTan] = useState<[number, number]>();
 
   const gripSize = 19;
@@ -58,7 +58,7 @@ export function Selection({
   const onResize = (_e: DraggableEvent, d: DraggableData) => {
     const ds = calcSize(d);
     if (ds !== undefined) {
-      reflect.mutate.resizeShape({ id, ds: ds[0] - ds[1] });
+      reflect.mutate.resizeShape({ id, ds: ds[1] - ds[0] });
     }
   };
 
@@ -110,7 +110,7 @@ export function Selection({
   };
 
   const onResizeStart = (_e: DraggableEvent, _d: DraggableData) => {
-    setShapeSize(calcSize(_d));
+    setStartSize(calcSize(_d));
   };
 
   const onResizeEnd = (_e: DraggableEvent, _d: DraggableData) => {
@@ -120,13 +120,13 @@ export function Selection({
         undo: async () => {
           return await reflect.mutate.resizeShape({
             id,
-            ds: -(startSize[0] - ds[1]),
+            ds: startSize[1] - ds[0],
           });
         },
         redo: async () => {
           return await reflect.mutate.resizeShape({
             id,
-            ds: startSize[0] - ds[1],
+            ds: -(startSize[1] - ds[0]),
           });
         },
       });
