@@ -205,5 +205,5 @@ const keyMap = {
   moveDown: ["down", "shift+down"],
   deleteShape: ["del", "backspace"],
   undo: ["ctrl+z", "command+z"],
-  redo: ["ctrl+y", "ctrl+shift+z"],
+  redo: ["ctrl+y", "command+shift+z"],
 };

@@ -19,7 +19,6 @@ export function Selection({
   undoManager: UndoManager;
 }) {
   const shape = useShapeByID(reflect, id);
-  const [startSize, setStartSize] = useState<[number, number]>();
   const [startTan, setStartTan] = useState<[number, number]>();
 
   const gripSize = 19;
@@ -37,29 +36,31 @@ export function Selection({
     };
   };
 
-  const size = (x1: number, x2: number, y1: number, y2: number) => {
-    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-  };
-
-  const calcSize = (d: DraggableData): [number, number] => {
+  const onResize = (_e: DraggableEvent, d: DraggableData) => {
     const shapeCenter = center();
 
-    const d0 = size(
+    const size = (x1: number, x2: number, y1: number, y2: number) => {
+      const distanceSqFromCenterToCursor =
+        Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2);
+      return Math.sqrt(distanceSqFromCenterToCursor / 2) * 2;
+    };
+
+    const s0 = size(
       shapeCenter.x,
       d.x - d.deltaX,
       shapeCenter.y,
       d.y - d.deltaY
     );
-    const d1 = size(shapeCenter.x, d.x, shapeCenter.y, d.y);
+    const s1 = size(shapeCenter.x, d.x, shapeCenter.y, d.y);
 
-    return [d0, d1];
-  };
-
-  const onResize = (_e: DraggableEvent, d: DraggableData) => {
-    const ds = calcSize(d);
-    if (ds !== undefined) {
-      reflect.mutate.resizeShape({ id, ds: ds[1] - ds[0] });
-    }
+    undoManager.add({
+      execute: () => {
+        reflect.mutate.resizeShape({ id, ds: s1 - s0 });
+      },
+      undo: () => {
+        reflect.mutate.resizeShape({ id, ds: s0 - s1 });
+      },
+    });
   };
 
   const calcTan = (d: DraggableData): [number, number] | undefined => {
@@ -110,27 +111,11 @@ export function Selection({
   };
 
   const onResizeStart = (_e: DraggableEvent, _d: DraggableData) => {
-    setStartSize(calcSize(_d));
+    undoManager.startGroup();
   };
 
   const onResizeEnd = (_e: DraggableEvent, _d: DraggableData) => {
-    const ds = calcSize(_d);
-    if (ds && startSize) {
-      undoManager.add({
-        undo: async () => {
-          return await reflect.mutate.resizeShape({
-            id,
-            ds: startSize[1] - ds[0],
-          });
-        },
-        redo: async () => {
-          return await reflect.mutate.resizeShape({
-            id,
-            ds: -(startSize[1] - ds[0]),
-          });
-        },
-      });
-    }
+    undoManager.endGroup();
   };
 
   return (
