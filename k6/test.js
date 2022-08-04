@@ -14,7 +14,7 @@ function randomID() {
 
 let lastMutationID = 0;
 
-function sendMutation(socket, name, args) {
+function sendMutation(socket, clientID, name, args) {
   const mutation = {
     id: ++lastMutationID,
     name,
@@ -22,6 +22,7 @@ function sendMutation(socket, name, args) {
     timestamp: Date.now(),
   };
   const pushBody = {
+    clientID,
     mutations: [mutation],
     pushVersion: 1,
     schemaVersion: "",
@@ -33,14 +34,14 @@ function sendMutation(socket, name, args) {
 }
 
 function createShape(socket, clientID, idx) {
-  sendMutation(socket, "createShape", {
+  sendMutation(socket, clientID, "createShape", {
     id: `${clientID}-${idx}`,
     shape: randomShape(),
   });
 }
 
 function scanShape(socket, clientID, idx) {
-  sendMutation(socket, "scanShape", {
+  sendMutation(socket, clientID, "scanShape", {
     id: `${clientID}-${idx}`,
     dx: 1,
     maxX: 500,
@@ -63,14 +64,18 @@ export default function () {
   const clientID = randomID();
   const userID = randomID();
 
-  const socketBaseURL = "ws://127.0.0.1:8787/connect";
-  const url = `${socketBaseURL}?clientID=${clientID}&roomID=${roomID}&baseCookie=0&ts=${Date.now()}`;
+  // Note: it looks like wrangler only listens on ipv6!
+  // https://github.com/cloudflare/wrangler/issues/1198#issuecomment-1204690449
+  const socketBaseURL = "ws://[::1]:8787/connect";
+  const url = `${socketBaseURL}?clientID=${clientID}&roomID=${roomID}&baseCookie=0&lmid=0&ts=${Date.now()}`;
   const params = {
     headers: {
-      "Sec-WebSocket-Protocol": JSON.stringify({
-        roomID,
-        userID,
-      }),
+      "Sec-WebSocket-Protocol": encodeURIComponent(
+        JSON.stringify({
+          roomID,
+          userID,
+        })
+      ),
     },
   };
 
@@ -101,9 +106,9 @@ export default function () {
     });
 
     socket.setTimeout(function () {
-      console.log("2 seconds passed, closing the socket");
+      console.log("test done, closing the socket");
       socket.close();
-    }, 30000);
+    }, 5000);
   });
 
   check(response, { "status is 101": (r) => r && r.status === 101 });
