@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev-worker": "wrangler dev --local --experimental-enable-local-persistence",
-    "build": "rm -rf dist && next build && npm run build-worker",
+    "build": "rm -rf dist && next build",
     "start": "next start",
     "format": "prettier --write './**/*.{js,jsx,json,ts,tsx,html,css,md}'",
     "check-types": "tsc -p tsconfig.json --noEmit && tsc -p worker/tsconfig.json --noEmit"
