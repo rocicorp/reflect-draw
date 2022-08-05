@@ -1,8 +1,14 @@
 import ws from "k6/ws";
 import { check } from "k6";
+import { Trend } from "k6/metrics";
 
 const numShapesPerClient = __ENV.SHAPES_PER_CLIENT || 1;
 const roomID = __ENV.ROOM_ID;
+
+// e.g.: wss://replidraw.replicache.workers.dev/connect or ws://[::1]:8787/connect
+// Note: it looks like wrangler only listens on ipv6!
+// https://github.com/cloudflare/wrangler/issues/1198#issuecomment-1204690449
+const socketBaseURL = __ENV.SOCKET_BASE_URL || "ws://[::1]:8787/connect";
 
 if (!roomID) {
   throw new Error("Must specify a ROOM_ID env variable");
@@ -12,22 +18,29 @@ function randomID() {
   return Math.random().toString(36).substring(2);
 }
 
-let lastMutationID = 0;
+const sentMutations = [];
+const receivedPokes = [];
+const pokeWaitTrend = new Trend("poke_wait_time");
 
 function sendMutation(socket, clientID, name, args) {
+  const lastMutation = sentMutations[sentMutations.length - 1];
+  const lmid = lastMutation ? lastMutation.id : 0;
+  const id = lmid + 1;
+  const ts = Date.now();
   const mutation = {
-    id: ++lastMutationID,
+    id,
     name,
     args,
-    timestamp: Date.now(),
+    timestamp: ts,
   };
   const pushBody = {
     clientID,
     mutations: [mutation],
     pushVersion: 1,
     schemaVersion: "",
-    timestamp: Date.now(),
+    timestamp: ts,
   };
+  sentMutations.push({ id, ts });
   const msg = JSON.stringify(["push", pushBody]);
   console.info("sending", msg);
   socket.send(msg);
@@ -64,9 +77,6 @@ export default function () {
   const clientID = randomID();
   const userID = randomID();
 
-  // Note: it looks like wrangler only listens on ipv6!
-  // https://github.com/cloudflare/wrangler/issues/1198#issuecomment-1204690449
-  const socketBaseURL = "ws://[::1]:8787/connect";
   const url = `${socketBaseURL}?clientID=${clientID}&roomID=${roomID}&baseCookie=0&lmid=0&ts=${Date.now()}`;
   const params = {
     headers: {
@@ -92,6 +102,25 @@ export default function () {
         socket.setInterval(() => {
           scanShapes(socket, clientID, numShapesPerClient);
         }, 16);
+      } else {
+        const lastPoke = receivedPokes[receivedPokes.length - 1];
+        const lastLMID = lastPoke ? lastPoke.id : -1;
+        const id = body.lastMutationID;
+        const ts = Date.now();
+        for (const m of sentMutations.reverse()) {
+          if (m.id <= id) {
+            pokeWaitTrend.add(ts - m.ts);
+            break;
+          }
+        }
+        check(type, {
+          "message type was poke": (res) => res === "poke",
+        });
+        check(body, {
+          "body is an object": (res) => typeof res === "object",
+          "received correct lmid": (res) => id >= lastLMID + 1,
+        });
+        receivedPokes.push({ id, ts: Date.now() });
       }
     });
 
