@@ -5,6 +5,7 @@ import {
   createReflectServer,
   ReflectServerBaseEnv,
 } from "@rocicorp/reflect-server";
+import { clearCursorAndSelectionState } from "../src/datamodel/client-state.js";
 import { serverMutators } from "../src/datamodel/mutators.js";
 
 function getLogSinks(env: ReplidrawEnv): LogSink[] {
@@ -46,8 +47,7 @@ const { worker, RoomDO, AuthDO } = createReflectServer({
   mutators: serverMutators,
   authHandler,
   disconnectHandler: async (write) => {
-    console.log("disconnectHandler");
-    write.put("test-disconnect-" + write.clientID, Date.now());
+    await clearCursorAndSelectionState(write, { id: write.clientID });
   },
   getLogSinks,
   getLogLevel: () => "info",
