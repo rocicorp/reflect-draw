@@ -45,6 +45,10 @@ const authHandler = async (auth: string, roomID: string) => {
 const { worker, RoomDO, AuthDO } = createReflectServer({
   mutators: serverMutators,
   authHandler,
+  disconnectHandler: async (write) => {
+    console.log("disconnectHandler");
+    write.put("test-disconnect-" + write.clientID, Date.now());
+  },
   getLogSinks,
   getLogLevel: () => "info",
 });
