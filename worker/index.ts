@@ -2,7 +2,7 @@ import {
   consoleLogSink,
   DatadogLogSink,
   LogSink,
-  createReflectServer,
+  createReflectServerWithoutAuthDO,
   ReflectServerBaseEnv,
 } from "@rocicorp/reflect-server";
 import { clearCursorAndSelectionState } from "../src/datamodel/client-state.js";
@@ -14,7 +14,7 @@ function getLogSinks(env: ReplidrawEnv): LogSink[] {
     logSinks.push(
       new DatadogLogSink({
         apiKey: env.DATADOG_API_KEY,
-        service: "replidraw-do-grgbkr",
+        service: "replidraw",
       })
     );
   }
@@ -43,7 +43,7 @@ const authHandler = async (auth: string, roomID: string) => {
   };
 };
 
-const { worker, RoomDO, AuthDO } = createReflectServer({
+const { worker, RoomDO } = createReflectServerWithoutAuthDO({
   mutators: serverMutators,
   authHandler,
   disconnectHandler: async (write) => {
@@ -52,4 +52,4 @@ const { worker, RoomDO, AuthDO } = createReflectServer({
   getLogSinks,
   getLogLevel: () => "info",
 });
-export { worker as default, RoomDO, AuthDO };
+export { worker as default, RoomDO };
