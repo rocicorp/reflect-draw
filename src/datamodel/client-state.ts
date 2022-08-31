@@ -43,10 +43,12 @@ export const userInfoSchema = z.object({
 // TODO: It would be good to merge this with the first-class concept of `client`
 // that Replicache itself manages if possible.
 export const clientStateSchema = z.object({
-  cursor: z.object({
-    x: z.number(),
-    y: z.number(),
-  }),
+  cursor: z
+    .object({
+      x: z.number(),
+      y: z.number(),
+    })
+    .optional(),
   overID: z.string(),
   selectedID: z.string(),
   userInfo: userInfoSchema,
@@ -65,10 +67,6 @@ export async function initClientState(
   await putClientState(tx, {
     id,
     clientState: {
-      cursor: {
-        x: 0,
-        y: 0,
-      },
       overID: "",
       selectedID: "",
       userInfo: defaultUserInfo,
@@ -108,6 +106,22 @@ export async function setCursor(
         x,
         y,
       },
+    },
+  });
+}
+
+export async function clearCursorAndSelectionState(
+  tx: WriteTransaction,
+  { id }: { id: string }
+): Promise<void> {
+  const clientState = await getClientState(tx, id);
+  await putClientState(tx, {
+    id,
+    clientState: {
+      ...clientState,
+      cursor: undefined,
+      overID: "",
+      selectedID: "",
     },
   });
 }
