@@ -114,12 +114,11 @@ export async function clearCursorAndSelectionState(
   tx: WriteTransaction,
   { id }: { id: string }
 ): Promise<void> {
-  const clientState = await getClientState(tx, id);
+  const { cursor, ...clientState } = await getClientState(tx, id);
   await putClientState(tx, {
     id,
     clientState: {
       ...clientState,
-      cursor: undefined,
       overID: "",
       selectedID: "",
     },
