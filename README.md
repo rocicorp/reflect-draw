@@ -9,7 +9,7 @@ Running live at [replidraw-do.vercel.app](https://replidraw-do.vercel.app/).
 
 ## Hacking Locally
 
-The `dev-worker` command runs the worker using [wrangler](https://developers.cloudflare.com/workers/wrangler/) in local mode, a really nice Cloudflare emulation environment. This is super convenient and doesn't require a CF account. Unfortunately, it also doesn't give you a realistic view of performance since everything is local.
+The `dev-worker` command runs the worker using [wrangler](https://developers.cloudflare.com/workers/wrangler/).
 
 ```bash
 npm install
@@ -21,30 +21,23 @@ npm run dev-worker
 NEXT_PUBLIC_WORKER_HOST=ws://localhost:8787 npm run dev
 ```
 
+Once the server comes up, you can also press `l` to switch out of "local mode".
+In local mode, it uses the Miniflare emulator to serve, so it's very fast, but
+also not completely accurate representation of production. Switching out of local
+mode runs the worker on Cloudflare's edge network, just like it runs in production,
+which gives a more realistic view of performance.
+
 ## Publishing Worker to Cloudflare
 
-1. Get an account at Cloudflare: https://workers.cloudflare.com/.
-2. Install the [Wrangler CLI tool](https://developers.cloudflare.com/workers/wrangler/get-started/)
+First, get an account at Cloudflare: https://workers.cloudflare.com/.
 
 Then:
 
 ```
 # publish to Cloudflare
-wrangler publish
+npx wrangler publish
 
 # run frontend
-npm run dev
-```
-
-## Developing against Cloudflare
-
-It is possible to develop using the Cloudflare network without destabilizing the production copy of a worker. This provides a more realistic idea of latency than Wrangler.
-
-```
-# Must have published at least once prior
-wrangler dev
-
-# (In another shell) Run frontend
 npm run dev
 ```
 
@@ -99,7 +92,7 @@ The server has an HTTP API for authentication tasks.
 All calls to the Auth API must provide an API Key. Configure the API Key using Wrangler:
 
 ```bash
-wrangler secret put REFLECT_AUTH_API_KEY
+npx wrangler secret put REFLECT_AUTH_API_KEY
 ```
 
 Then pass the API Key in each request to the Auth API using the `x-reflect-auth-api-key` HTTP header:
