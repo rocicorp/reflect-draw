@@ -45,6 +45,18 @@ export function RectController({
     // We will apply this movement to whatever the state happens to be when we
     // replay. If somebody else was moving the object at the same moment, we'll
     // then end up with a union of the two vectors, which is what we want!
+    for (let i = 0; i < 8; i++) {
+      reflect.mutate.moveShape({
+        id,
+        dx: d.deltaX,
+        dy: d.deltaY,
+      });
+      reflect.mutate.moveShape({
+        id,
+        dx: -d.deltaX,
+        dy: -d.deltaY,
+      });
+    }
     reflect.mutate.moveShape({
       id,
       dx: d.deltaX,
