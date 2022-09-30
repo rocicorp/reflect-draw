@@ -4,4 +4,13 @@ module.exports = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  webpack: (config, options) => {
+    return {
+      ...config,
+      optimization: {
+        ...config.optimization,
+        minimize: false,
+      },
+    };
+  },
 };
