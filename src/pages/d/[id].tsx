@@ -6,15 +6,13 @@ import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
+//import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
 
-  const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
-    ? new DataDogBrowserLogSink()
-    : consoleLogSink;
+  const logSink = consoleLogSink;
   const logger = new OptionalLoggerImpl(logSink);
 
   useEffect(() => {
@@ -34,6 +32,7 @@ export default function Home() {
           roomID,
         }),
         logSinks: [logSink],
+        logLevel: "error",
         mutators: clientMutators,
       });
 
