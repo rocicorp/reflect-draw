@@ -51,86 +51,86 @@ export function RectController({
       dx: d.deltaX,
       dy: d.deltaY,
     });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: -d.deltaX,
+    //   dy: -d.deltaY,
+    // });
+    // reflect.mutate.moveShape({
+    //   id,
+    //   dx: d.deltaX,
+    //   dy: d.deltaY,
+    // });
   };
 
   if (!shape) {
