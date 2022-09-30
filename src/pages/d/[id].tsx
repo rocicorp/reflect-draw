@@ -21,9 +21,7 @@ export default function Home() {
     const [, , roomID] = location.pathname.split("/");
 
     (async () => {
-      const workerOrigin =
-        process.env.NEXT_PUBLIC_WORKER_HOST ??
-        "wss://replidraw.replicache.workers.dev";
+      const workerOrigin = "wss://replidraw-do-grgbkr.replicache.workers.dev";
       logger.info?.(`Connecting to worker at ${workerOrigin}`);
       const userID = nanoid();
       const r = new Reflect<M>({
