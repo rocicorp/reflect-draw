@@ -38,7 +38,6 @@ export function RectController({
     blech();
   };
   const onDrag = (_e: DraggableEvent, d: DraggableData) => {
-    console.log("drag");
     // This is subtle, and worth drawing attention to:
     // In order to properly resolve conflicts, what we want to capture in
     // mutation arguments is the *intent* of the mutation, not the effect.
@@ -46,76 +45,18 @@ export function RectController({
     // We will apply this movement to whatever the state happens to be when we
     // replay. If somebody else was moving the object at the same moment, we'll
     // then end up with a union of the two vectors, which is what we want!
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: d.deltaX,
-      dy: d.deltaY,
-    });
-    reflect.mutate.moveShape({
-      id,
-      dx: -d.deltaX,
-      dy: -d.deltaY,
-    });
+    for (let i = 0; i < 8; i++) {
+      reflect.mutate.moveShape({
+        id,
+        dx: d.deltaX,
+        dy: d.deltaY,
+      });
+      reflect.mutate.moveShape({
+        id,
+        dx: -d.deltaX,
+        dy: -d.deltaY,
+      });
+    }
     reflect.mutate.moveShape({
       id,
       dx: d.deltaX,
