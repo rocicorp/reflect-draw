@@ -31,7 +31,6 @@ export default function Home() {
           userID,
           roomID,
         }),
-        logSinks: [logSink],
         mutators: clientMutators,
       });
 
