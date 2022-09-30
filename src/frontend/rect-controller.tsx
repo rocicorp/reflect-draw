@@ -68,6 +68,11 @@ export function RectController({
     });
     reflect.mutate.moveShape({
       id,
+      dx: d.deltaX,
+      dy: d.deltaY,
+    });
+    reflect.mutate.moveShape({
+      id,
       dx: -d.deltaX,
       dy: -d.deltaY,
     });
@@ -80,6 +85,31 @@ export function RectController({
       id,
       dx: -d.deltaX,
       dy: -d.deltaY,
+    });
+    reflect.mutate.moveShape({
+      id,
+      dx: d.deltaX,
+      dy: d.deltaY,
+    });
+    reflect.mutate.moveShape({
+      id,
+      dx: -d.deltaX,
+      dy: -d.deltaY,
+    });
+    reflect.mutate.moveShape({
+      id,
+      dx: d.deltaX,
+      dy: d.deltaY,
+    });
+    reflect.mutate.moveShape({
+      id,
+      dx: -d.deltaX,
+      dy: -d.deltaY,
+    });
+    reflect.mutate.moveShape({
+      id,
+      dx: d.deltaX,
+      dy: d.deltaY,
     });
     reflect.mutate.moveShape({
       id,
