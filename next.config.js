@@ -1,7 +1,13 @@
-module.exports = {
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
-  },
+module.exports = (nextConfig) => {
+  return {
+    ...nextConfig,
+    webpack(webpackConfig) {
+      return {
+        ...webpackConfig,
+        optimization: {
+          minimize: false,
+        },
+      };
+    },
+  };
 };
