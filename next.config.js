@@ -8,7 +8,6 @@ module.exports = {
     return {
       ...config,
       optimization: {
-        ...config.optimization,
         minimize: false,
       },
     };
