@@ -21,24 +21,18 @@ npm run dev-worker
 NEXT_PUBLIC_WORKER_HOST=ws://localhost:8787 npm run dev
 ```
 
-Once the server comes up, you can also press `l` to switch out of "local mode".
-In local mode, it uses the Miniflare emulator to serve, so it's very fast, but
-also not completely accurate representation of production. Switching out of local
-mode runs the worker on Cloudflare's edge network, just like it runs in production,
-which gives a more realistic view of performance.
-
 ## Publishing Worker to Cloudflare
 
 First, get an account at Cloudflare: https://workers.cloudflare.com/.
 
 Then:
 
-```
+```bash
 # publish to Cloudflare
 npx wrangler publish
 
 # run frontend
-npm run dev
+NEXT_PUBLIC_WORKER_HOST=wss://<host from previous command> npm run dev
 ```
 
 ## Building your Own Thing
