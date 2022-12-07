@@ -7,6 +7,7 @@ import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
+import { workerWsURI } from "../../util/host";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
@@ -21,13 +22,10 @@ export default function Home() {
     const [, , roomID] = location.pathname.split("/");
 
     (async () => {
-      const workerOrigin =
-        process.env.NEXT_PUBLIC_WORKER_HOST ??
-        "wss://replidraw.replicache.workers.dev";
-      logger.info?.(`Connecting to worker at ${workerOrigin}`);
+      logger.info?.(`Connecting to worker at ${workerWsURI}`);
       const userID = nanoid();
       const r = new Reflect<M>({
-        socketOrigin: workerOrigin,
+        socketOrigin: workerWsURI,
         onOnlineChange: setOnline,
         userID,
         roomID,
