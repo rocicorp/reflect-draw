@@ -14,11 +14,18 @@ The `dev-worker` command runs the worker using [wrangler](https://developers.clo
 ```bash
 npm install
 
-# start the backend
+# Generate a secure shared secret enabling Reflect Server to
+# authenticate calls from the front-end, e.g. to create a new
+# room. Configure Reflect Server with the key via wranlger:
+npx wrangler secret put REFLECT_AUTH_API_KEY
+
+# start the backend (Reflect Server)
 npm run dev-worker
 
 # (in another shell) start the frontend
-NEXT_PUBLIC_WORKER_HOST=ws://localhost:8787 npm run dev
+REFLECT_API_KEY=<share secret from above> \
+NEXT_PUBLIC_WORKER_HOST=ws://127.0.0.1:8787 \
+npm run dev
 ```
 
 ## Publishing Worker to Cloudflare
@@ -32,7 +39,9 @@ Then:
 npx wrangler publish
 
 # run frontend
-NEXT_PUBLIC_WORKER_HOST=wss://<host from previous command> npm run dev
+REFLECT_API_KEY=<shared secret> \
+NEXT_PUBLIC_WORKER_HOST=wss://<host from previous command> \
+npm run dev
 ```
 
 ## Building your Own Thing
@@ -47,7 +56,7 @@ NEXT_PUBLIC_WORKER_HOST=wss://<host from previous command> npm run dev
 
 Reflect can optionally authenticate users who connect to rooms with your server and authorize their access to the room.
 
-1. Pass some `authToken` to the `Replicache` constructor's `auth` parameter. See: https://github.com/rocicorp/replidraw-do/blob/main/src/pages/d/%5Bid%5D.tsx#L30.
+1. Provide an `authToken` that will authenticate the user to your `authHandler` via the `Replicache` constructor's `auth` parameter. See: https://github.com/rocicorp/replidraw-do/blob/main/src/pages/d/%5Bid%5D.tsx#L34.
 2. Provide Reflect with an `authHandler` function that authenticates the user and returns whether the user should be allowed in the room. See: https://github.com/rocicorp/replidraw-do/blob/main/worker/index.ts#L29.
 
 The signature for the auth handler is as follows:
