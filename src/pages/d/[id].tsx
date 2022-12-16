@@ -4,13 +4,18 @@ import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
-import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
 import { workerWsURI } from "../../util/host";
 
+// used to change mutators to test creating new client groups
+// and mutation recovery
+type M2 = M & {
+  blah: () => Promise<void>;
+};
+
 export default function Home() {
-  const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
+  const [reflect, setReflectClient] = useState<Reflect<M2> | null>(null);
   const [online, setOnline] = useState(false);
 
   const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
@@ -23,8 +28,8 @@ export default function Home() {
 
     (async () => {
       logger.info?.(`Connecting to worker at ${workerWsURI}`);
-      const userID = nanoid();
-      const r = new Reflect<M>({
+      const userID = "test-user";
+      const r = new Reflect<M2>({
         socketOrigin: workerWsURI,
         onOnlineChange: setOnline,
         userID,
@@ -34,7 +39,10 @@ export default function Home() {
           roomID,
         }),
         logSinks: [logSink],
-        mutators: clientMutators,
+        mutators: {
+          ...clientMutators,
+          blah: async () => {},
+        },
       });
 
       const defaultUserInfo = randUserInfo();
