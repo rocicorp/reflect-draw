@@ -16,7 +16,7 @@ npm install
 
 # Generate a secure shared secret enabling Reflect Server to
 # authenticate calls from the front-end, e.g. to create a new
-# room. Configure Reflect Server with the key via wranlger:
+# room. Configure Reflect Server with the key via wrangler:
 npx wrangler secret put REFLECT_AUTH_API_KEY
 
 # start the backend (Reflect Server)
