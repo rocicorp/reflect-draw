@@ -1,7 +1,5 @@
 # Replidraw
 
-touch to force rebuild.
-
 A tiny Figma-like multiplayer graphics editor.
 
 Built with [Replicache](https://replicache.dev), [Next.js](https://nextjs.org/),
