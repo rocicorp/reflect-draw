@@ -47,6 +47,8 @@ export default function Home() {
         logSinks,
         mutators: clientMutators,
         metrics,
+        buffer: 250,
+        // maxRandomPushLatency: 100,
       });
 
       const defaultUserInfo = randUserInfo();

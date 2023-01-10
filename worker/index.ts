@@ -51,6 +51,7 @@ const { worker, RoomDO, AuthDO } = createReflectServer({
   },
   getLogSinks,
   getLogLevel: () => "info",
-  allowUnconfirmedWrites: true,
+  allowUnconfirmedWrites: false,
+  //maxRandomLatency: 30,
 });
 export { worker as default, RoomDO, AuthDO };
