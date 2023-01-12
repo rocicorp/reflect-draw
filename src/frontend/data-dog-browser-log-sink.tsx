@@ -18,6 +18,47 @@ export class DataDogBrowserLogSink implements LogSink {
   }
 
   log(level: LogLevel, ...args: unknown[]): void {
-    datadogLogs.logger.log(args.join(", "), {}, level);
+    // The DD API says the message should be string but any json value works
+    // fine and gives better logs.
+
+    // @ts-expect-error message can be any json value.
+    datadogLogs.logger.log(convertErrors(flattenMessage(args)), {}, level);
   }
+}
+
+function flattenMessage(message: unknown): unknown {
+  if (Array.isArray(message) && message.length === 1) {
+    return flattenMessage(message[0]);
+  }
+  return message;
+}
+
+function convertError(e: Error): {
+  name: string;
+  message: string;
+  stack: string | undefined;
+} {
+  return {
+    name: e.name,
+    message: e.message,
+    stack: e.stack,
+  };
+}
+
+function convertErrors(message: unknown): unknown {
+  if (message instanceof Error) {
+    return convertError(message);
+  }
+  if (message instanceof Array) {
+    const convertedMessage = [];
+    for (const item of message) {
+      if (item instanceof Error) {
+        convertedMessage.push(convertError(item));
+      } else {
+        convertedMessage.push(item);
+      }
+    }
+    return convertedMessage;
+  }
+  return message;
 }
