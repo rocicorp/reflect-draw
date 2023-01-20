@@ -14,7 +14,7 @@ function getLogSinks(env: ReplidrawEnv): LogSink[] {
     logSinks.push(
       new DatadogLogSink({
         apiKey: env.DATADOG_API_KEY,
-        service: "replidraw-do-grgbkr",
+        service: "replidraw-do",
       })
     );
   }
