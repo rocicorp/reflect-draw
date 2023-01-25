@@ -19,6 +19,10 @@ npm install
 # room. Configure Reflect Server with the key via wrangler:
 npx wrangler secret put REFLECT_AUTH_API_KEY
 
+# OPTIONAL: if you want logs and metrics reported to Datadog, set
+# this secret to a Datadog API key.
+npx wrangler secret put REFLECT_DATADOG_API_KEY
+
 # start the backend (Reflect Server)
 npm run dev-worker
 
@@ -35,6 +39,10 @@ First, get an account at Cloudflare: https://workers.cloudflare.com/.
 Then:
 
 ```bash
+# Set the secrets if you have not already:
+npx wrangler secret put REFLECT_AUTH_API_KEY
+npx wrangler secret put REFLECT_DATADOG_API_KEY # Optional
+
 # publish to Cloudflare
 npx wrangler publish
 

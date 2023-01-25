@@ -1,19 +1,19 @@
 import {
-  consoleLogSink,
   DatadogLogSink,
   LogSink,
   createReflectServer,
   ReflectServerBaseEnv,
 } from "@rocicorp/reflect-server";
+import { nodeConsoleLogSink } from "@rocicorp/logger";
 import { clearCursorAndSelectionState } from "../src/datamodel/client-state.js";
 import { serverMutators } from "../src/datamodel/mutators.js";
 
 function getLogSinks(env: ReplidrawEnv): LogSink[] {
-  let logSinks = [consoleLogSink];
-  if (env.DATADOG_API_KEY) {
+  let logSinks = [nodeConsoleLogSink];
+  if (env.REFLECT_DATADOG_API_KEY) {
     logSinks.push(
       new DatadogLogSink({
-        apiKey: env.DATADOG_API_KEY,
+        apiKey: env.REFLECT_DATADOG_API_KEY,
         service: "replidraw-do",
       })
     );
@@ -22,7 +22,7 @@ function getLogSinks(env: ReplidrawEnv): LogSink[] {
 }
 
 interface ReplidrawEnv extends ReflectServerBaseEnv {
-  DATADOG_API_KEY?: string;
+  REFLECT_DATADOG_API_KEY?: string;
 }
 
 const authHandler = async (auth: string, roomID: string) => {

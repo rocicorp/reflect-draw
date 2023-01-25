@@ -22,5 +22,5 @@ new_classes = ["AuthDO"]
 crons = [ "*/5 * * * *" ] # ever 5 mins for AuthDO connection revalidation
 
 #[secrets]
-#DATADOG_API_KEY
+#REFLECT_DATADOG_API_KEY
 #REFLECT_AUTH_API_KEY
