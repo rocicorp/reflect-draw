@@ -5,18 +5,21 @@ import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nanoid } from "nanoid";
-import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
+import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
-import { workerWsURI } from "../../util/host";
+import { workerWsURI, workerURL } from "../../util/host";
+import { Metrics, Reporter } from "@rocicorp/datadog-util";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
 
-  const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
-    ? new DataDogBrowserLogSink()
-    : consoleLogSink;
+  const logSink = nodeConsoleLogSink;
   const logger = new OptionalLoggerImpl(logSink);
+  const logSinks = [logSink];
+  if (process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== undefined) {
+    logSinks.push(new DataDogBrowserLogSink());
+  }
 
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
@@ -24,6 +27,14 @@ export default function Home() {
     (async () => {
       logger.info?.(`Connecting to worker at ${workerWsURI}`);
       const userID = nanoid();
+      const metrics = new Metrics();
+      // TODO figure out why we can't use ROUTES.reportMetrics here from reflect-server.
+      const metricsEndpoint = new URL("/api/metrics/v0/report", workerURL);
+      new Reporter({
+        metrics,
+        url: metricsEndpoint.toString(),
+      });
+
       const r = new Reflect<M>({
         socketOrigin: workerWsURI,
         onOnlineChange: setOnline,
@@ -33,8 +44,9 @@ export default function Home() {
           userID,
           roomID,
         }),
-        logSinks: [logSink],
+        logSinks,
         mutators: clientMutators,
+        metrics,
       });
 
       const defaultUserInfo = randUserInfo();
