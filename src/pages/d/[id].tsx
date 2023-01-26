@@ -9,6 +9,7 @@ import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
 import { workerWsURI, workerURL } from "../../util/host";
 import { Metrics, Reporter } from "@rocicorp/datadog-util";
+import { ROUTES } from "@rocicorp/reflect-server";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
@@ -29,7 +30,7 @@ export default function Home() {
       const userID = nanoid();
       const metrics = new Metrics();
       // TODO figure out why we can't use ROUTES.reportMetrics here from reflect-server.
-      const metricsEndpoint = new URL("/api/metrics/v0/report", workerURL);
+      const metricsEndpoint = new URL(ROUTES.reportMetrics, workerURL);
       new Reporter({
         metrics,
         url: metricsEndpoint.toString(),
