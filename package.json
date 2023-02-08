@@ -13,10 +13,10 @@
   "dependencies": {
     "@cloudflare/workers-types": "^3.11.0",
     "@datadog/browser-logs": "^4.11.3",
-    "@rocicorp/datadog-util": "^0.5.0",
+    "@rocicorp/datadog-util": "^0.6.0",
     "@rocicorp/logger": "^4.0.0",
     "@rocicorp/reflect": "^0.12.2",
-    "@rocicorp/reflect-server": "^0.21.2",
+    "@rocicorp/reflect-server": "^0.21.6",
     "@types/node": "^17.0.16",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
@@ -34,6 +34,6 @@
     "zod": "^3.11.6"
   },
   "devDependencies": {
-    "wrangler": "^2.1.9"
+    "wrangler": "^2.9.1"
   }
 }
