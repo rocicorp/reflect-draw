@@ -10,6 +10,8 @@ import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink"
 import { workerWsURI, workerURL } from "../../util/host";
 import { Metrics, Reporter } from "@rocicorp/datadog-util";
 
+export const unusedForVercelCacheBusting = 1;
+
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
