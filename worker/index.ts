@@ -50,7 +50,7 @@ const { worker, RoomDO, AuthDO } = createReflectServer({
     await clearCursorAndSelectionState(write, { id: write.clientID });
   },
   getLogSinks,
-  getLogLevel: () => "info",
+  getLogLevel: () => "debug",
   allowUnconfirmedWrites: true,
 });
 export { worker as default, RoomDO, AuthDO };
