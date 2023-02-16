@@ -26,7 +26,7 @@ export default function Home() {
 
     (async () => {
       logger.info?.(`Connecting to worker at ${workerWsURI}`);
-      const userID = nanoid();
+      const userID = "replidraw-guest";
       const metrics = new Metrics();
       // TODO figure out why we can't use ROUTES.reportMetrics here from reflect-server.
       const metricsEndpoint = new URL("/api/metrics/v0/report", workerURL);
