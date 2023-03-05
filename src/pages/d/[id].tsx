@@ -4,7 +4,6 @@ import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
-import { nanoid } from "nanoid";
 import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
 import { workerWsURI, workerURL } from "../../util/host";
@@ -26,7 +25,7 @@ export default function Home() {
 
     (async () => {
       logger.info?.(`Connecting to worker at ${workerWsURI}`);
-      const userID = nanoid();
+      const userID = "reflect-user";
       const metrics = new Metrics();
       // TODO figure out why we can't use ROUTES.reportMetrics here from reflect-server.
       const metricsEndpoint = new URL("/api/metrics/v0/report", workerURL);
