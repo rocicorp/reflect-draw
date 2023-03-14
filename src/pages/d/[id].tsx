@@ -44,7 +44,7 @@ export default function Home() {
           roomID,
         }),
         logSinks,
-        logLevel: "debug",
+        logLevel: "info",
         mutators: clientMutators,
         metrics,
       });
