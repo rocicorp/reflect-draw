@@ -1,5 +1,5 @@
 import {
-  DatadogLogSink,
+  // DatadogLogSink,
   LogSink,
   createReflectServer,
   ReflectServerBaseEnv,
@@ -10,14 +10,14 @@ import { serverMutators } from "../src/datamodel/mutators.js";
 
 function getLogSinks(env: ReplidrawEnv): LogSink[] {
   let logSinks = [nodeConsoleLogSink];
-  if (env.REFLECT_DATADOG_API_KEY) {
-    logSinks.push(
-      new DatadogLogSink({
-        apiKey: env.REFLECT_DATADOG_API_KEY,
-        service: "replidraw-do",
-      })
-    );
-  }
+  // if (env.REFLECT_DATADOG_API_KEY) {
+  //   logSinks.push(
+  //     new DatadogLogSink({
+  //       apiKey: env.REFLECT_DATADOG_API_KEY,
+  //       service: "replidraw-do",
+  //     })
+  //   );
+  // }
   return logSinks;
 }
 
@@ -50,7 +50,7 @@ const { worker, RoomDO, AuthDO } = createReflectServer({
     await clearCursorAndSelectionState(write, { id: write.clientID });
   },
   getLogSinks,
-  getLogLevel: () => "debug",
+  getLogLevel: () => "info",
   allowUnconfirmedWrites: true,
 });
 export { worker as default, RoomDO, AuthDO };
