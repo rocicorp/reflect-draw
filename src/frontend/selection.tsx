@@ -2,18 +2,18 @@ import type { Reflect } from "@rocicorp/reflect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
-import { useShapeByID } from "../datamodel/subscriptions";
+import type { Shape } from "../datamodel/shape";
 
 export function Selection({
   reflect,
-  id,
+  shape,
   containerOffsetTop,
 }: {
   reflect: Reflect<M>;
-  id: string;
+  shape: Shape;
   containerOffsetTop: number | null;
 }) {
-  const shape = useShapeByID(reflect, id);
+  const { id } = shape;
   const gripSize = 19;
 
   if (!shape) {
@@ -73,8 +73,7 @@ export function Selection({
     <div>
       <Rect
         {...{
-          reflect,
-          id,
+          shape,
           highlight: true,
         }}
       />

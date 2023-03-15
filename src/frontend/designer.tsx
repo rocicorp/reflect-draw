@@ -9,10 +9,10 @@ import { RectController } from "./rect-controller";
 import { touchToMouse } from "./events";
 import { Selection } from "./selection";
 import {
-  useShapeIDs,
-  useOverShapeID,
-  useSelectedShapeID,
+  useShapes,
   useCollaboratorIDs,
+  useOverShape,
+  useSelectedShape,
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
@@ -23,25 +23,32 @@ export function Designer({
   reflect: Reflect<M>;
   logger: OptionalLogger;
 }) {
-  const ids = useShapeIDs(reflect);
-  const overID = useOverShapeID(reflect);
-  const selectedID = useSelectedShapeID(reflect);
+  const shapes = useShapes(reflect);
+  const shapeMap = new Map(shapes.map((s) => [s.id, s]));
+  const overShape = useOverShape(reflect);
+  const selectedShape = useSelectedShape(reflect);
   const collaboratorIDs = useCollaboratorIDs(reflect);
 
   const ref = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
 
+  const move = async (dx = 0, dy = 0) => {
+    if (selectedShape) {
+      await reflect.mutate.moveShape({ id: selectedShape.id, dx, dy });
+    }
+  };
+
   const handlers = {
-    moveLeft: () =>
-      reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
-    moveRight: () =>
-      reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
-    moveUp: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
-    moveDown: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
+    moveLeft: () => move(-20, 0),
+    moveRight: () => move(20, 0),
+    moveUp: () => move(0, -20),
+    moveDown: () => move(0, 20),
     deleteShape: () => {
       // Prevent navigating backward on some browsers.
       event?.preventDefault();
-      reflect.mutate.deleteShape(selectedID);
+      if (selectedShape) {
+        reflect.mutate.deleteShape(selectedShape.id);
+      }
     },
   };
 
@@ -86,25 +93,24 @@ export function Designer({
             onTouchMove: (e) => touchToMouse(e, onMouseMove),
           }}
         >
-          {ids.map((id) => (
+          {shapes.map((shape) => (
             // draggable rects
             <RectController
               {...{
-                key: `shape-${id}`,
+                key: `shape-${shape.id}`,
                 reflect,
-                id,
+                shape,
               }}
             />
           ))}
 
           {
             // self-highlight
-            !dragging && overID && (
+            !dragging && overShape && (
               <Rect
                 {...{
-                  key: `highlight-${overID}`,
-                  reflect,
-                  id: overID,
+                  key: `highlight-${overShape.id}`,
+                  shape: overShape,
                   highlight: true,
                 }}
               />
@@ -113,12 +119,12 @@ export function Designer({
 
           {
             // self-selection
-            selectedID && (
+            selectedShape && (
               <Selection
                 {...{
-                  key: `selection-${selectedID}`,
+                  key: `selection-${selectedShape?.id}`,
                   reflect,
-                  id: selectedID,
+                  shape: selectedShape,
                   highlight: true,
                   containerOffsetTop: ref.current && ref.current.offsetTop,
                 }}
@@ -136,6 +142,7 @@ export function Designer({
                 key={`key-${id}`}
                 reflect={reflect}
                 clientID={id}
+                shapeMap={shapeMap}
                 logger={logger}
               />
             ))

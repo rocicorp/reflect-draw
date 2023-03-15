@@ -1,19 +1,22 @@
 import type { Reflect } from "@rocicorp/reflect";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
-import { useShapeByID } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
+import React from "react";
+import { isEqual } from "lodash";
+import shallowequal from "shallowequal";
+import type { Shape } from "src/datamodel/shape";
 
 // TODO: In the future I imagine this becoming ShapeController and
 // there also be a Shape that wraps Rect and also knows how to draw Circle, etc.
-export function RectController({
+function RectControllerInternal({
   reflect,
-  id,
+  shape,
 }: {
   reflect: Reflect<M>;
-  id: string;
+  shape: Shape;
 }) {
-  const shape = useShapeByID(reflect, id);
+  const { id } = shape;
 
   const onMouseEnter = async () =>
     reflect.mutate.overShape({
@@ -61,8 +64,7 @@ export function RectController({
       <div>
         <Rect
           {...{
-            reflect,
-            id,
+            shape,
             highlight: false,
             onMouseEnter,
             onMouseLeave,
@@ -72,3 +74,13 @@ export function RectController({
     </DraggableCore>
   );
 }
+
+export const RectController = React.memo(
+  RectControllerInternal,
+  (prev, next) => {
+    return (
+      isEqual(prev.shape, next.shape) &&
+      shallowequal({ ...prev, shape: undefined }, { ...next, shape: undefined })
+    );
+  }
+);

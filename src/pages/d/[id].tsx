@@ -8,6 +8,7 @@ import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
 import { workerWsURI, workerURL } from "../../util/host";
 import { Metrics, Reporter } from "@rocicorp/datadog-util";
+import { randomShape } from "src/datamodel/shape";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
@@ -53,7 +54,7 @@ export default function Home() {
         id: await r.clientID,
         defaultUserInfo,
       });
-      await r.mutate.initShapes();
+      await r.mutate.initShapes(Array.from({ length: 5 }, () => randomShape()));
 
       setReflectClient(r);
     })();

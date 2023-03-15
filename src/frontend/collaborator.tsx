@@ -5,6 +5,7 @@ import type { M } from "../datamodel/mutators";
 import { useClientInfo } from "../datamodel/subscriptions";
 import type { Reflect } from "@rocicorp/reflect";
 import type { OptionalLogger } from "@rocicorp/logger";
+import type { Shape } from "src/datamodel/shape";
 
 const hideCollaboratorDelay = 5000;
 
@@ -19,11 +20,13 @@ interface Position {
 export function Collaborator({
   reflect,
   clientID,
+  shapeMap,
   logger,
 }: {
   reflect: Reflect<M>;
   clientID: string;
   logger: OptionalLogger;
+  shapeMap: Map<string, Shape>;
 }) {
   const clientInfo = useClientInfo(reflect, clientID);
   const [lastPos, setLastPos] = useState<Position | null>(null);
@@ -75,6 +78,11 @@ export function Collaborator({
     return null;
   }
 
+  const collaboratorShape = shapeMap.get(clientInfo.selectedID);
+  if (!collaboratorShape) {
+    return null;
+  }
+
   return (
     <div className={styles.collaborator} style={{ opacity: visible ? 1 : 0 }}>
       {clientInfo.selectedID && (
@@ -82,7 +90,7 @@ export function Collaborator({
           {...{
             reflect,
             key: `selection-${clientInfo.selectedID}`,
-            id: clientInfo.selectedID,
+            shape: collaboratorShape,
             highlight: true,
             highlightColor: userInfo.color,
           }}

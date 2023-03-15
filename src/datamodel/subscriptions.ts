@@ -1,30 +1,16 @@
 import type { Reflect } from "@rocicorp/reflect";
 import { useSubscribe } from "replicache-react";
 import { getClientState, clientStatePrefix } from "./client-state";
-import { getShape, shapePrefix } from "./shape";
+import { getShape, getShapes } from "./shape";
 import type { M } from "./mutators";
 
-export function useShapeIDs(reflect: Reflect<M>) {
+export function useShapes(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      const shapes = (await tx
-        .scan({ prefix: shapePrefix })
-        .keys()
-        .toArray()) as string[];
-      return shapes.map((k) => k.substring(shapePrefix.length));
+      return getShapes(tx);
     },
     []
-  );
-}
-
-export function useShapeByID(reflect: Reflect<M>, id: string) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return await getShape(tx, id);
-    },
-    null
   );
 }
 
@@ -38,23 +24,25 @@ export function useUserInfo(reflect: Reflect<M>) {
   );
 }
 
-export function useOverShapeID(reflect: Reflect<M>) {
+export function useOverShape(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).overID;
+      const { overID } = await getClientState(tx, await reflect.clientID);
+      return overID ? (await getShape(tx, overID)) ?? null : null;
     },
-    ""
+    null
   );
 }
 
-export function useSelectedShapeID(reflect: Reflect<M>) {
+export function useSelectedShape(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).selectedID;
+      const { selectedID } = await getClientState(tx, await reflect.clientID);
+      return selectedID ? (await getShape(tx, selectedID)) ?? null : null;
     },
-    ""
+    null
   );
 }
 

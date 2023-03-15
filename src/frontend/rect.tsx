@@ -1,11 +1,10 @@
-import type { Reflect } from "@rocicorp/reflect";
 import React, { MouseEventHandler, TouchEventHandler } from "react";
-import type { M } from "../datamodel/mutators";
-import { useShapeByID } from "../datamodel/subscriptions";
+import type { Shape } from "../datamodel/shape";
+import isEqual from "lodash/isEqual";
+import shallowequal from "shallowequal";
 
-export function Rect({
-  reflect,
-  id,
+export function RectInternal({
+  shape,
   highlight = false,
   highlightColor = "rgb(74,158,255)",
   onMouseDown,
@@ -13,8 +12,7 @@ export function Rect({
   onMouseEnter,
   onMouseLeave,
 }: {
-  reflect: Reflect<M>;
-  id: string;
+  shape: Shape;
   highlight?: boolean;
   highlightColor?: string;
   onMouseDown?: MouseEventHandler;
@@ -22,11 +20,9 @@ export function Rect({
   onMouseEnter?: MouseEventHandler;
   onMouseLeave?: MouseEventHandler;
 }) {
-  const shape = useShapeByID(reflect, id);
   if (!shape) {
     return null;
   }
-
   const { x, y, width, height, rotate } = shape;
   const enableEvents =
     onMouseDown || onTouchStart || onMouseEnter || onMouseLeave;
@@ -63,3 +59,19 @@ export function Rect({
     </svg>
   );
 }
+
+export const Rect = React.memo(RectInternal, (prev, next) => {
+  return (
+    isEqual(prev.shape, next.shape) &&
+    shallowequal(
+      {
+        ...prev,
+        shape: undefined,
+      },
+      {
+        ...next,
+        shape: undefined,
+      }
+    )
+  );
+});
