@@ -18,26 +18,14 @@ function RectControllerInternal({
 }) {
   const { id } = shape;
 
-  const onMouseEnter = async () =>
-    reflect.mutate.overShape({
-      clientID: await reflect.clientID,
-      shapeID: id,
-    });
-  const onMouseLeave = async () =>
-    reflect.mutate.overShape({
-      clientID: await reflect.clientID,
-      shapeID: "",
-    });
+  const onMouseEnter = async () => await reflect.mutate.overShape(id);
+  const onMouseLeave = async () => await reflect.mutate.overShape("");
 
   const onDragStart = (_e: DraggableEvent, _d: DraggableData) => {
     // Can't mark onDragStart async because it changes return type and onDragStart
     // must return void.
-    const blech = async () => {
-      reflect.mutate.selectShape({
-        clientID: await reflect.clientID,
-        shapeID: id,
-      });
-    };
+    const blech = async () => await reflect.mutate.selectShape(id);
+
     blech();
   };
   const onDrag = (_e: DraggableEvent, d: DraggableData) => {

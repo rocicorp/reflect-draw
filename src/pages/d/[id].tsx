@@ -50,10 +50,7 @@ export default function Home() {
       });
 
       const defaultUserInfo = randUserInfo();
-      await r.mutate.initClientState({
-        id: await r.clientID,
-        defaultUserInfo,
-      });
+      await r.mutate.initClientState(defaultUserInfo);
       await r.mutate.initShapes(Array.from({ length: 5 }, () => randomShape()));
 
       setReflectClient(r);

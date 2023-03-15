@@ -47,7 +47,7 @@ const { worker, RoomDO, AuthDO } = createReflectServer({
   mutators: serverMutators,
   authHandler,
   disconnectHandler: async (write) => {
-    await clearCursorAndSelectionState(write, { id: write.clientID });
+    await clearCursorAndSelectionState(write);
   },
   getLogSinks,
   getLogLevel: () => "debug",

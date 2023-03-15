@@ -18,7 +18,7 @@ export function useUserInfo(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).userInfo;
+      return (await getClientState(tx, tx.clientID)).userInfo;
     },
     null
   );
@@ -28,7 +28,7 @@ export function useOverShape(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      const { overID } = await getClientState(tx, await reflect.clientID);
+      const { overID } = await getClientState(tx, tx.clientID);
       return overID ? (await getShape(tx, overID)) ?? null : null;
     },
     null
@@ -39,7 +39,7 @@ export function useSelectedShape(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      const { selectedID } = await getClientState(tx, await reflect.clientID);
+      const { selectedID } = await getClientState(tx, tx.clientID);
       return selectedID ? (await getShape(tx, selectedID)) ?? null : null;
     },
     null
@@ -54,7 +54,7 @@ export function useCollaboratorIDs(reflect: Reflect<M>) {
         .scan({ prefix: clientStatePrefix })
         .keys()
         .toArray()) as string[];
-      const myClientID = await reflect.clientID;
+      const myClientID = await tx.clientID;
       return clientIDs
         .filter((k) => !k.endsWith(myClientID))
         .map((k) => k.substr(clientStatePrefix.length));

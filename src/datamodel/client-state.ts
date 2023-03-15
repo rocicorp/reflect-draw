@@ -59,18 +59,15 @@ export type ClientState = z.infer<typeof clientStateSchema>;
 
 export async function initClientState(
   tx: WriteTransaction,
-  { id, defaultUserInfo }: { id: string; defaultUserInfo: UserInfo }
+  defaultUserInfo: UserInfo
 ): Promise<void> {
-  if (await tx.has(key(id))) {
+  if (await tx.has(key(tx.clientID))) {
     return;
   }
   await putClientState(tx, {
-    id,
-    clientState: {
-      overID: "",
-      selectedID: "",
-      userInfo: defaultUserInfo,
-    },
+    overID: "",
+    selectedID: "",
+    userInfo: defaultUserInfo,
   });
 }
 
@@ -88,68 +85,55 @@ export async function getClientState(
 
 export function putClientState(
   tx: WriteTransaction,
-  { id, clientState }: { id: string; clientState: ClientState }
+  clientState: ClientState
 ): Promise<void> {
-  return tx.put(key(id), clientState);
+  return tx.put(key(tx.clientID), clientState);
 }
 
 export async function setCursor(
   tx: WriteTransaction,
-  { id, x, y }: { id: string; x: number; y: number }
+  { x, y }: { x: number; y: number }
 ): Promise<void> {
-  const clientState = await getClientState(tx, id);
+  const clientState = await getClientState(tx, tx.clientID);
   await putClientState(tx, {
-    id,
-    clientState: {
-      ...clientState,
-      cursor: {
-        x,
-        y,
-      },
+    ...clientState,
+    cursor: {
+      x,
+      y,
     },
   });
 }
 
 export async function clearCursorAndSelectionState(
-  tx: WriteTransaction,
-  { id }: { id: string }
+  tx: WriteTransaction
 ): Promise<void> {
-  const { cursor, ...clientState } = await getClientState(tx, id);
+  const { cursor, ...clientState } = await getClientState(tx, tx.clientID);
   await putClientState(tx, {
-    id,
-    clientState: {
-      ...clientState,
-      overID: "",
-      selectedID: "",
-    },
+    ...clientState,
+    overID: "",
+    selectedID: "",
   });
 }
 
 export async function overShape(
   tx: WriteTransaction,
-  { clientID, shapeID }: { clientID: string; shapeID: string }
+  shapeID: string
 ): Promise<void> {
-  const clientState = await getClientState(tx, clientID);
+  const clientState = await getClientState(tx, tx.clientID);
   await putClientState(tx, {
-    id: clientID,
-    clientState: {
-      ...clientState,
-      overID: shapeID,
-    },
+    ...clientState,
+    overID: shapeID,
   });
 }
 
 export async function selectShape(
   tx: WriteTransaction,
-  { clientID, shapeID }: { clientID: string; shapeID: string }
+  shapeID: string
 ): Promise<void> {
-  const clientState = await getClientState(tx, clientID);
+  const clientState = await getClientState(tx, tx.clientID);
   await putClientState(tx, {
-    id: clientID,
-    clientState: {
-      ...clientState,
-      selectedID: shapeID,
-    },
+    ...clientState,
+    selectedID: shapeID,
   });
 }
 

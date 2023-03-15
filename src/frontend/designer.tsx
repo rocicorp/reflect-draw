@@ -61,7 +61,6 @@ export function Designer({
   }) => {
     if (ref && ref.current) {
       reflect.mutate.setCursor({
-        id: await reflect.clientID,
         x: pageX,
         y: pageY - ref.current.offsetTop,
       });
