@@ -30,7 +30,8 @@ export type Shape = Readonly<z.TypeOf<typeof shapeSchema>>;
 export async function getShapes(tx: ReadTransaction): Promise<Shape[]> {
   const shapes = await tx.scan({ prefix: shapePrefix }).entries().toArray();
   return shapes.map(([_, val]) => {
-    return shapeSchema.parse(val);
+    shapeSchema.parse(val);
+    return val as Shape;
   });
 }
 
@@ -43,7 +44,8 @@ export async function getShape(
     console.log(`Specified shape ${id} not found.`);
     return undefined;
   }
-  return shapeSchema.parse(val);
+  shapeSchema.parse(val);
+  return val as Shape;
 }
 
 export async function putShape(
@@ -72,6 +74,24 @@ export async function moveShape(
       y: shape.y + dy,
     });
   }
+}
+
+export async function scanShape(
+  tx: WriteTransaction,
+  { id, dx, maxX }: { id: string; dx: number; maxX: number }
+): Promise<void> {
+  const shape = await getShape(tx, id);
+  if (!shape) {
+    return;
+  }
+  let newX = shape.x + dx;
+  if (newX > maxX) {
+    newX = 0;
+  }
+  putShape(tx, {
+    ...shape,
+    x: newX,
+  });
 }
 
 export async function resizeShape(

@@ -11,6 +11,8 @@ import { Metrics, Reporter } from "@rocicorp/datadog-util";
 import { randomShape } from "src/datamodel/shape";
 
 export default function Home() {
+  const SCHEMA_VERISON = "1";
+
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
 
@@ -47,6 +49,7 @@ export default function Home() {
         logSinks,
         mutators: clientMutators,
         metrics,
+        schemaVersion: SCHEMA_VERISON,
       });
 
       const defaultUserInfo = randUserInfo();

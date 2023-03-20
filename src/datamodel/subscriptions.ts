@@ -54,7 +54,7 @@ export function useCollaboratorIDs(reflect: Reflect<M>) {
         .scan({ prefix: clientStatePrefix })
         .keys()
         .toArray()) as string[];
-      const myClientID = await tx.clientID;
+      const myClientID = tx.clientID;
       return clientIDs
         .filter((k) => !k.endsWith(myClientID))
         .map((k) => k.substr(clientStatePrefix.length));

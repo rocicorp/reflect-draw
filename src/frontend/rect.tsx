@@ -60,18 +60,4 @@ export function RectInternal({
   );
 }
 
-export const Rect = React.memo(RectInternal, (prev, next) => {
-  return (
-    isEqual(prev.shape, next.shape) &&
-    shallowequal(
-      {
-        ...prev,
-        shape: undefined,
-      },
-      {
-        ...next,
-        shape: undefined,
-      }
-    )
-  );
-});
+export const Rect = React.memo(RectInternal);

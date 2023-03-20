@@ -3,8 +3,6 @@ import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import React from "react";
-import { isEqual } from "lodash";
-import shallowequal from "shallowequal";
 import type { Shape } from "src/datamodel/shape";
 
 // TODO: In the future I imagine this becoming ShapeController and
@@ -63,12 +61,4 @@ function RectControllerInternal({
   );
 }
 
-export const RectController = React.memo(
-  RectControllerInternal,
-  (prev, next) => {
-    return (
-      isEqual(prev.shape, next.shape) &&
-      shallowequal({ ...prev, shape: undefined }, { ...next, shape: undefined })
-    );
-  }
-);
+export const RectController = React.memo(RectControllerInternal);
