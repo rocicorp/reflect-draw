@@ -11,6 +11,7 @@
     "check-types": "tsc -p tsconfig.json --noEmit && tsc -p worker/tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@badrap/valita": "^0.2.0",
     "@cloudflare/workers-types": "^3.11.0",
     "@datadog/browser-logs": "^4.11.3",
     "@rocicorp/datadog-util": "^0.6.0",
