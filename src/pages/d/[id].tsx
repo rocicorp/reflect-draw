@@ -46,7 +46,6 @@ export default function Home() {
         logSinks,
         logLevel: "debug",
         mutators: clientMutators,
-        metrics,
       });
 
       const defaultUserInfo = randUserInfo();
