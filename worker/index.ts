@@ -1,18 +1,17 @@
 import {
-  DatadogLogSink,
   LogSink,
   createReflectServer,
   ReflectServerBaseEnv,
+  createWorkerDatadogLogSink,
 } from "@rocicorp/reflect-server";
 import { nodeConsoleLogSink } from "@rocicorp/logger";
 import { clearCursorAndSelectionState } from "../src/datamodel/client-state.js";
 import { serverMutators } from "../src/datamodel/mutators.js";
-
 function getLogSinks(env: ReplidrawEnv): LogSink[] {
   let logSinks = [nodeConsoleLogSink];
   if (env.REFLECT_DATADOG_API_KEY) {
     logSinks.push(
-      new DatadogLogSink({
+      createWorkerDatadogLogSink({
         apiKey: env.REFLECT_DATADOG_API_KEY,
         service: "replidraw-do",
       })
@@ -43,14 +42,14 @@ const authHandler = async (auth: string, roomID: string) => {
   };
 };
 
-const { worker, RoomDO, AuthDO } = createReflectServer({
+const { worker, RoomDO, AuthDO } = createReflectServer((env: ReplidrawEnv) => ({
   mutators: serverMutators,
   authHandler,
   disconnectHandler: async (write) => {
     await clearCursorAndSelectionState(write, { id: write.clientID });
   },
-  getLogSinks,
-  getLogLevel: () => "debug",
-  allowUnconfirmedWrites: true,
-});
+  logSinks: getLogSinks(env),
+  logLevel: "debug",
+  allowUnconfirmedWrites: false,
+}));
 export { worker as default, RoomDO, AuthDO };

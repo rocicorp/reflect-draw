@@ -1,12 +1,15 @@
 import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { DataDogBrowserLogSink } from "../frontend/data-dog-browser-log-sink";
 import { workerURL } from "../util/host";
+import { createClientDatadogLogSink } from "@rocicorp/reflect";
 
 const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
-  ? new DataDogBrowserLogSink()
+  ? createClientDatadogLogSink({
+      clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN,
+      service: "replidraw-do",
+    })
   : consoleLogSink;
-const logger = new OptionalLoggerImpl(logSink);
+const logger = new OptionalLoggerImpl(logSink, "info");
 
 function Page() {
   return "";

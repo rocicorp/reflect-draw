@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { Reflect } from "@rocicorp/reflect";
+import { createClientDatadogLogSink, Reflect } from "@rocicorp/reflect";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { DataDogBrowserLogSink } from "../../frontend/data-dog-browser-log-sink";
 import { workerWsURI, workerURL } from "../../util/host";
 import { Metrics, Reporter } from "@rocicorp/datadog-util";
 
@@ -17,7 +16,12 @@ export default function Home() {
   const logger = new OptionalLoggerImpl(logSink);
   const logSinks = [logSink];
   if (process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== undefined) {
-    logSinks.push(new DataDogBrowserLogSink());
+    logSinks.push(
+      createClientDatadogLogSink({
+        clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN,
+        service: "replidraw-do",
+      })
+    );
   }
 
   useEffect(() => {
@@ -44,8 +48,8 @@ export default function Home() {
           roomID,
         }),
         logSinks,
+        logLevel: "debug",
         mutators: clientMutators,
-        metrics,
       });
 
       const defaultUserInfo = randUserInfo();
