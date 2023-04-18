@@ -50,6 +50,6 @@ const { worker, RoomDO, AuthDO } = createReflectServer((env: ReplidrawEnv) => ({
   },
   logSinks: getLogSinks(env),
   logLevel: "debug",
-  allowUnconfirmedWrites: false,
+  allowUnconfirmedWrites: true,
 }));
 export { worker as default, RoomDO, AuthDO };
