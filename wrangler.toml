@@ -1,4 +1,4 @@
-name = "replidraw-do-grgbkr-2"
+name = "replidraw"
 main = "worker/index.ts"
 compatibility_date = "2022-06-03"
 logpush = true
