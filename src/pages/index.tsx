@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid";
 import { consoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
 import { workerURL } from "../util/host";
-import { createClientDatadogLogSink } from "@rocicorp/reflect";
+import { createClientDatadogLogSink } from "@rocicorp/reflect/client";
 
 const logSink = process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN
   ? createClientDatadogLogSink({

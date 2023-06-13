@@ -1,4 +1,4 @@
-import type { Reflect } from "@rocicorp/reflect";
+import type { Reflect } from "@rocicorp/reflect/client";
 import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";

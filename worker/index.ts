@@ -3,7 +3,7 @@ import {
   createReflectServer,
   ReflectServerBaseEnv,
   createWorkerDatadogLogSink,
-} from "@rocicorp/reflect-server";
+} from "@rocicorp/reflect/server";
 import { nodeConsoleLogSink } from "@rocicorp/logger";
 import { clearCursorAndSelectionState } from "../src/datamodel/client-state.js";
 import { serverMutators } from "../src/datamodel/mutators.js";

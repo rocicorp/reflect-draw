@@ -1,4 +1,4 @@
-import type { Reflect } from "@rocicorp/reflect";
+import type { Reflect } from "@rocicorp/reflect/client";
 import type { OptionalLogger } from "@rocicorp/logger";
 import React, { useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createClientDatadogLogSink, Reflect } from "@rocicorp/reflect";
+import { createClientDatadogLogSink, Reflect } from "@rocicorp/reflect/client";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
