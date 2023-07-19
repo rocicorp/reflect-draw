@@ -15,7 +15,7 @@
     "@datadog/browser-logs": "^4.11.3",
     "@rocicorp/datadog-util": "^0.6.0",
     "@rocicorp/logger": "^4.0.0",
-    "@rocicorp/reflect": "^0.14.0-beta.0",
+    "@rocicorp/reflect": "file:../mono/rocicorp-reflect-0.29.1.tgz",
     "@rocicorp/reflect-server": "^0.23.0-beta.0",
     "@types/node": "^17.0.16",
     "@types/react": "^17.0.39",

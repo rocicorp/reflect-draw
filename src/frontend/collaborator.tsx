@@ -1,10 +1,10 @@
+import type { OptionalLogger } from "@rocicorp/logger";
+import type { Reflect } from "@rocicorp/reflect/client";
 import { useEffect, useState } from "react";
-import styles from "./collaborator.module.css";
-import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useClientInfo } from "../datamodel/subscriptions";
-import type { Reflect } from "@rocicorp/reflect";
-import type { OptionalLogger } from "@rocicorp/logger";
+import styles from "./collaborator.module.css";
+import { Rect } from "./rect";
 
 const hideCollaboratorDelay = 5000;
 

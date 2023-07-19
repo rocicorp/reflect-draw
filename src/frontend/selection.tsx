@@ -1,8 +1,8 @@
-import type { Reflect } from "@rocicorp/reflect";
-import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
-import { Rect } from "./rect";
+import type { Reflect } from "@rocicorp/reflect/client";
+import { DraggableCore, DraggableData, DraggableEvent } from "react-draggable";
 import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
+import { Rect } from "./rect";
 
 export function Selection({
   reflect,

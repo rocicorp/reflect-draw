@@ -1,8 +1,8 @@
-import type { Reflect } from "@rocicorp/reflect";
-import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
-import { Rect } from "./rect";
-import { useShapeByID } from "../datamodel/subscriptions";
+import type { Reflect } from "@rocicorp/reflect/client";
+import { DraggableCore, DraggableData, DraggableEvent } from "react-draggable";
 import type { M } from "../datamodel/mutators";
+import { useShapeByID } from "../datamodel/subscriptions";
+import { Rect } from "./rect";
 
 // TODO: In the future I imagine this becoming ShapeController and
 // there also be a Shape that wraps Rect and also knows how to draw Circle, etc.

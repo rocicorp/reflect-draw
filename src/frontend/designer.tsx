@@ -1,20 +1,20 @@
-import type { Reflect } from "@rocicorp/reflect";
 import type { OptionalLogger } from "@rocicorp/logger";
-import React, { useRef, useState } from "react";
-import { HotKeys } from "react-hotkeys";
+import type { Reflect } from "@rocicorp/reflect/client";
+import { useRef, useState } from "react";
 import { DraggableCore } from "react-draggable";
-import { Rect } from "./rect";
-import { Collaborator } from "./collaborator";
-import { RectController } from "./rect-controller";
-import { touchToMouse } from "./events";
-import { Selection } from "./selection";
+import { HotKeys } from "react-hotkeys";
+import type { M } from "../datamodel/mutators";
 import {
-  useShapeIDs,
+  useCollaboratorIDs,
   useOverShapeID,
   useSelectedShapeID,
-  useCollaboratorIDs,
+  useShapeIDs,
 } from "../datamodel/subscriptions";
-import type { M } from "../datamodel/mutators";
+import { Collaborator } from "./collaborator";
+import { touchToMouse } from "./events";
+import { Rect } from "./rect";
+import { RectController } from "./rect-controller";
+import { Selection } from "./selection";
 
 export function Designer({
   reflect,

@@ -1,12 +1,12 @@
+import type { Reflect } from "@rocicorp/reflect/client";
 import { useEffect, useRef, useState } from "react";
-import type { Reflect } from "@rocicorp/reflect";
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import styles from "./nav.module.css";
+import Modal from "react-bootstrap/Modal";
+import type { M } from "../datamodel/mutators";
 import { randomShape } from "../datamodel/shape";
 import { useUserInfo } from "../datamodel/subscriptions";
-import type { M } from "../datamodel/mutators";
+import styles from "./nav.module.css";
 import { OnlineStatus } from "./online-status";
 
 type NavProps = {

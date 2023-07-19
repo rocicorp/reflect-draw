@@ -1,8 +1,8 @@
-import type { Reflect } from "@rocicorp/reflect";
+import type { Reflect } from "@rocicorp/reflect/client";
 import { useSubscribe } from "replicache-react";
-import { getClientState, clientStatePrefix } from "./client-state";
-import { getShape, shapePrefix } from "./shape";
+import { clientStatePrefix, getClientState } from "./client-state";
 import type { M } from "./mutators";
+import { getShape, shapePrefix } from "./shape";
 
 export function useShapeIDs(reflect: Reflect<M>) {
   return useSubscribe(

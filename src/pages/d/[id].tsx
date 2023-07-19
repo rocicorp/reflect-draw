@@ -1,12 +1,12 @@
+import { Metrics, Reporter } from "@rocicorp/datadog-util";
+import { OptionalLoggerImpl, nodeConsoleLogSink } from "@rocicorp/logger";
+import { Reflect, createClientDatadogLogSink } from "@rocicorp/reflect/client";
 import { useEffect, useState } from "react";
-import { createClientDatadogLogSink, Reflect } from "@rocicorp/reflect";
+import { randUserInfo } from "../../datamodel/client-state";
+import { M, clientMutators } from "../../datamodel/mutators";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
-import { M, clientMutators } from "../../datamodel/mutators";
-import { randUserInfo } from "../../datamodel/client-state";
-import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { workerWsURI, workerURL } from "../../util/host";
-import { Metrics, Reporter } from "@rocicorp/datadog-util";
+import { workerURL, workerWsURI } from "../../util/host";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
