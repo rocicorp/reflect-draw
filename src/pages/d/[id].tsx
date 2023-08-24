@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { createClientDatadogLogSink, Reflect } from "@rocicorp/reflect/client";
+import { ExperimentalMemKVStore, Reflect } from "@rocicorp/reflect/client";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { workerWsURI, workerURL } from "../../util/host";
-import { Metrics, Reporter } from "@rocicorp/datadog-util";
+import { workerWsURI } from "../../util/host";
+import { nanoid } from "nanoid";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
@@ -14,42 +14,24 @@ export default function Home() {
 
   const logSink = nodeConsoleLogSink;
   const logger = new OptionalLoggerImpl(logSink);
-  const logSinks = [logSink];
-  if (process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN !== undefined) {
-    logSinks.push(
-      createClientDatadogLogSink({
-        clientToken: process.env.NEXT_PUBLIC_DATADOG_CLIENT_TOKEN,
-        service: "replidraw-do",
-      })
-    );
-  }
 
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
     (async () => {
       logger.info?.(`Connecting to worker at ${workerWsURI}`);
-      const userID = "reflect-user";
-      const metrics = new Metrics();
-      // TODO figure out why we can't use ROUTES.reportMetrics here from reflect-server.
-      const metricsEndpoint = new URL("/api/metrics/v0/report", workerURL);
-      new Reporter({
-        metrics,
-        url: metricsEndpoint.toString(),
-      });
+      const userID = nanoid();
 
       const r = new Reflect<M>({
         socketOrigin: workerWsURI,
         onOnlineChange: setOnline,
         userID,
         roomID,
-        auth: JSON.stringify({
-          userID,
-          roomID,
-        }),
-        logSinks,
         logLevel: "debug",
         mutators: clientMutators,
+
+        // TODO: Remove when Reflect first-class presence feature arrives.
+        createKVStore: (name) => new ExperimentalMemKVStore(name),
       });
 
       const defaultUserInfo = randUserInfo();
