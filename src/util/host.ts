@@ -6,5 +6,4 @@
 // apparently does string substitution.
 export const workerWsURI =
   process.env.NEXT_PUBLIC_WORKER_HOST ??
-  "wss://replidraw.replicache.workers.dev";
-export const workerURL = workerWsURI.replace(/^ws/, "http");
+  "wss://general-spotless-freedom-llowmpfh.reflect-server.net";

@@ -4,18 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev-worker": "wrangler dev",
     "build": "rm -rf dist && next build",
     "start": "next start",
     "format": "prettier --write './**/*.{js,jsx,json,ts,tsx,html,css,md}'",
     "check-types": "tsc -p tsconfig.json --noEmit && tsc -p worker/tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@cloudflare/workers-types": "^3.11.0",
-    "@datadog/browser-logs": "^4.11.3",
-    "@rocicorp/datadog-util": "^0.6.0",
     "@rocicorp/logger": "^4.0.0",
-    "@rocicorp/reflect": "^0.31.0",
+    "@rocicorp/reflect": "^0.31.6",
     "@types/node": "^17.0.16",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
