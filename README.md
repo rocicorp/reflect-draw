@@ -14,7 +14,7 @@ npm install
 
 ```bash
 # Run local Reflect server
-npx reflect dev reflect/index.ts
+npx reflect dev
 
 # Run UI
 npm run dev
@@ -30,7 +30,7 @@ npm run dev
 npx reflect init --new
 
 # Publish app
-npx reflect publish reflect/index.ts
+npx reflect publish
 
 # Publish UI somewhere, Vercel works
 npx vercel

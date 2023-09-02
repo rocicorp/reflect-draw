@@ -1,0 +1,8 @@
+{
+  "server": "./reflect/index.ts",
+  "apps": {
+    "default": {
+      "appID": "llowmpfh"
+    }
+  }
+}

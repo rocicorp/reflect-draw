@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExperimentalMemKVStore, Reflect } from "@rocicorp/reflect/client";
+import { Reflect } from "@rocicorp/reflect/client";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
@@ -29,9 +29,6 @@ export default function Home() {
         roomID,
         logLevel: "debug",
         mutators: clientMutators,
-
-        // TODO: Remove when Reflect first-class presence feature arrives.
-        createKVStore: (name) => new ExperimentalMemKVStore(name),
       });
 
       const defaultUserInfo = randUserInfo();
