@@ -4,6 +4,4 @@
 //
 // Note: process.env has to be used instead of importing env because Next.js
 // apparently does string substitution.
-export const workerWsURI =
-  process.env.NEXT_PUBLIC_WORKER_HOST ??
-  "wss://general-spotless-freedom-llowmpfh.reflect-server.net";
+export const workerWsURI = process.env.NEXT_PUBLIC_WORKER_HOST ?? "";

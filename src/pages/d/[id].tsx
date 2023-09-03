@@ -27,7 +27,6 @@ export default function Home() {
         onOnlineChange: setOnline,
         userID,
         roomID,
-        logLevel: "debug",
         mutators: clientMutators,
       });
 
