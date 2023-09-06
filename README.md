@@ -17,18 +17,17 @@ npm install
 npx reflect dev
 
 # Run UI
-npm run dev
-
 NEXT_PUBLIC_WORKER_HOST=ws://127.0.0.1:8080 \
 npm run dev
 ```
 
 ## Publish
 
-```bash
-# Create a new app on reflect.net
-npx reflect init --new
+First, edit `reflect.config.json` to remove the existing `apps` key.
 
+Then:
+
+```bash
 # Publish app
 npx reflect publish
 
