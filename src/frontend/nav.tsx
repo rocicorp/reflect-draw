@@ -102,11 +102,10 @@ export function Nav({ reflect, online }: NavProps) {
         <Modal.Body>
           <p>
             This is a demonstration of{" "}
-            <a href="https://replicache.dev" target="_blank">
-              <u>Replicache</u>
+            <a href="https://reflect.net" target="_blank">
+              <u>Reflect</u>
             </a>{" "}
-            — a JavaScript library that enables realtime, collaborative web apps
-            for any backend stack.
+            — a JS library and web service for building multiplayer web apps.
           </p>
           <p>
             Try{" "}
@@ -124,12 +123,8 @@ export function Nav({ reflect, online }: NavProps) {
           >
             Demo Source
           </Button>
-          <Button
-            variant="primary"
-            href="https://replicache.dev/"
-            target="_blank"
-          >
-            Replicache Homepage
+          <Button variant="primary" href="https://reflect.net/" target="_blank">
+            Reflect Homepage
           </Button>
         </Modal.Footer>
       </Modal>
