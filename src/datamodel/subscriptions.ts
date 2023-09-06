@@ -1,18 +1,15 @@
 import type { Reflect } from "@rocicorp/reflect/client";
 import { useSubscribe } from "replicache-react";
 import { getClientState, listClientStates } from "./client-state";
-import { getShape, shapePrefix } from "./shape";
+import { getShape, listShapes } from "./shape";
 import type { M } from "./mutators";
 
 export function useShapeIDs(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      const shapes = (await tx
-        .scan({ prefix: shapePrefix })
-        .keys()
-        .toArray()) as string[];
-      return shapes.map((k) => k.substring(shapePrefix.length));
+      const shapes = await listShapes(tx);
+      return shapes.map((s) => s.id);
     },
     []
   );
