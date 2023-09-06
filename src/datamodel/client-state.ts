@@ -81,9 +81,18 @@ export async function overShape(
 
 export async function selectShape(
   tx: WriteTransaction,
-  clientID: string
+  shapeID: string
 ): Promise<void> {
-  await updateClientState(tx, { id: tx.clientID, selectedID: clientID });
+  await updateClientState(tx, { id: tx.clientID, selectedID: shapeID });
+}
+
+export async function clearCursorAndSelectionState(tx: WriteTransaction) {
+  await updateClientState(tx, {
+    id: tx.clientID,
+    cursor: null,
+    overID: "",
+    selectedID: "",
+  });
 }
 
 export function randUserInfo(): UserInfo {
