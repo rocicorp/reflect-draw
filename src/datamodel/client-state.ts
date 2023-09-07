@@ -1,6 +1,8 @@
+import type {
+  ReadTransaction,
+  WriteTransaction,
+} from "@rocicorp/reflect/client";
 import { randInt } from "../util/rand";
-import { entitySchema, generate } from "@rocicorp/rails";
-import type { WriteTransaction } from "@rocicorp/reflect";
 
 const colors = [
   "#f94144",
@@ -41,14 +43,15 @@ export const userInfoSchema = z.object({
   color: z.string(),
 });
 
-export const clientStateSchema = entitySchema.extend({
-  cursor: z.union([
-    z.object({
+// TODO: It would be good to merge this with the first-class concept of `client`
+// that Replicache itself manages if possible.
+export const clientStateSchema = z.object({
+  cursor: z
+    .object({
       x: z.number(),
       y: z.number(),
-    }),
-    z.null(),
-  ]),
+    })
+    .optional(),
   overID: z.string(),
   selectedID: z.string(),
   userInfo: userInfoSchema,
@@ -57,33 +60,100 @@ export const clientStateSchema = entitySchema.extend({
 export type UserInfo = z.infer<typeof userInfoSchema>;
 export type ClientState = z.infer<typeof clientStateSchema>;
 
-export const {
-  init: initClientState,
-  mustGet: getClientState,
-  put: putClientState,
-  update: updateClientState,
-  list: listClientStates,
-} = generate("client-state", clientStateSchema);
+export async function initClientState(
+  tx: WriteTransaction,
+  { id, defaultUserInfo }: { id: string; defaultUserInfo: UserInfo }
+): Promise<void> {
+  if (await tx.has(key(id))) {
+    return;
+  }
+  await putClientState(tx, {
+    id,
+    clientState: {
+      overID: "",
+      selectedID: "",
+      userInfo: defaultUserInfo,
+    },
+  });
+}
+
+export async function getClientState(
+  tx: ReadTransaction,
+  id: string
+): Promise<ClientState> {
+  const jv = await tx.get(key(id));
+  if (!jv) {
+    throw new Error("Expected clientState to be initialized already: " + id);
+  }
+  return jv as ClientState;
+  //return clientStateSchema.parse(jv);
+}
+
+export function putClientState(
+  tx: WriteTransaction,
+  { id, clientState }: { id: string; clientState: ClientState }
+): Promise<void> {
+  return tx.put(key(id), clientState);
+}
 
 export async function setCursor(
   tx: WriteTransaction,
-  { x, y }: { id: string; x: number; y: number }
+  { id, x, y }: { id: string; x: number; y: number }
 ): Promise<void> {
-  await updateClientState(tx, { id: tx.clientID, cursor: { x, y } });
+  const clientState = await getClientState(tx, id);
+  await putClientState(tx, {
+    id,
+    clientState: {
+      ...clientState,
+      cursor: {
+        x,
+        y,
+      },
+    },
+  });
+}
+
+export async function clearCursorAndSelectionState(
+  tx: WriteTransaction,
+  { id }: { id: string }
+): Promise<void> {
+  const { cursor, ...clientState } = await getClientState(tx, id);
+  await putClientState(tx, {
+    id,
+    clientState: {
+      ...clientState,
+      overID: "",
+      selectedID: "",
+    },
+  });
 }
 
 export async function overShape(
   tx: WriteTransaction,
-  shapeID: string
+  { clientID, shapeID }: { clientID: string; shapeID: string }
 ): Promise<void> {
-  await updateClientState(tx, { id: tx.clientID, overID: shapeID });
+  const clientState = await getClientState(tx, clientID);
+  await putClientState(tx, {
+    id: clientID,
+    clientState: {
+      ...clientState,
+      overID: shapeID,
+    },
+  });
 }
 
 export async function selectShape(
   tx: WriteTransaction,
-  clientID: string
+  { clientID, shapeID }: { clientID: string; shapeID: string }
 ): Promise<void> {
-  await updateClientState(tx, { id: tx.clientID, selectedID: clientID });
+  const clientState = await getClientState(tx, clientID);
+  await putClientState(tx, {
+    id: clientID,
+    clientState: {
+      ...clientState,
+      selectedID: shapeID,
+    },
+  });
 }
 
 export function randUserInfo(): UserInfo {
@@ -94,3 +164,9 @@ export function randUserInfo(): UserInfo {
     color: colors[randInt(0, colors.length - 1)],
   };
 }
+
+function key(id: string): string {
+  return `${clientStatePrefix}${id}`;
+}
+
+export const clientStatePrefix = `client-state-`;

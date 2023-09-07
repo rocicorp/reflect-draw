@@ -15,14 +15,25 @@ export function RectController({
 }) {
   const shape = useShapeByID(reflect, id);
 
-  const onMouseEnter = async () => reflect.mutate.overShape(id);
-  const onMouseLeave = async () => reflect.mutate.overShape("");
+  const onMouseEnter = async () =>
+    reflect.mutate.overShape({
+      clientID: await reflect.clientID,
+      shapeID: id,
+    });
+  const onMouseLeave = async () =>
+    reflect.mutate.overShape({
+      clientID: await reflect.clientID,
+      shapeID: "",
+    });
 
   const onDragStart = (_e: DraggableEvent, _d: DraggableData) => {
     // Can't mark onDragStart async because it changes return type and onDragStart
     // must return void.
     const blech = async () => {
-      reflect.mutate.selectShape(id);
+      reflect.mutate.selectShape({
+        clientID: await reflect.clientID,
+        shapeID: id,
+      });
     };
     blech();
   };

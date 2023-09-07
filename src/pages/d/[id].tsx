@@ -33,10 +33,7 @@ export default function Home() {
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({
         id: await r.clientID,
-        cursor: null,
-        overID: "",
-        selectedID: "",
-        userInfo: defaultUserInfo,
+        defaultUserInfo,
       });
       await r.mutate.initShapes();
 

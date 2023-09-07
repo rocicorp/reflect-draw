@@ -1,6 +1,6 @@
 import type { Reflect } from "@rocicorp/reflect/client";
 import { useSubscribe } from "replicache-react";
-import { getClientState, listClientStates } from "./client-state";
+import { getClientState, clientStatePrefix } from "./client-state";
 import { getShape, shapePrefix } from "./shape";
 import type { M } from "./mutators";
 
@@ -62,8 +62,14 @@ export function useCollaboratorIDs(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      const cs = await listClientStates(tx);
-      return cs.map((c) => c.id);
+      const clientIDs = (await tx
+        .scan({ prefix: clientStatePrefix })
+        .keys()
+        .toArray()) as string[];
+      const myClientID = await reflect.clientID;
+      return clientIDs
+        .filter((k) => !k.endsWith(myClientID))
+        .map((k) => k.substr(clientStatePrefix.length));
     },
     []
   );
