@@ -9,7 +9,7 @@ import { workerWsURI } from "../../util/host";
 import { nanoid } from "nanoid";
 
 export default function Home() {
-  const [r, setReflectClient] = useState<Reflect<M> | null>(null);
+  const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
 
   const logSink = nodeConsoleLogSink;
@@ -44,7 +44,7 @@ export default function Home() {
     })();
   }, []);
 
-  if (!r) {
+  if (!reflect) {
     return null;
   }
 
@@ -61,8 +61,8 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav r={r} online={online} />
-      <Designer r={r} logger={logger} />
+      <Nav reflect={reflect} online={online} />
+      <Designer reflect={reflect} logger={logger} />
     </div>
   );
 }
