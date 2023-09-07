@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styles from "./collaborator.module.css";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
-import { useClientState } from "../datamodel/subscriptions";
+import { useClientInfo } from "../datamodel/subscriptions";
 import type { Reflect } from "@rocicorp/reflect/client";
 import type { OptionalLogger } from "@rocicorp/logger";
 
@@ -17,24 +17,24 @@ interface Position {
 }
 
 export function Collaborator({
-  r,
+  reflect,
   clientID,
   logger,
 }: {
-  r: Reflect<M>;
+  reflect: Reflect<M>;
   clientID: string;
   logger: OptionalLogger;
 }) {
-  const clientState = useClientState(r, clientID);
+  const clientInfo = useClientInfo(reflect, clientID);
   const [lastPos, setLastPos] = useState<Position | null>(null);
   const [gotFirstChange, setGotFirstChange] = useState(false);
   const [, setPoke] = useState({});
 
   let curPos = null;
   let userInfo = null;
-  if (clientState) {
-    curPos = clientState.cursor;
-    userInfo = clientState.userInfo;
+  if (clientInfo) {
+    curPos = clientInfo.cursor;
+    userInfo = clientInfo.userInfo;
   }
 
   let elapsed = 0;
@@ -71,18 +71,18 @@ export function Collaborator({
   logger.debug?.(
     `Cursor ${clientID} - elapsed ${elapsed}, remaining: ${remaining}, visible: ${visible}`
   );
-  if (!clientState || !curPos || !userInfo) {
+  if (!clientInfo || !curPos || !userInfo) {
     return null;
   }
 
   return (
     <div className={styles.collaborator} style={{ opacity: visible ? 1 : 0 }}>
-      {clientState.selectedID && (
+      {clientInfo.selectedID && (
         <Rect
           {...{
-            r,
-            key: `selection-${clientState.selectedID}`,
-            id: clientState.selectedID,
+            reflect,
+            key: `selection-${clientInfo.selectedID}`,
+            id: clientInfo.selectedID,
             highlight: true,
             highlightColor: userInfo.color,
           }}

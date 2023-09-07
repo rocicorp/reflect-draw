@@ -6,17 +6,23 @@ import type { M } from "../datamodel/mutators";
 
 // TODO: In the future I imagine this becoming ShapeController and
 // there also be a Shape that wraps Rect and also knows how to draw Circle, etc.
-export function RectController({ r, id }: { r: Reflect<M>; id: string }) {
-  const shape = useShapeByID(r, id);
+export function RectController({
+  reflect,
+  id,
+}: {
+  reflect: Reflect<M>;
+  id: string;
+}) {
+  const shape = useShapeByID(reflect, id);
 
-  const onMouseEnter = async () => r.mutate.overShape(id);
-  const onMouseLeave = async () => r.mutate.overShape("");
+  const onMouseEnter = async () => reflect.mutate.overShape(id);
+  const onMouseLeave = async () => reflect.mutate.overShape("");
 
   const onDragStart = (_e: DraggableEvent, _d: DraggableData) => {
     // Can't mark onDragStart async because it changes return type and onDragStart
     // must return void.
     const blech = async () => {
-      r.mutate.selectShape(id);
+      reflect.mutate.selectShape(id);
     };
     blech();
   };
@@ -28,7 +34,7 @@ export function RectController({ r, id }: { r: Reflect<M>; id: string }) {
     // We will apply this movement to whatever the state happens to be when we
     // replay. If somebody else was moving the object at the same moment, we'll
     // then end up with a union of the two vectors, which is what we want!
-    r.mutate.moveShape({
+    reflect.mutate.moveShape({
       id,
       dx: d.deltaX,
       dy: d.deltaY,
@@ -44,7 +50,7 @@ export function RectController({ r, id }: { r: Reflect<M>; id: string }) {
       <div>
         <Rect
           {...{
-            r,
+            reflect,
             id,
             highlight: false,
             onMouseEnter,

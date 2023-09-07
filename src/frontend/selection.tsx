@@ -5,15 +5,15 @@ import type { M } from "../datamodel/mutators";
 import { useShapeByID } from "../datamodel/subscriptions";
 
 export function Selection({
-  r,
+  reflect,
   id,
   containerOffsetTop,
 }: {
-  r: Reflect<M>;
+  reflect: Reflect<M>;
   id: string;
   containerOffsetTop: number | null;
 }) {
-  const shape = useShapeByID(r, id);
+  const shape = useShapeByID(reflect, id);
   const gripSize = 19;
 
   if (!shape) {
@@ -46,7 +46,7 @@ export function Selection({
     );
     const s1 = size(shapeCenter.x, d.x, shapeCenter.y, d.y);
 
-    r.mutate.resizeShape({ id, ds: s1 - s0 });
+    reflect.mutate.resizeShape({ id, ds: s1 - s0 });
   };
 
   const onRotate = (_e: DraggableEvent, d: DraggableData) => {
@@ -63,7 +63,7 @@ export function Selection({
     );
     const after = Math.atan2(offsetY - shapeCenter.y, d.x - shapeCenter.x);
 
-    r.mutate.rotateShape({
+    reflect.mutate.rotateShape({
       id,
       ddeg: ((after - before) * 180) / Math.PI,
     });
@@ -73,7 +73,7 @@ export function Selection({
     <div>
       <Rect
         {...{
-          r,
+          reflect,
           id,
           highlight: true,
         }}
