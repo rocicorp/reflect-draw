@@ -1,81 +1,52 @@
 import type { Reflect } from "@rocicorp/reflect/client";
 import { useSubscribe } from "replicache-react";
-import { getClientState, clientStatePrefix } from "./client-state";
-import { getShape, shapePrefix } from "./shape";
+import { getClientState, listClientStateIDs } from "./client-state";
+import { getShape, listShapeIDs } from "./shape";
 import type { M } from "./mutators";
 
 export function useShapeIDs(reflect: Reflect<M>) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      const shapes = (await tx
-        .scan({ prefix: shapePrefix })
-        .keys()
-        .toArray()) as string[];
-      return shapes.map((k) => k.substring(shapePrefix.length));
-    },
-    []
-  );
+  return useSubscribe(reflect, listShapeIDs, []);
 }
 
 export function useShapeByID(reflect: Reflect<M>, id: string) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return await getShape(tx, id);
-    },
-    null
-  );
-}
-
-export function useUserInfo(reflect: Reflect<M>) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).userInfo;
-    },
-    null
-  );
-}
-
-export function useOverShapeID(reflect: Reflect<M>) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).overID;
-    },
-    ""
-  );
-}
-
-export function useSelectedShapeID(reflect: Reflect<M>) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).selectedID;
-    },
-    ""
-  );
+  return useSubscribe(reflect, (tx) => getShape(tx, id), null);
 }
 
 export function useCollaboratorIDs(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
     async (tx) => {
-      const clientIDs = (await tx
-        .scan({ prefix: clientStatePrefix })
-        .keys()
-        .toArray()) as string[];
-      const myClientID = await reflect.clientID;
-      return clientIDs
-        .filter((k) => !k.endsWith(myClientID))
-        .map((k) => k.substr(clientStatePrefix.length));
+      const cs = await listClientStateIDs(tx);
+      return cs.filter((id) => id !== tx.clientID);
     },
     []
   );
 }
 
-export function useClientInfo(reflect: Reflect<M>, clientID: string) {
+export function useMyUserInfo(reflect: Reflect<M>) {
+  return useSubscribe(
+    reflect,
+    async (tx) => {
+      const cs = await getClientState(tx, tx.clientID);
+      return cs.userInfo;
+    },
+    null
+  );
+}
+
+export function useSelectionState(reflect: Reflect<M>) {
+  return useSubscribe(
+    reflect,
+    async (tx) => {
+      const cs = await getClientState(tx, tx.clientID);
+      const { selectedID, overID } = cs;
+      return { selectedID, overID };
+    },
+    { selectedID: "", overID: "" }
+  );
+}
+
+export function useClientState(reflect: Reflect<M>, clientID: string) {
   return useSubscribe(
     reflect,
     async (tx) => {
