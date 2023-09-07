@@ -33,7 +33,10 @@ export default function Home() {
       const defaultUserInfo = randUserInfo();
       await r.mutate.initClientState({
         id: await r.clientID,
-        defaultUserInfo,
+        cursor: null,
+        overID: "",
+        selectedID: "",
+        userInfo: defaultUserInfo,
       });
       await r.mutate.initShapes();
 
@@ -58,8 +61,8 @@ export default function Home() {
         background: "rgb(229,229,229)",
       }}
     >
-      <Nav reflect={reflect} online={online} />
-      <Designer reflect={reflect} logger={logger} />
+      <Nav r={reflect} online={online} />
+      <Designer r={reflect} logger={logger} />
     </div>
   );
 }
