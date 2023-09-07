@@ -6,7 +6,7 @@ function makeOptions(): ReflectServerOptions<M> {
   return {
     mutators: serverMutators,
     disconnectHandler: async (write) => {
-      await clearCursorAndSelectionState(write);
+      await clearCursorAndSelectionState(write, { id: write.clientID });
     },
     logLevel: "debug",
   };
