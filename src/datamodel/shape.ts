@@ -1,10 +1,12 @@
-import type { WriteTransaction } from "@rocicorp/reflect/client";
+import type {
+  ReadTransaction,
+  WriteTransaction,
+} from "@rocicorp/reflect/client";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { randInt } from "../util/rand";
-import { entitySchema, generate } from "@rocicorp/rails";
 
-export const shapeSchema = entitySchema.extend({
+export const shapeSchema = z.object({
   type: z.literal("rect"),
   x: z.number(),
   y: z.number(),
@@ -16,12 +18,32 @@ export const shapeSchema = entitySchema.extend({
 
 export type Shape = z.infer<typeof shapeSchema>;
 
-export const {
-  get: getShape,
-  list: listShapes,
-  put: putShape,
-  delete: deleteShape,
-} = generate("shape", shapeSchema);
+export async function getShape(
+  tx: ReadTransaction,
+  id: string
+): Promise<Shape | null> {
+  const jv = await tx.get(key(id));
+  if (!jv) {
+    console.log(`Specified shape ${id} not found.`);
+    return null;
+  }
+  return jv as Shape;
+  //return shapeSchema.parse(jv);
+}
+
+export function putShape(
+  tx: WriteTransaction,
+  { id, shape }: { id: string; shape: Shape }
+): Promise<void> {
+  return tx.put(key(id), shape);
+}
+
+export async function deleteShape(
+  tx: WriteTransaction,
+  id: string
+): Promise<void> {
+  await tx.del(key(id));
+}
 
 export async function moveShape(
   tx: WriteTransaction,
@@ -30,9 +52,12 @@ export async function moveShape(
   const shape = await getShape(tx, id);
   if (shape) {
     await putShape(tx, {
-      ...shape,
-      x: shape.x + dx,
-      y: shape.y + dy,
+      id,
+      shape: {
+        ...shape,
+        x: shape.x + dx,
+        y: shape.y + dy,
+      },
     });
   }
 }
@@ -50,8 +75,11 @@ export async function scanShape(
     newX = 0;
   }
   putShape(tx, {
-    ...shape,
-    x: newX,
+    id,
+    shape: {
+      ...shape,
+      x: newX,
+    },
   });
 }
 
@@ -65,11 +93,14 @@ export async function resizeShape(
     const dw = Math.max(minSize - shape.width, ds);
     const dh = Math.max(minSize - shape.height, ds);
     await putShape(tx, {
-      ...shape,
-      width: shape.width + dw,
-      height: shape.height + dh,
-      x: shape.x - dw / 2,
-      y: shape.y - dh / 2,
+      id,
+      shape: {
+        ...shape,
+        width: shape.width + dw,
+        height: shape.height + dh,
+        x: shape.x - dw / 2,
+        y: shape.y - dh / 2,
+      },
     });
   }
 }
@@ -81,8 +112,11 @@ export async function rotateShape(
   const shape = await getShape(tx, id);
   if (shape) {
     await putShape(tx, {
-      ...shape,
-      rotate: shape.rotate + ddeg,
+      id,
+      shape: {
+        ...shape,
+        rotate: shape.rotate + ddeg,
+      },
     });
   }
 }
@@ -98,6 +132,12 @@ export async function initShapes(tx: WriteTransaction) {
   ]);
 }
 
+function key(id: string): string {
+  return `${shapePrefix}${id}`;
+}
+
+export const shapePrefix = "shape-";
+
 const colors = ["red", "blue", "white", "green", "yellow"];
 let nextColor = 0;
 
@@ -109,12 +149,14 @@ export function randomShape() {
   }
   return {
     id: nanoid(),
-    type: "rect",
-    x: randInt(0, 400),
-    y: randInt(0, 400),
-    width: s,
-    height: s,
-    rotate: randInt(0, 359),
-    fill,
-  } as Shape;
+    shape: {
+      type: "rect",
+      x: randInt(0, 400),
+      y: randInt(0, 400),
+      width: s,
+      height: s,
+      rotate: randInt(0, 359),
+      fill,
+    } as Shape,
+  };
 }
