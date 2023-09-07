@@ -5,20 +5,21 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import styles from "./nav.module.css";
 import { randomShape } from "../datamodel/shape";
-import { useUserInfo } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 import { OnlineStatus } from "./online-status";
+import { useMyClientState } from "src/datamodel/subscriptions";
 
 type NavProps = {
-  reflect: Reflect<M>;
+  r: Reflect<M>;
   online: boolean;
 };
 
-export function Nav({ reflect, online }: NavProps) {
+export function Nav({ r, online }: NavProps) {
   const [aboutVisible, showAbout] = useState(false);
   const [shareVisible, showShare] = useState(false);
   const urlBox = useRef<HTMLInputElement>(null);
-  const userInfo = useUserInfo(reflect);
+  const clientState = useMyClientState(r);
+  const userInfo = clientState?.userInfo;
 
   useEffect(() => {
     if (shareVisible) {
@@ -27,7 +28,7 @@ export function Nav({ reflect, online }: NavProps) {
   });
 
   const onRectangle = () => {
-    reflect.mutate.createShape(randomShape());
+    r.mutate.createShape(randomShape());
   };
 
   return (

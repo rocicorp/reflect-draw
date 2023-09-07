@@ -67,7 +67,7 @@ export const {
 
 export async function setCursor(
   tx: WriteTransaction,
-  { x, y }: { id: string; x: number; y: number }
+  { x, y }: { x: number; y: number }
 ): Promise<void> {
   await updateClientState(tx, { id: tx.clientID, cursor: { x, y } });
 }
