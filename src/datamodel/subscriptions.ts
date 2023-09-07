@@ -30,7 +30,7 @@ export function useCollaboratorIDs(reflect: Reflect<M>) {
     reflect,
     async (tx) => {
       const cs = await listClientStates(tx);
-      return cs.map((c) => c.id);
+      return cs.map((c) => c.id).filter((id) => id !== tx.clientID);
     },
     []
   );
