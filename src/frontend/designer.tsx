@@ -10,38 +10,36 @@ import { touchToMouse } from "./events";
 import { Selection } from "./selection";
 import {
   useShapeIDs,
-  useOverShapeID,
-  useSelectedShapeID,
   useCollaboratorIDs,
+  useMyClientState,
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
 export function Designer({
-  reflect,
+  r,
   logger,
 }: {
-  reflect: Reflect<M>;
+  r: Reflect<M>;
   logger: OptionalLogger;
 }) {
-  const ids = useShapeIDs(reflect);
-  const overID = useOverShapeID(reflect);
-  const selectedID = useSelectedShapeID(reflect);
-  const collaboratorIDs = useCollaboratorIDs(reflect);
+  const ids = useShapeIDs(r);
+  const clientState = useMyClientState(r);
+  const selectedID = clientState?.selectedID ?? "";
+  const overID = clientState?.overID ?? "";
+  const collaboratorIDs = useCollaboratorIDs(r);
 
   const ref = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const handlers = {
-    moveLeft: () =>
-      reflect.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
-    moveRight: () =>
-      reflect.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
-    moveUp: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
-    moveDown: () => reflect.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
+    moveLeft: () => r.mutate.moveShape({ id: selectedID, dx: -20, dy: 0 }),
+    moveRight: () => r.mutate.moveShape({ id: selectedID, dx: 20, dy: 0 }),
+    moveUp: () => r.mutate.moveShape({ id: selectedID, dx: 0, dy: -20 }),
+    moveDown: () => r.mutate.moveShape({ id: selectedID, dx: 0, dy: 20 }),
     deleteShape: () => {
       // Prevent navigating backward on some browsers.
       event?.preventDefault();
-      reflect.mutate.deleteShape(selectedID);
+      r.mutate.deleteShape(selectedID);
     },
   };
 
@@ -53,8 +51,7 @@ export function Designer({
     pageY: number;
   }) => {
     if (ref && ref.current) {
-      reflect.mutate.setCursor({
-        id: await reflect.clientID,
+      r.mutate.setCursor({
         x: pageX,
         y: pageY - ref.current.offsetTop,
       });
@@ -91,7 +88,7 @@ export function Designer({
             <RectController
               {...{
                 key: `shape-${id}`,
-                reflect,
+                r,
                 id,
               }}
             />
@@ -103,7 +100,7 @@ export function Designer({
               <Rect
                 {...{
                   key: `highlight-${overID}`,
-                  reflect,
+                  r,
                   id: overID,
                   highlight: true,
                 }}
@@ -117,7 +114,7 @@ export function Designer({
               <Selection
                 {...{
                   key: `selection-${selectedID}`,
-                  reflect,
+                  r,
                   id: selectedID,
                   highlight: true,
                   containerOffsetTop: ref.current && ref.current.offsetTop,
@@ -134,7 +131,7 @@ export function Designer({
             collaboratorIDs.map((id) => (
               <Collaborator
                 key={`key-${id}`}
-                reflect={reflect}
+                r={r}
                 clientID={id}
                 logger={logger}
               />

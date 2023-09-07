@@ -25,36 +25,6 @@ export function useShapeByID(reflect: Reflect<M>, id: string) {
   );
 }
 
-export function useUserInfo(reflect: Reflect<M>) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).userInfo;
-    },
-    null
-  );
-}
-
-export function useOverShapeID(reflect: Reflect<M>) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).overID;
-    },
-    ""
-  );
-}
-
-export function useSelectedShapeID(reflect: Reflect<M>) {
-  return useSubscribe(
-    reflect,
-    async (tx) => {
-      return (await getClientState(tx, await reflect.clientID)).selectedID;
-    },
-    ""
-  );
-}
-
 export function useCollaboratorIDs(reflect: Reflect<M>) {
   return useSubscribe(
     reflect,
@@ -66,7 +36,17 @@ export function useCollaboratorIDs(reflect: Reflect<M>) {
   );
 }
 
-export function useClientInfo(reflect: Reflect<M>, clientID: string) {
+export function useMyClientState(reflect: Reflect<M>) {
+  return useSubscribe(
+    reflect,
+    async (tx) => {
+      return await getClientState(tx, tx.clientID);
+    },
+    null
+  );
+}
+
+export function useClientState(reflect: Reflect<M>, clientID: string) {
   return useSubscribe(
     reflect,
     async (tx) => {
