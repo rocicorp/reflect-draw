@@ -1,4 +1,4 @@
-import type { WriteTransaction } from "@rocicorp/reflect/client";
+import type { WriteTransaction } from "@rocicorp/reflect";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { randInt } from "../util/rand";

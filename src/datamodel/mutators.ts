@@ -1,4 +1,4 @@
-import type { WriteTransaction } from "@rocicorp/reflect/client";
+import type { WriteTransaction } from "@rocicorp/reflect";
 import {
   initClientState,
   setCursor,
