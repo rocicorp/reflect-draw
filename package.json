@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@rocicorp/logger": "^4.0.0",
-    "@rocicorp/rails": "^0.6.0",
+    "@rocicorp/rails": "^0.7.1",
     "@rocicorp/reflect": "^0.35.0",
     "@types/node": "^17.0.16",
     "@types/react": "^17.0.39",

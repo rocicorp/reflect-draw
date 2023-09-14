@@ -2,9 +2,11 @@ import type { WriteTransaction } from "@rocicorp/reflect";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { randInt } from "../util/rand";
-import { entitySchema, generate } from "@rocicorp/rails";
+import { generate } from "@rocicorp/rails";
+import { getParse } from "./zod";
 
-export const shapeSchema = entitySchema.extend({
+export const shapeSchema = z.object({
+  id: z.string(),
   type: z.literal("rect"),
   x: z.number(),
   y: z.number(),
@@ -22,7 +24,7 @@ export const {
   listIDs: listShapeIDs,
   put: putShape,
   delete: deleteShape,
-} = generate("shape", shapeSchema);
+} = generate("shape", getParse(shapeSchema));
 
 export async function moveShape(
   tx: WriteTransaction,

@@ -1,5 +1,5 @@
 import { randInt } from "../util/rand";
-import { entitySchema, generate } from "@rocicorp/rails";
+import { generate } from "@rocicorp/rails";
 import type { WriteTransaction } from "@rocicorp/reflect";
 
 const colors = [
@@ -34,6 +34,7 @@ const avatars = [
 ];
 
 import { z } from "zod";
+import { getParse } from "./zod";
 
 export const userInfoSchema = z.object({
   avatar: z.string(),
@@ -41,7 +42,8 @@ export const userInfoSchema = z.object({
   color: z.string(),
 });
 
-export const clientStateSchema = entitySchema.extend({
+export const clientStateSchema = z.object({
+  id: z.string(),
   cursor: z.union([
     z.object({
       x: z.number(),
@@ -64,7 +66,7 @@ export const {
   update: updateClientState,
   list: listClientStates,
   listIDs: listClientStateIDs,
-} = generate("client-state", clientStateSchema);
+} = generate("client-state", getParse(clientStateSchema));
 
 export async function setCursor(
   tx: WriteTransaction,
