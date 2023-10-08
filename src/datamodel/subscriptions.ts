@@ -1,5 +1,5 @@
 import type { Reflect } from "@rocicorp/reflect/client";
-import { useSubscribe } from "replicache-react";
+import { useSubscribe } from "@rocicorp/reflect/react";
 import { getClientState, listClientStateIDs } from "./client-state";
 import { getShape, listShapeIDs } from "./shape";
 import type { M } from "./mutators";
