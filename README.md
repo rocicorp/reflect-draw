@@ -17,7 +17,7 @@ npm install
 npx reflect dev
 
 # Run UI
-NEXT_PUBLIC_WORKER_HOST=ws://127.0.0.1:8080 \
+NEXT_PUBLIC_REFLECT_SERVER=http://127.0.0.1:8080/ \
 npm run dev
 ```
 
@@ -35,7 +35,7 @@ npx reflect publish
 npx vercel
 
 # You'll have to set the environment variable on Vercel:
-# NEXT_PUBLIC_WORKER_HOST=<whatever-was-printed-by-reflect-publish>
+# NEXT_PUBLIC_REFLECT_SERVER=<whatever-was-printed-by-reflect-publish>
 ```
 
 ## Building your Own Thing

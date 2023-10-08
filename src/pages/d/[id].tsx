@@ -23,7 +23,7 @@ export default function Home() {
       const userID = nanoid();
 
       const r = new Reflect<M>({
-        socketOrigin: workerWsURI,
+        server: workerWsURI,
         onOnlineChange: setOnline,
         userID,
         roomID,
