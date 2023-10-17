@@ -1,82 +1,26 @@
-import { useEffect, useState } from "react";
 import styles from "./collaborator.module.css";
 import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useClientState } from "../datamodel/subscriptions";
 import type { Reflect } from "@rocicorp/reflect/client";
-import type { OptionalLogger } from "@rocicorp/logger";
-
-const hideCollaboratorDelay = 5000;
-
-interface Position {
-  pos: {
-    x: number;
-    y: number;
-  };
-  ts: number;
-}
 
 export function Collaborator({
   r,
   clientID,
-  logger,
 }: {
   r: Reflect<M>;
   clientID: string;
-  logger: OptionalLogger;
 }) {
   const clientState = useClientState(r, clientID);
-  const [lastPos, setLastPos] = useState<Position | null>(null);
-  const [gotFirstChange, setGotFirstChange] = useState(false);
-  const [, setPoke] = useState({});
 
-  let curPos = null;
-  let userInfo = null;
-  if (clientState) {
-    curPos = clientState.cursor;
-    userInfo = clientState.userInfo;
-  }
-
-  let elapsed = 0;
-  let remaining = 0;
-  let visible = false;
-
-  if (curPos) {
-    if (!lastPos) {
-      logger.debug?.(`Cursor ${clientID} - got initial position`, curPos);
-      setLastPos({ pos: curPos, ts: Date.now() });
-    } else {
-      if (lastPos.pos.x != curPos.x || lastPos.pos.y != curPos.y) {
-        logger.debug?.(`Cursor ${clientID} - got change to`, curPos);
-        setLastPos({ pos: curPos, ts: Date.now() });
-        setGotFirstChange(true);
-      }
-      if (gotFirstChange) {
-        elapsed = Date.now() - lastPos.ts;
-        remaining = hideCollaboratorDelay - elapsed;
-        visible = remaining > 0;
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (remaining > 0) {
-      logger.debug?.(`Cursor ${clientID} - setting timer for ${remaining}ms`);
-      const timerID = setTimeout(() => setPoke({}), remaining);
-      return () => clearTimeout(timerID);
-    }
-    return;
-  });
-
-  logger.debug?.(
-    `Cursor ${clientID} - elapsed ${elapsed}, remaining: ${remaining}, visible: ${visible}`
-  );
-  if (!clientState || !curPos || !userInfo) {
+  if (!clientState || !clientState.cursor) {
     return null;
   }
 
+  const { userInfo, cursor } = clientState;
+
   return (
-    <div className={styles.collaborator} style={{ opacity: visible ? 1 : 0 }}>
+    <div className={styles.collaborator}>
       {clientState.selectedID && (
         <Rect
           {...{
@@ -92,8 +36,8 @@ export function Collaborator({
       <div
         className={styles.cursor}
         style={{
-          left: curPos.x,
-          top: curPos.y,
+          left: cursor.x,
+          top: cursor.y,
           overflow: "auto",
         }}
       >

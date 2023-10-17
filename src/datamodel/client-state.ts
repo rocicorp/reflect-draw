@@ -61,11 +61,10 @@ export type ClientState = z.infer<typeof clientStateSchema>;
 
 export const {
   init: initClientState,
-  mustGet: getClientState,
+  get: getClientState,
+  mustGet: mustGetClientState,
   put: putClientState,
   update: updateClientState,
-  list: listClientStates,
-  listIDs: listClientStateIDs,
 } = generate("client-state", getParse(clientStateSchema));
 
 export async function setCursor(
@@ -87,15 +86,6 @@ export async function selectShape(
   shapeID: string
 ): Promise<void> {
   await updateClientState(tx, { id: tx.clientID, selectedID: shapeID });
-}
-
-export async function clearCursorAndSelectionState(tx: WriteTransaction) {
-  await updateClientState(tx, {
-    id: tx.clientID,
-    cursor: null,
-    overID: "",
-    selectedID: "",
-  });
 }
 
 export function randUserInfo(): UserInfo {

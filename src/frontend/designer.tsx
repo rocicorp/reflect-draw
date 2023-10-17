@@ -1,5 +1,4 @@
 import type { Reflect } from "@rocicorp/reflect/client";
-import type { OptionalLogger } from "@rocicorp/logger";
 import React, { useRef, useState } from "react";
 import { HotKeys } from "react-hotkeys";
 import { DraggableCore } from "react-draggable";
@@ -10,18 +9,12 @@ import { touchToMouse } from "./events";
 import { Selection } from "./selection";
 import {
   useShapeIDs,
-  useCollaboratorIDs,
   useSelectionState,
+  useCollaboratorIDs,
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
-export function Designer({
-  r,
-  logger,
-}: {
-  r: Reflect<M>;
-  logger: OptionalLogger;
-}) {
+export function Designer({ r }: { r: Reflect<M> }) {
   const ids = useShapeIDs(r);
   const { selectedID, overID } = useSelectionState(r);
   const collaboratorIDs = useCollaboratorIDs(r);
@@ -126,13 +119,8 @@ export function Designer({
             // foreignObject seems super buggy in Safari, so instead we do the
             // text labels in an HTML context, then do collaborator selection
             // rectangles as their own independent svg content. Le. Sigh.
-            collaboratorIDs.map((id) => (
-              <Collaborator
-                key={`key-${id}`}
-                r={r}
-                clientID={id}
-                logger={logger}
-              />
+            [...collaboratorIDs].map((id) => (
+              <Collaborator key={`key-${id}`} r={r} clientID={id} />
             ))
           }
         </div>

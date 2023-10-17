@@ -4,26 +4,22 @@ import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
-import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { workerWsURI } from "../../util/host";
+import { reflectServer } from "../../util/host";
 import { nanoid } from "nanoid";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
   const [online, setOnline] = useState(false);
 
-  const logSink = nodeConsoleLogSink;
-  const logger = new OptionalLoggerImpl(logSink);
-
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
     (async () => {
-      logger.info?.(`Connecting to worker at ${workerWsURI}`);
+      console.info(`Connecting to Reflect server at ${reflectServer}`);
       const userID = nanoid();
 
       const r = new Reflect<M>({
-        server: workerWsURI,
+        server: reflectServer,
         onOnlineChange: setOnline,
         userID,
         roomID,
@@ -62,7 +58,7 @@ export default function Home() {
       }}
     >
       <Nav r={reflect} online={online} />
-      <Designer r={reflect} logger={logger} />
+      <Designer r={reflect} />
     </div>
   );
 }
