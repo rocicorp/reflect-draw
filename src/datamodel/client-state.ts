@@ -61,11 +61,10 @@ export type ClientState = z.infer<typeof clientStateSchema>;
 
 export const {
   init: initClientState,
-  mustGet: getClientState,
+  get: getClientState,
+  mustGet: mustGetClientState,
   put: putClientState,
   update: updateClientState,
-  list: listClientStates,
-  listIDs: listClientStateIDs,
 } = generate("client-state", getParse(clientStateSchema));
 
 export async function setCursor(
