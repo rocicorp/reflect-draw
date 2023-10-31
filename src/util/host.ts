@@ -1,1 +1,1 @@
-export const reflectURL = process.env.NEXT_PUBLIC_REFLECT_SERVER ?? "";
+export const reflectServer = process.env.NEXT_PUBLIC_REFLECT_SERVER ?? "";

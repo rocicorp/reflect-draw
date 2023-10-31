@@ -10,8 +10,8 @@ import { touchToMouse } from "./events";
 import { Selection } from "./selection";
 import {
   useShapeIDs,
-  useCollaboratorIDs,
   useSelectionState,
+  useCollaboratorIDs,
 } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
 
@@ -126,7 +126,7 @@ export function Designer({
             // foreignObject seems super buggy in Safari, so instead we do the
             // text labels in an HTML context, then do collaborator selection
             // rectangles as their own independent svg content. Le. Sigh.
-            collaboratorIDs.map((id) => (
+            [...collaboratorIDs].map((id) => (
               <Collaborator
                 key={`key-${id}`}
                 r={r}

@@ -5,7 +5,7 @@ import { Nav } from "../../frontend/nav";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { randUserInfo } from "../../datamodel/client-state";
 import { nodeConsoleLogSink, OptionalLoggerImpl } from "@rocicorp/logger";
-import { reflectURL } from "../../util/host";
+import { reflectServer } from "../../util/host";
 import { nanoid } from "nanoid";
 
 export default function Home() {
@@ -19,11 +19,11 @@ export default function Home() {
     const [, , roomID] = location.pathname.split("/");
 
     (async () => {
-      logger.info?.(`Connecting to worker at ${reflectURL}`);
+      logger.info?.(`Connecting to Reflect server at ${reflectServer}`);
       const userID = nanoid();
 
       const r = new Reflect<M>({
-        server: reflectURL,
+        server: reflectServer,
         onOnlineChange: setOnline,
         userID,
         roomID,
