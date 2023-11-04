@@ -3,7 +3,6 @@ import { useSubscribe, usePresence } from "@rocicorp/reflect/react";
 import { getClientState, mustGetClientState } from "./client-state";
 import { getShape, listShapeIDs } from "./shape";
 import type { M } from "./mutators";
-import { useEffect, useState } from "react";
 
 export function useShapeIDs(reflect: Reflect<M>) {
   return useSubscribe(reflect, listShapeIDs, []);
@@ -14,20 +13,8 @@ export function useShapeByID(reflect: Reflect<M>, id: string) {
 }
 
 export function useCollaboratorIDs(reflect: Reflect<M>) {
-  // TODO: This will go away soon, we are making r.clientID synchronous in an
-  // upcoming Reflect release.
-  const [myClientID, setClientID] = useState<string | null>(null);
-  useEffect(() => {
-    reflect.clientID.then(setClientID);
-  }, [reflect]);
-
   const clientIDs = usePresence(reflect);
-
-  if (myClientID === null) {
-    return [];
-  }
-
-  return clientIDs.filter((id) => id !== myClientID);
+  return clientIDs.filter((id) => id !== reflect.clientID);
 }
 
 export function useMyUserInfo(reflect: Reflect<M>) {
