@@ -14,30 +14,28 @@ export default function Home() {
   useEffect(() => {
     const [, , roomID] = location.pathname.split("/");
 
-    (async () => {
-      console.info(`Connecting to Reflect server at ${reflectServer}`);
-      const userID = nanoid();
+    console.info(`Connecting to Reflect server at ${reflectServer}`);
+    const userID = nanoid();
 
-      const r = new Reflect<M>({
-        server: reflectServer,
-        onOnlineChange: setOnline,
-        userID,
-        roomID,
-        mutators: clientMutators,
-      });
+    const r = new Reflect<M>({
+      server: reflectServer,
+      onOnlineChange: setOnline,
+      userID,
+      roomID,
+      mutators: clientMutators,
+    });
 
-      const defaultUserInfo = randUserInfo();
-      await r.mutate.initClientState({
-        id: await r.clientID,
-        cursor: null,
-        overID: "",
-        selectedID: "",
-        userInfo: defaultUserInfo,
-      });
-      await r.mutate.initShapes();
+    const defaultUserInfo = randUserInfo();
+    void r.mutate.initClientState({
+      id: r.clientID,
+      cursor: null,
+      overID: "",
+      selectedID: "",
+      userInfo: defaultUserInfo,
+    });
+    void r.mutate.initShapes();
 
-      setReflectClient(r);
-    })();
+    setReflectClient(r);
   }, []);
 
   if (!reflect) {
