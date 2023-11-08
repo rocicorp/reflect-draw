@@ -2,7 +2,7 @@
 
 A tiny Figma-like multiplayer graphics editor built with [Reflect](https://reflect.net/).
 
-Running live at [replidraw-do.vercel.app](https://replidraw-do.vercel.app/).
+Running live at [reflect-draw.vercel.app](https://reflect-draw.vercel.app/).
 
 ## Install
 

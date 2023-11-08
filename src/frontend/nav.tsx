@@ -118,7 +118,7 @@ export function Nav({ r, online }: NavProps) {
         <Modal.Footer>
           <Button
             variant="secondary"
-            href="https://github.com/rocicorp/replidraw-do"
+            href="https://github.com/rocicorp/reflect-draw"
             target="_blank"
           >
             Demo Source
