@@ -22,7 +22,7 @@ export const {
   get: getShape,
   list: listShapes,
   listIDs: listShapeIDs,
-  put: putShape,
+  set: setShape,
   delete: deleteShape,
 } = generate("shape", getParse(shapeSchema));
 
@@ -32,7 +32,7 @@ export async function moveShape(
 ): Promise<void> {
   const shape = await getShape(tx, id);
   if (shape) {
-    await putShape(tx, {
+    await setShape(tx, {
       ...shape,
       x: shape.x + dx,
       y: shape.y + dy,
@@ -52,7 +52,7 @@ export async function scanShape(
   if (newX > maxX) {
     newX = 0;
   }
-  putShape(tx, {
+  setShape(tx, {
     ...shape,
     x: newX,
   });
@@ -67,7 +67,7 @@ export async function resizeShape(
     const minSize = 10;
     const dw = Math.max(minSize - shape.width, ds);
     const dh = Math.max(minSize - shape.height, ds);
-    await putShape(tx, {
+    await setShape(tx, {
       ...shape,
       width: shape.width + dw,
       height: shape.height + dh,
@@ -83,7 +83,7 @@ export async function rotateShape(
 ): Promise<void> {
   const shape = await getShape(tx, id);
   if (shape) {
-    await putShape(tx, {
+    await setShape(tx, {
       ...shape,
       rotate: shape.rotate + ddeg,
     });
@@ -97,7 +97,7 @@ export async function initShapes(tx: WriteTransaction) {
   const shapes = Array.from({ length: 5 }, () => randomShape());
   await Promise.all([
     tx.put("initialized", true),
-    ...shapes.map((s) => putShape(tx, s)),
+    ...shapes.map((s) => setShape(tx, s)),
   ]);
 }
 

@@ -6,7 +6,7 @@ import {
   selectShape,
 } from "./client-state";
 import {
-  putShape,
+  setShape,
   deleteShape,
   moveShape,
   scanShape,
@@ -18,7 +18,7 @@ import {
 export type M = typeof serverMutators;
 
 export const serverMutators = {
-  createShape: putShape,
+  createShape: setShape,
   deleteShape,
   moveShape,
   scanShape,
