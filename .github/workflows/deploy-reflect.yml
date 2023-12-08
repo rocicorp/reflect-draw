@@ -25,5 +25,7 @@ jobs:
           npm install
 
       - name: publish
+        env:
+          REFLECT_AUTH_KEY: ${{ secrets.REFLECT_AUTH_KEY }}
         run: |
           npx reflect publish --auth-key-from-env=REFLECT_AUTH_KEY
