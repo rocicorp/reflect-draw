@@ -3,12 +3,13 @@ import { Rect } from "./rect";
 import type { M } from "../datamodel/mutators";
 import { useClientState } from "../datamodel/subscriptions";
 import type { Reflect } from "@rocicorp/reflect/client";
+import type { Mutators as YJSMutators } from "@rocicorp/reflect-yjs";
 
 export function Collaborator({
   r,
   clientID,
 }: {
-  r: Reflect<M>;
+  r: Reflect<M & YJSMutators>;
   clientID: string;
 }) {
   const clientState = useClientState(r, clientID);

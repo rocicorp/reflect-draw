@@ -1,7 +1,20 @@
 import type { Reflect } from "@rocicorp/reflect/client";
 import React, { MouseEventHandler, TouchEventHandler } from "react";
 import type { M } from "../datamodel/mutators";
+import type { Mutators as YJSMutators } from "@rocicorp/reflect-yjs";
 import { useShapeByID } from "../datamodel/subscriptions";
+import { Editor } from "./editor";
+
+export type Shape = {
+  id: string;
+  type: "rect";
+  fill: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotate: number;
+};
 
 export function Rect({
   r,
@@ -12,8 +25,9 @@ export function Rect({
   onTouchStart,
   onMouseEnter,
   onMouseLeave,
-}: {
-  r: Reflect<M>;
+}: 
+{
+  r: Reflect<M & YJSMutators>;
   id: string;
   highlight?: boolean;
   highlightColor?: string;
@@ -27,39 +41,44 @@ export function Rect({
     return null;
   }
 
-  const { x, y, width, height, rotate } = shape;
+  const { x, y, width, height, fill } = shape;
   const enableEvents =
     onMouseDown || onTouchStart || onMouseEnter || onMouseLeave;
 
   return (
-    <svg
+    <div
       {...{
         style: {
           position: "absolute",
           left: -1,
           top: -1,
-          transform: `translate3d(${x}px, ${y}px, 0) rotate(${rotate}deg)`,
+          transform: `translate3d(${x}px, ${y}px, 0)`,
           pointerEvents: enableEvents ? "all" : "none",
+          backgroundColor: "#ffeb3b",
+          border: "1px solid #ffd54f",
+          boxShadow: "3px 3px 7px rgba(0,0,0,0.2)",
+          fontFamily: "sans-serif",
+          fontSize: "2px",
+          width: width + 2,
+          height: height + 2,
         },
-        width: width + 2,
-        height: height + 2,
         onMouseDown,
         onTouchStart,
         onMouseEnter,
         onMouseLeave,
       }}
     >
-      <rect
+      <div
+        className="container"
         {...{
-          x: 1, // To make room for stroke
-          y: 1,
-          strokeWidth: highlight ? "2px" : "0",
-          stroke: highlightColor,
-          width,
-          height,
-          fill: highlight ? "none" : shape.fill,
+          style: {
+            width,
+            height,
+          },
         }}
-      />
-    </svg>
+      >
+        <Editor r={r} shape={shape} />
+      </div>
+    </div>
   );
 }

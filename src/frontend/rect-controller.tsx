@@ -3,10 +3,11 @@ import { DraggableCore, DraggableEvent, DraggableData } from "react-draggable";
 import { Rect } from "./rect";
 import { useShapeByID } from "../datamodel/subscriptions";
 import type { M } from "../datamodel/mutators";
+import type { Mutators as YJSMutators } from "@rocicorp/reflect-yjs";
 
 // TODO: In the future I imagine this becoming ShapeController and
 // there also be a Shape that wraps Rect and also knows how to draw Circle, etc.
-export function RectController({ r, id }: { r: Reflect<M>; id: string }) {
+export function RectController({ r, id }: { r: Reflect<M & YJSMutators>; id: string }) {
   const shape = useShapeByID(r, id);
 
   const onMouseEnter = async () => r.mutate.overShape(id);

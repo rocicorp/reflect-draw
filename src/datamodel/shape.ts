@@ -77,47 +77,29 @@ export async function resizeShape(
   }
 }
 
-export async function rotateShape(
-  tx: WriteTransaction,
-  { id, ddeg }: { id: string; ddeg: number }
-): Promise<void> {
-  const shape = await getShape(tx, id);
-  if (shape) {
-    await putShape(tx, {
-      ...shape,
-      rotate: shape.rotate + ddeg,
-    });
-  }
-}
 
 export async function initShapes(tx: WriteTransaction) {
   if (await tx.has("initialized")) {
     return;
   }
-  const shapes = Array.from({ length: 5 }, () => randomShape());
+  const shapes = Array.from({ length: 1 }, () => randomShape());
   await Promise.all([
     tx.put("initialized", true),
     ...shapes.map((s) => putShape(tx, s)),
   ]);
 }
 
-const colors = ["red", "blue", "white", "green", "yellow"];
-let nextColor = 0;
 
 export function randomShape() {
-  const s = randInt(100, 400);
-  const fill = colors[nextColor++];
-  if (nextColor == colors.length) {
-    nextColor = 0;
-  }
+
   return {
     id: nanoid(),
     type: "rect",
     x: randInt(0, 400),
     y: randInt(0, 400),
-    width: s,
-    height: s,
-    rotate: randInt(0, 359),
-    fill,
+    width: 300,
+    height: 300,
+    rotate: 90,
+    fill: "yellow",
   } as Shape;
 }

@@ -10,10 +10,10 @@ import {
   deleteShape,
   moveShape,
   scanShape,
-  resizeShape,
-  rotateShape,
+
   initShapes,
 } from "./shape";
+import { mutators as yjsMutators } from "@rocicorp/reflect-yjs";
 
 export type M = typeof serverMutators;
 
@@ -22,14 +22,14 @@ export const serverMutators = {
   deleteShape,
   moveShape,
   scanShape,
-  resizeShape,
-  rotateShape,
+
   initClientState,
   setCursor,
   overShape,
   selectShape,
   initShapes,
   nop: async (_: WriteTransaction) => {},
+  ...yjsMutators
 };
 
 export const clientMutators: M = {
