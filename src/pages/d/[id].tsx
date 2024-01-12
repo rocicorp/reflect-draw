@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
 import { Reflect } from "@rocicorp/reflect/client";
+import { nanoid } from "nanoid";
+import { useEffect, useState } from "react";
+import { randUserInfo } from "../../datamodel/client-state";
+import { M, clientMutators } from "../../datamodel/mutators";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
-import { M, clientMutators } from "../../datamodel/mutators";
-import { randUserInfo } from "../../datamodel/client-state";
 import { reflectServer } from "../../util/host";
-import { nanoid } from "nanoid";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
@@ -27,7 +27,6 @@ export default function Home() {
 
     const defaultUserInfo = randUserInfo();
     void r.mutate.initClientState({
-      id: r.clientID,
       cursor: null,
       overID: "",
       selectedID: "",

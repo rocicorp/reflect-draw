@@ -23,10 +23,6 @@ npm run dev
 
 ## Publish
 
-First, edit `reflect.config.json` to remove the existing `apps` key.
-
-Then:
-
 ```bash
 # Publish app
 npx reflect publish
