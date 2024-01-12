@@ -1,18 +1,18 @@
 import type { WriteTransaction } from "@rocicorp/reflect";
 import {
   initClientState,
-  setCursor,
   overShape,
   selectShape,
+  setCursor,
 } from "./client-state";
 import {
-  putShape,
   deleteShape,
+  initShapes,
   moveShape,
-  scanShape,
+  putShape,
   resizeShape,
   rotateShape,
-  initShapes,
+  scanShape,
 } from "./shape";
 
 export type M = typeof serverMutators;

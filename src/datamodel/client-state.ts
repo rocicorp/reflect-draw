@@ -1,6 +1,6 @@
-import { randInt } from "../util/rand";
-import { generate } from "@rocicorp/rails";
+import { generatePresence } from "@rocicorp/rails";
 import type { WriteTransaction } from "@rocicorp/reflect";
+import { randInt } from "../util/rand";
 
 const colors = [
   "#f94144",
@@ -43,7 +43,8 @@ export const userInfoSchema = z.object({
 });
 
 export const clientStateSchema = z.object({
-  id: z.string(),
+  clientID: z.string(),
+  id: z.literal(""),
   cursor: z.union([
     z.object({
       x: z.number(),
@@ -63,29 +64,29 @@ export const {
   init: initClientState,
   get: getClientState,
   mustGet: mustGetClientState,
-  put: putClientState,
+  set: setClientState,
   update: updateClientState,
-} = generate("client-state", getParse(clientStateSchema));
+} = generatePresence("client-state", getParse(clientStateSchema));
 
 export async function setCursor(
   tx: WriteTransaction,
   { x, y }: { x: number; y: number }
 ): Promise<void> {
-  await updateClientState(tx, { id: tx.clientID, cursor: { x, y } });
+  await updateClientState(tx, { cursor: { x, y } });
 }
 
 export async function overShape(
   tx: WriteTransaction,
   shapeID: string
 ): Promise<void> {
-  await updateClientState(tx, { id: tx.clientID, overID: shapeID });
+  await updateClientState(tx, { overID: shapeID });
 }
 
 export async function selectShape(
   tx: WriteTransaction,
   shapeID: string
 ): Promise<void> {
-  await updateClientState(tx, { id: tx.clientID, selectedID: shapeID });
+  await updateClientState(tx, { selectedID: shapeID });
 }
 
 export function randUserInfo(): UserInfo {
