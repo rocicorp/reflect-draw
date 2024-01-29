@@ -1,8 +1,8 @@
+import { generate } from "@rocicorp/rails";
 import type { WriteTransaction } from "@rocicorp/reflect";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { randInt } from "../util/rand";
-import { generate } from "@rocicorp/rails";
 import { getParse } from "./zod";
 
 export const shapeSchema = z.object({

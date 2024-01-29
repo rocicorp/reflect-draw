@@ -44,7 +44,6 @@ export const userInfoSchema = z.object({
 
 export const clientStateSchema = z.object({
   clientID: z.string(),
-  id: z.literal(""),
   cursor: z.union([
     z.object({
       x: z.number(),
@@ -64,7 +63,6 @@ export const {
   init: initClientState,
   get: getClientState,
   mustGet: mustGetClientState,
-  set: setClientState,
   update: updateClientState,
 } = generatePresence("client-state", getParse(clientStateSchema));
 
