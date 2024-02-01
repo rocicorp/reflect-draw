@@ -25,7 +25,7 @@ jobs:
  
       - name: publish
         env:
-          REFLECT_AUTH_KEY: ${{ secrets.REFLECT_API_KEY }}
+          REFLECT_AUTH_KEY: ${{ secrets.REFLECT_AUTH_KEY }}
           REFLECT_APP_NAME: ${{ vars.REFLECT_APP_NAME }}
         run: |
           npx reflect publish --app=${REFLECT_APP_NAME}-${GITHUB_HEAD_REF/\//-} --auth-key-from-env=REFLECT_API_KEY
