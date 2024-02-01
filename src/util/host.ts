@@ -8,5 +8,5 @@ function applyTemplate(template: string) {
     `return \`${template}\``
   );
   const branchName = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF ?? "";
-  return f(branchName.replace(/\//g, "-"));
+  return f(branchName.replace(/[a-zA-Z0-9]/g, "-"));
 }
