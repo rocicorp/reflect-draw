@@ -10,7 +10,7 @@ const refName = getEnv(
 const appName = `${appBaseName}-${refName}`
   .toLowerCase()
   .replace(/^[^a-z]/, "")
-  .replace(/[^a-z0-9-]/g, "");
+  .replace(/[^a-z0-9-]/g, "-");
 
 publish();
 
