@@ -5,7 +5,7 @@ import { randUserInfo } from "../../datamodel/client-state";
 import { M, clientMutators } from "../../datamodel/mutators";
 import { Designer } from "../../frontend/designer";
 import { Nav } from "../../frontend/nav";
-import { reflectServer } from "../../util/host";
+import { reflectServer } from "src/util/host";
 
 export default function Home() {
   const [reflect, setReflectClient] = useState<Reflect<M> | null>(null);
