@@ -1,3 +1,0 @@
-{
-  "buildCommand": "node publish-reflect.js && npm run build"
-}
