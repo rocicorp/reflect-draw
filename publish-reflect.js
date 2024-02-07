@@ -2,10 +2,7 @@ const { spawn } = require("child_process");
 const fs = require("fs");
 
 const appBaseName = getEnv(process.env.REFLECT_APP_NAME, "REFLECT_APP_NAME");
-const refName = getEnv(
-  process.env.VERCEL_GIT_COMMIT_REF,
-  "VERCEL_GIT_COMMIT_REF"
-);
+const refName = getEnv(process.env.HEAD, "HEAD");
 
 const appName = `${appBaseName}-${refName}`
   .toLowerCase()
