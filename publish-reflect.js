@@ -24,16 +24,13 @@ async function publish() {
     "--reflect-channel=canary",
     `--app=${appName}`,
     "--auth-key-from-env=REFLECT_AUTH_KEY",
+    "--output=json",
   ]);
 
-  // Ick, fix this once and --output=json flag is added.
-  const lines = output.toString().split("\n");
-  const success = lines.findIndex((line) =>
-    line.includes("🎁 Published successfully to:")
-  );
-  const url = lines[success + 1];
-
-  fs.writeFileSync("./.env", `NEXT_PUBLIC_REFLECT_SERVER=${url}`);
+  const res = JSON.parse(output.toString());
+  if (res.success) {
+    fs.writeFileSync("./.env", `NEXT_PUBLIC_REFLECT_SERVER=${res.url}`);
+  }
 }
 
 function runCommand(command, args) {

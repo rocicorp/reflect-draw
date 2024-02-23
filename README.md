@@ -14,7 +14,7 @@ npm install
 
 ```bash
 # Run local Reflect server
-npx reflect dev --server-path=./reflect/index.ts
+npx reflect dev
 
 # Run UI
 NEXT_PUBLIC_REFLECT_SERVER=http://127.0.0.1:8080/ \
@@ -25,7 +25,7 @@ npm run dev
 
 ```bash
 # Publish app
-npx reflect publish --app reflect-draw --server-path=./reflect/index.ts
+npx reflect publish --app reflect-draw
 
 # Publish UI somewhere, Vercel works
 npx vercel
