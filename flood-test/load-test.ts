@@ -17,17 +17,15 @@ export default () => {
   });
 
   step("Start", async (browser) => {
-    await browser.visit("https://reflect-draw.vercel.app/d/YYVVf2");
+    await browser.visit("https://reflect-draw-cesar-load-test.vercel.app/d/QRT19V");
   });
 
   step("Step 2 move cursor", async (browser) => {
     const rectangles = await browser.findElements(By.css("svg > rect"));
     for (let i = 0; i < 15; i++) {
-      for (let rect of shuffleArray(rectangles)) {
+      for (let rect of rectangles) {
         const center = await rect.centerPoint();
         await browser.page.mouse.move(center[0], center[1]);
-        
-        // Randomize the x and y coordinates within a range
         const randomX = Math.floor(Math.random() * 20) + 800;
         const randomY = Math.floor(Math.random() * 20) + 600;
         await browser.page.mouse.move(randomX, randomY, { steps: 100 } );
@@ -36,10 +34,3 @@ export default () => {
   });
 };
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; 
-  }
-  return array;
-}

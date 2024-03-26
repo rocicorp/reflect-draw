@@ -7,7 +7,7 @@ PID_FILE="pids.txt"
 : > "$PID_FILE"
 
 # Loop to execute the command 50 times in the background, disabling all output
-for i in {1..10}; do
+for i in {1..15}; do
     npx element run load-test.ts >/dev/null 2>&1 &
     echo $! >> "$PID_FILE"
 done
